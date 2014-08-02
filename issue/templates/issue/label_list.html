@@ -1,0 +1,48 @@
+{% extends 'issue/project.html' %}
+
+{% block labeltab %} class="active"{% endblock %}
+
+{% block content %}
+
+<div class="panel panel-default">
+
+  <div class="panel-heading">
+    <h1>
+      Labels
+      <div class="pull-right">
+        <a href="{% url 'add-label' project.name %}"><button class="btn btn-success">New label</button></a>
+      </div>
+    </h1>
+  </div>
+
+  {% if labels.count %}
+  <table class="table">
+    {% for label in labels %}
+    <tr>
+      <td>
+        <a href="{% url 'list-issue' project.name %}?q=open%20label:{{ label.name }}">
+          <button class="btn" style="{{ label.style }}">
+            <span class="glyphicon glyphicon-tag" style="font-size: 100%;"></span> {{ label }}
+          </button>
+        </a>
+        <div class="pull-right">
+          <a href="">
+            <button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+          </a>
+          <a href="">
+            <button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button>
+          </a>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="panel-body">
+    There aren't any labels for this repository quite yet.
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'issue/project.html' %}
+
+{% block issuetab %} class="active"{% endblock %}
+
+{% block content %}
+
+<div class="panel panel-default">
+
+  <div class="panel-heading">
+    <h1>
+      Issues
+      <div class="pull-right">
+        <form class="form-inline" role="form" method="GET" action="" id="filter-form">
+          <div class="form-group">
+            <div class="input-group">
+              <div class="dropdown">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="filters-menu">
+                  Filters <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="filters-menu">
+                  <li role="presentation"><a role="menu-item" href="{% url 'list-issue' project.name %}?q=open">Open</a></li>
+                  <li role="presentation"><a role="menu-item" href="{% url 'list-issue' project.name %}?q=close">Close</a></li>
+                  <li role="presentation"><a role="menu-item" href="{% url 'list-issue' project.name %}?q=all">All</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <input class="form-control" name="q" type="text" placeholder="filter" value="{{ query }}"/>
+              <div class="input-group-addon">
+                <a href="#" onclick="$('#filter-form').submit();">
+                  <span class="glyphicon glyphicon-search"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="input-group">
+              <a href="{% url 'add-issue' project.name %}">
+                <button class="btn btn-success" type="button">New issue</button>
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </h1>
+  </div>
+
+  {% if issues.count %}
+  <table class="table">
+    {% for issue in issues %}
+    <tr>
+      <td>
+        <span class="text-headline">
+          <a href="{% url 'show-issue' project.name issue.id %}">{{ issue }}</a>
+        </span>
+        {% for label in issue.labels.all %}
+        <a href="{% url 'list-issue' project.name %}?q=open%20label:{{ label.name }}">
+          <span class="label" style="{{ label.style }}">{{ label }}</span>
+        </a>
+        {% endfor %}
+        <br />
+        <small>#{{ issue.id }} opened by {{ issue.author.username }} on {{ issue.opened_at }}</small>
+        <span class="badge">{{ issue.comments.count }}</span>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="panel-body">
+    No issues match your desired criteria.
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

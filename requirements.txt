@@ -1,0 +1,7 @@
+Django==1.7c2
+Markdown==2.4.1
+django-colorful==1.0.1
+django-crispy-forms==1.4.0
+django-markdown==0.6.1
+ipython==2.1.0
+pyinotify==0.9.4

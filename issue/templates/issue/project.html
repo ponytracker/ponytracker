@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project }}{% endblock %}
+
+{% block projectmenu %}
+{% if request.user.is_authenticated and request.user.is_admin %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'delete-project' project.name %}">Delete this project</a></li>
+{% endif %}
+{% endblock %}
+
+{% block navbar %}
+<li{% block issuetab %}{% endblock %}><a href="{% url 'list-issue' project.name %}">Issues</a></li>
+<li{% block labeltab %}{% endblock %}><a href="{% url 'list-label' project.name %}">Labels</a></li>
+<li{% block milestonetab %}{% endblock %}><a href="{% url 'list-milestone' project.name %}">Milestones</a></li>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'issue/project.html' %}
+
+{% load django_markdown %}
+
+{% block issuetab %} class="active"{% endblock %}
+
+{% block content %}
+
+<div class="panel panel-default">
+
+  <div class="panel-heading">
+    <h1>{{ issue }} <small>#{{ issue.id }}</small></h1>
+
+    {% if issue.closed %}
+    <span class="label label-danger">Closed</span>
+    {% else %}
+    <span class="label label-success">Open</span>
+    {% endif %}
+
+    {{ issue.author.username }} opened this issue on {{ issue.opened_at }}
+  - {{ issue.comments.count }} comments
+  </div>
+
+  <table class="table">
+    {% for event in events %}
+    <tr>
+      <td>
+        {{ event }} on {{ event.date }}
+        {% if event.additionnal_section %}
+          {% if event.boxed %}
+          <br />
+          <br />
+          <div class="well">
+            {{ event.additionnal_section|markdown }}
+          </div>
+          {% else %}
+          <hr>
+          {{ event.additionnal_section|markdown }}
+          {% endif %}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+</div>
+
+<a href="{% url 'comment-issue' project.name issue.id %}"><button class="btn btn-default">Comment this issue</button></a>
+
+<a href="{% url 'edit-issue' project.name issue.id %}"><button class="btn btn-default">Edit this issue</button></a>
+
+{% if issue.closed %}
+<a href="{% url 'reopen-issue' project.name issue.id %}"><button class="btn btn-default">Reopen this issue</button></a>
+{% else %}
+<a href="{% url 'close-issue' project.name issue.id %}"><button class="btn btn-default">Close this issue</button></a>
+{% endif %}
+
+<a href="{% url 'delete-issue' project.name issue.id %}"><button class="btn btn-default">Delete this issue</button></a>
+
+{% endblock %}

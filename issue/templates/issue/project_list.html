@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Projects</h1>
+
+<table class="table table-hover">
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+  </tr>
+  {% for project in projects %}
+  <tr>
+    <td><a href="{% url 'list-issue' project.name %}">{{ project }}</a></td>
+    <td>{{ project.description }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<a href="{% url 'add-project' %}"><button class="btn btn-success">Add project</button></a>
+
+{% endblock %}

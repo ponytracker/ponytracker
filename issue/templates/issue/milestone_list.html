@@ -1,0 +1,17 @@
+{% extends 'issue/project.html' %}
+
+{% block milestonetab %} class="active"{% endblock %}
+
+{% block core %}
+
+Milestones :
+
+<ul>
+    {% for milestone in milestones %}
+    <li>
+        {{ milestone }}
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

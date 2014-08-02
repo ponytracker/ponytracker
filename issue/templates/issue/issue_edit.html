@@ -1,0 +1,15 @@
+{% extends 'issue/project.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block issuetab %} class="active"{% endblock %}
+
+{% block content %}
+
+<form action="" method="post" role="form">
+  {{ form|crispy }}
+  {% csrf_token %}
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock %}
