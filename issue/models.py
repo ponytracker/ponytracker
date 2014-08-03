@@ -65,16 +65,36 @@ class Label(models.Model):
 
 class Milestone(models.Model):
 
+    name_validator = RegexValidator(regex='^[a-z0-9_.-]+$',
+            message="Please enter only lowercase characters, number, "
+                    "dot, underscores or hyphens.")
+
     project = models.ForeignKey(Project, related_name='milestones')
 
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32, validators=[name_validator])
 
     class Meta:
         unique_together = [ 'project', 'name' ]
 
-    progression = models.SmallIntegerField(default=0)
+    due_date = models.DateTimeField(blank=True,null=True)
 
-    due_date = models.DateTimeField(null=True)
+    def closed_issues(self):
+
+        return self.issues.filter(closed=True).count()
+
+    def total_issues(self):
+
+        return self.issues.count()
+
+    def progress(self):
+
+        closed = self.closed_issues()
+        total = self.total_issues()
+
+        if total:
+            return int(100 * closed / total);
+        else:
+            return 0
 
     def __str__(self):
         return self.name
@@ -98,6 +118,8 @@ class Issue(models.Model):
     closed = models.BooleanField(default=False)
 
     labels = models.ManyToManyField(Label, blank=True, null=True, related_name='issues')
+
+    milestone = models.ForeignKey(Milestone, blank=True, null=True, related_name='issues')
 
     assignee = models.ForeignKey(User, blank=True, null=True, related_name='+')
 
@@ -154,6 +176,28 @@ class Issue(models.Model):
                 code=Event.DEL_LABEL, args={'label': label.id})
         event.save()
 
+    def add_milestone(self, author, milestone, commit=True):
+        if self.milestone:
+            event = Event(issue=self, author=author, code=Event.CHANGE_MILESTONE,
+                    args={'old_milestone': self.milestone.name,
+                          'new_milestone': milestone.name})
+            event.save()
+        else:
+            event = Event(issue=self, author=author, code=Event.SET_MILESTONE,
+                    args={'milestone': milestone.name})
+            event.save()
+        self.milestone = milestone
+        if commit:
+            self.save()
+
+    def remove_milestone(self, author, milestone, commit=True):
+        self.milestone = None
+        if commit:
+            self.save()
+        event = Event(issue=self, author=author, code=Event.UNSET_MILESTONE,
+                args={'milestone': milestone.name})
+        event.save()
+
     def __str__(self):
         return self.title
 
@@ -167,7 +211,7 @@ class Event(models.Model):
     DEL_LABEL = 5
     SET_MILESTONE = 6
     CHANGE_MILESTONE = 7
-    DEL_MILESTONE = 8
+    UNSET_MILESTONE = 8
     REFERENCE = 9
     COMMENT = 10
     DESCRIBE = 11
@@ -198,14 +242,11 @@ class Event(models.Model):
 
         return self.code == Event.COMMENT or self.code == Event.DESCRIBE
 
-    def boxed(self):
-
-        return self.code == Event.COMMENT or self.code == Event.DESCRIBE
-
     def glyphicon(self):
 
-        if self.code == Event.COMMENT \
-                or self.code == Event.DESCRIBE:
+        if self.code == Event.COMMENT:
+            return "bullhorn"
+        elif self.code == Event.DESCRIBE:
             return "pencil"
         elif self.code == Event.CLOSE:
             return "ban-circle"
@@ -218,7 +259,7 @@ class Event(models.Model):
             return "tag"
         elif self.code == Event.SET_MILESTONE \
                 or self.code == Event.CHANGE_MILESTONE \
-                or self.code == Event.DEL_MILESTONE:
+                or self.code == Event.UNSET_MILESTONE:
             return "road"
         elif self.code == Event.REFERENCE:
             return "transfer"
@@ -253,8 +294,8 @@ class Event(models.Model):
         elif self.code == Event.SET_MILESTONE:
             description = "added this to the {milestone} milestone"
         elif self.code == Event.CHANGE_MILESTONE:
-            description = "moved this from the {old_milestone} milestone to the {new_mileston} milestone"
-        elif self.code == Event.DEL_MILESTONE:
+            description = "moved this from the {old_milestone} milestone to the {new_milestone} milestone"
+        elif self.code == Event.UNSET_MILESTONE:
             description = "deleted this from the {milestone} milestone"
         elif self.code == Event.REFERENCE:
             description = "referenced this issue"

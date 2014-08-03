@@ -8,6 +8,7 @@ from issue.models import *
 
 from django_markdown.widgets import MarkdownWidget
 from stronghold.decorators import public
+from bootstrap3_datetime.widgets import DateTimePicker
 
 
 @public
@@ -165,6 +166,17 @@ def issue_list(request, project):
                 break
             else:
                 issues = issues.filter(labels=label)
+
+        elif key == 'milestone':
+            try:
+                milestone = Milestone.objects.get(project=project,name=value)
+            except ObjectDoesNotExist:
+                messages.error(request, "The milestone '%s' does not exist." %value)
+                issues = None
+                break
+            else:
+                issues = issues.filter(milestone=milestone)
+
         elif key == 'author' or key == 'user':
             try:
                 author = User.objects.get(username=value)
@@ -174,6 +186,7 @@ def issue_list(request, project):
                 break
             else:
                 issues = issues.filter(author=author)
+
         else:
             messages.error(request, "Unknow '%s' filtering criterion." %keyword)
             issues = None
@@ -279,6 +292,8 @@ def issue(request, project, id):
     labels = Label.objects.filter(project=issue.project, deleted=False) \
             .exclude(id__in=issue.labels.all().values_list('id'))
     milestones = Milestone.objects.filter(project=issue.project)
+    if issue.milestone:
+        milestones = milestones.exclude(name=issue.milestone.name)
 
     events = issue.events.all()
 
@@ -402,6 +417,26 @@ def issue_remove_label(request, project, issue, label):
 
     return redirect('show-issue', project, issue.id)
 
+def issue_add_milestone(request, project, issue, milestone):
+
+    issue = get_object_or_404(Issue, project__name=project, id=issue)
+    milestone = get_object_or_404(Milestone, project__name=project, name=milestone)
+    author = User.objects.get(username=request.user.username)
+
+    issue.add_milestone(author, milestone)
+
+    return redirect('show-issue', project, issue.id)
+
+def issue_remove_milestone(request, project, issue, milestone):
+
+    issue = get_object_or_404(Issue, project__name=project, id=issue)
+    milestone = get_object_or_404(Milestone, project__name=project, name=milestone)
+    author = User.objects.get(username=request.user.username)
+
+    issue.remove_milestone(author, milestone)
+
+    return redirect('show-issue', project, issue.id)
+
 def label_list(request, project):
 
     project = get_object_or_404(Project, name=project)
@@ -428,12 +463,7 @@ def label_edit(request, project, id=None):
     else:
         label = None
 
-    class LabelForm(forms.ModelForm):
-
-        class Meta:
-            model = Label
-            fields = ['name', 'color', 'inverted']
-
+    LabelForm = modelform_factory(Label, fields=['name', 'color', 'inverted'])
     form = LabelForm(request.POST or None, instance=label)
 
     if request.method == 'POST' and form.is_valid():
@@ -502,14 +532,72 @@ def milestone_list(request, project):
 
     return render(request, 'issue/milestone_list.html', c)
 
-def milestone_edit(request, project):
+def milestone_edit(request, project, name=None):
 
     project = get_object_or_404(Project, name=project)
 
+    if name:
+        milestone = get_object_or_404(Milestone, project=project, name=name)
+    else:
+        milestone = None
+
+    class MilestoneForm(forms.ModelForm):
+
+        class Meta:
+            model = Milestone
+            fields = ['name', 'due_date']
+            widgets = {
+                    'due_date': DateTimePicker(format="YYYY-MM-DD HH:mm"),
+            }
+
+    form = MilestoneForm(request.POST or None, instance=milestone)
+
+    if request.method == 'POST' and form.is_valid():
+
+        similar = Milestone.objects.filter(project=project,
+                name=form.cleaned_data['name'])
+
+        if milestone:
+            similar = similar.exclude(pk=milestone.pk)
+
+        if similar.count():
+
+            form._errors['name'] = ['There is already a milestone with this name.']
+
+        else:
+
+            if milestone:
+                if name != form.cleaned_data['name']:
+                    author = User.objects.get(username=request.user.username)
+                    for issue in milestone.issues.all():
+                        event = Event(issue=issue, author=author, code=Event.CHANGE_MILESTONE,
+                                args={'old_milestone': name, 'new_milestone': form.cleaned_data['name']})
+                        event.save()
+                form.save()
+                messages.success(request, 'Milestone modified successfully.')
+            else:
+                milestone = form.save(commit=False)
+                milestone.project = project
+                milestone.save()
+                messages.success(request, 'Milestone added successfully.')
+
+            issue = request.GET.get('issue')
+            if issue:
+                return redirect('add-milestone-to-issue', project.name, issue, milestone.name)
+
+            return redirect('list-milestone', project.name)
+
+    projects = Project.objects.all()
+
     c = {
             'request': request,
+            'projects': projects,
             'project': project,
-            'milestones': project.milestones.all(),
+            'form': form,
         }
 
-    return render(request, 'issue/milestone_list.html', c)
+    return render(request, 'issue/milestone_edit.html', c)
+
+def milestone_delete(request, project, name):
+
+    return redirect('list-milestone', project)

@@ -41,6 +41,7 @@ INSTALLED_APPS = (
 
     'stronghold',
     'django_markdown',
+    'bootstrap3_datetime',
     'crispy_forms',
     'colorful',
     'issue',

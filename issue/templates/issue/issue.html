@@ -35,15 +35,11 @@
         <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ event.author.username }}"><strong>{{ event.author}}</strong></a> {{ event }} {{ event.date|naturaltime }}
         {% if event.code == event.DESCRIBE %}
         <div class="pull-right">
-          <a href="{% url 'edit-issue' project.name issue.id %}">
-            <button class="btn btn-primary btn-xs">Edit</button>
-          </a>
+          <a href="{% url 'edit-issue' project.name issue.id %}"><button class="btn btn-primary btn-xs">Edit</button></a>
         </div>
         {% elif event.code == event.COMMENT %}
         <div class="pull-right">
-          <a href="{% url 'edit-comment' project.name issue.id event.id %}">
-            <button class="btn btn-primary btn-xs">Edit</button>
-          </a>
+          <a href="{% url 'edit-comment' project.name issue.id event.id %}"><button class="btn btn-primary btn-xs">Edit</button></a>
         </div>
         {% endif %}
       </div>
@@ -119,16 +115,29 @@
     None yet
     {% endif %}
     <hr>
-    <h5>
-      <b>Milestons</b>
-      <div class="pull-right">
-        <a href="#"><button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span></button></a>
+    <b>Milestone</b>
+    <div class="pull-right">
+      <div class="dropdown">
+        <button class="btn btn-default btn-xs" type="button" id="labels-menu" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="labels-menu">
+          {% if milestones.count %}
+          {% for milestone in milestones %}
+          <li role="presentation">
+            <a href="{% url 'add-milestone-to-issue' project.name issue.id milestone.name %}">{{ milestone }}</a>
+          </li>
+          {% endfor %}
+          <li role="presentation" class="divider"></li>
+          {% endif %}
+          <li role="presentation">
+            <a href="{% url 'add-milestone' project.name %}?issue={{ issue.id }}"><button class="btn btn-success btn-xs btn-block">New milestone...</button></a>
+          </li>
+        </ul>
       </div>
-    </h5>
-    {% if issue.milestones.count %}
-    {% for milestone in issue.milestones.all %}
-    {{ milestone }}
-    {% endfor %}
+    </div>
+    <br /><br />
+    {% if issue.milestone %}
+    <a href="{% url 'remove-milestone-from-issue' project.name issue.id issue.milestone.name %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
+    <a href="{% url 'list-issue' project.name %}?q=is:open%20milestone:{{ issue.milestone.name  }}"><b>{{ issue.milestone }}</b></a>
     {% else %}
     No milestone
     {% endif %}

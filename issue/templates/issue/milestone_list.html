@@ -2,16 +2,55 @@
 
 {% block milestonetab %} class="active"{% endblock %}
 
-{% block core %}
+{% block content %}
 
-Milestones :
+<div class="panel panel-default">
 
-<ul>
+  <div class="panel-heading">
+    <h1>
+      Milestone
+      <div class="pull-right">
+        <a href="{% url 'add-milestone' project.name %}"><button class="btn btn-success">New milestone</button></a>
+      </div>
+    </h1>
+  </div>
+
+  {% if milestones.count %}
+  <table class="table">
     {% for milestone in milestones %}
-    <li>
-        {{ milestone }}
-    </li>
+    <tr>
+      <td>
+        <div class="pull-right">
+          <a href="{% url 'edit-milestone' project.name milestone.name %}">
+            <button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button>
+          </a>
+          <a href="{% url 'delete-milestone' project.name milestone.name %}">
+            <button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button>
+          </a>
+        </div>
+        <b style="font-size: 200%;">
+          <a href="{% url 'list-issue' project.name %}?q=is:open%20milestone:{{ milestone.name }}">{{ milestone }}</a>
+        </b>
+        &#160;
+        <small>
+          <span class="glyphicon glyphicon-calendar"></span> {% if milestone.due_date %}Due by {{ milestone.due_date }}{% else %}No due date{% endif %}
+        </small>
+        <br /><br />
+        <div class="progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ milestone.progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ milestone.progress }}%;">
+            {{ milestone.progress }}% complete
+          </div>
+        </div>
+      </td>
+    </tr>
     {% endfor %}
-</ul>
+  </table>
+  {% else %}
+  <div class="panel-body">
+    There aren't any milestones for this repository quite yet.
+  </div>
+  {% endif %}
+
+</div>
 
 {% endblock %}
