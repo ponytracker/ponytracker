@@ -1,0 +1,25 @@
+{% extends 'issue/project.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block milestonetab %} class="active"{% endblock %}
+
+{% block media %}
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-offset-4 col-md-4">
+
+    <form action="" method="post" role="form">
+      {{ form|crispy }}
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
