@@ -7,8 +7,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from issue.models import *
 
 from django_markdown.widgets import MarkdownWidget
+from stronghold.decorators import public
 
 
+@public
 def project_list(request):
 
     projects = Project.objects.all()
@@ -26,32 +28,67 @@ def project_list(request):
 
     return render(request, 'issue/project_list.html', c)
 
-def project_edit(request, project=None):
+def project_add(request):
 
-    if project:
-        project = get_object_or_404(Project, name=project)
-
-    class ProjectForm(forms.ModelForm):
-
-        class Meta:
-            model=Project
-            fields=['display_name', 'name', 'description']
-
-    form = ProjectForm(request.POST or None, instance=project)
+    ProjectForm = modelform_factory(Project, fields=['display_name', 'name', 'description'])
+    form = ProjectForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
 
-        project = form.save()
-        messages.success(request, 'Project added successfully.')
+        if Project.objects \
+                .filter(display_name__iexact=form.cleaned_data['display_name']) \
+                .count():
 
-        return redirect('list-issue', project.name)
+            form._errors['display_name'] = ['There is already a project with a similar name.']
+
+        else:
+
+            project = form.save()
+
+            project.create_default_labels()
+
+            messages.success(request, 'Project added successfully.')
+
+            return redirect('list-issue', project.name)
 
     projects = Project.objects.all()
 
     c = {
             'request': request,
             'projects': projects,
-            'project': project,
+            'form': form,
+        }
+
+    return render(request, 'issue/project_edit.html', c)
+
+def project_edit(request, project):
+
+    project = get_object_or_404(Project, name=project)
+
+    ProjectForm = modelform_factory(Project, fields=['display_name', 'description'])
+    form = ProjectForm(request.POST or None, instance=project)
+
+    if request.method == 'POST' and form.is_valid():
+
+        if Project.objects \
+                .filter(display_name__iexact=form.cleaned_data['display_name']) \
+                .exclude(pk=project.pk).count():
+
+            form._errors['display_name'] = ['There is already a project with a similar name.']
+
+        else:
+
+            project = form.save()
+
+            messages.success(request, 'Project modified successfully.')
+
+            return redirect('list-issue', project.name)
+
+    projects = Project.objects.all()
+
+    c = {
+            'request': request,
+            'projects': projects,
             'form': form,
         }
 
@@ -75,41 +112,81 @@ def issue_list(request, project):
 
     issues = project.issues
 
-    query = request.GET.get('q', 'open')
+    is_open = ''
+    is_close = ''
+    is_all = ''
+    is_all_query = ""
 
-    constraints = query.split(' ')
+    query = request.GET.get('q', '')
 
-    error = False
-    for constraint in constraints:
+    if query == '':
+        query = 'is:open'
 
-        if constraint == 'open':
-            issues = issues.filter(closed=False)
-        elif constraint == 'close':
-            issues = issues.filter(closed=True)
-        elif constraint == 'all':
-            pass
-        else:
-            args = constraint.split(':')
-            if len(args) != 2:
-                error = True
-                break
-            if len(args) == 2 and args[0] == 'label':
-                try:
-                    label = Label.objects.get(name=args[1])
-                except ObjectDoesNotExist:
-                    messages.info(request, "The label '%s' does not exist"
-                                        ", ignoring the constraint." %args[1])
-                else:
-                    issues = issues.filter(labels=label)
+    syntaxe_error = False
+    for constraint in query.split(' '):
+
+        if constraint == '':
+            continue
+
+        if constraint == '*':
+            continue
+
+        args = constraint.split(':')
+
+        if len(args) != 2:
+            messages.error(request, 'There is a syntaxe error in your filter.')
+            issues = None
+            break
+
+        key = args[0]
+        value = args[1]
+
+        if key == '':
+            continue
+
+        elif key == 'is':
+            if value == 'open':
+                issues = issues.filter(closed=False)
+                is_open = ' active'
+            elif value =='close':
+                issues = issues.filter(closed=True)
+                is_close = ' active'
             else:
-                error = True
+                messages.error(request, "The keyword 'is' must be followed by 'open' or 'close'.")
+                issues = None
                 break
 
-    if error:
-        messages.error(request, 'There is a syntaxe error in your filter.')
-        issues = project.issues.filter(closed=False)
+        elif key == 'label':
+            try:
+                label = Label.objects.get(project=project,name=value,deleted=False)
+            except ObjectDoesNotExist:
+                messages.error(request, "The label '%s' does not exist." %value)
+                issues = None
+                break
+            else:
+                issues = issues.filter(labels=label)
+        elif key == 'author' or key == 'user':
+            try:
+                author = User.objects.get(username=value)
+            except ObjectDoesNotExist:
+                messages.error(request, "The user '%s' does not exist." %value)
+                issues = None
+                break
+            else:
+                issues = issues.filter(author=author)
+        else:
+            messages.error(request, "Unknow '%s' filtering criterion." %keyword)
+            issues = None
+            break
 
-    issues = issues.extra(order_by=['-opened_at'])
+        if key != 'is':
+            is_all_query += ' ' + constraint
+
+    if issues:
+        issues = issues.extra(order_by=['-opened_at'])
+
+    if is_open == '' and is_close == '':
+        is_all = ' active'
 
     c = {
             'request': request,
@@ -117,6 +194,10 @@ def issue_list(request, project):
             'project': project,
             'issues': issues,
             'query': query,
+            'is_open': is_open,
+            'is_close': is_close,
+            'is_all': is_all,
+            'is_all_query': is_all_query[1:],
         }
 
     return render(request, 'issue/issue_list.html', c)
@@ -128,7 +209,7 @@ def issue_edit(request, project, id=None):
     if id:
         issue = get_object_or_404(Issue, project__name=project.name, id=id)
         init_data = {'title': issue.title,
-                     'comment': issue.events.first().additionnal_section}
+                     'description': issue.description}
     else:
         issue = None
         init_data = None
@@ -136,15 +217,14 @@ def issue_edit(request, project, id=None):
     class IssueForm(forms.Form):
 
         title = forms.CharField(max_length=128)
-        comment = forms.CharField(widget=MarkdownWidget)
+        description = forms.CharField(widget=MarkdownWidget, required=False)
 
     form = IssueForm(request.POST or init_data)
 
     if request.method == 'POST' and form.is_valid():
 
         title = form.cleaned_data['title']
-        comment = form.cleaned_data['comment']
-        print(comment)
+        description = form.cleaned_data['description']
 
         if issue:
 
@@ -160,10 +240,8 @@ def issue_edit(request, project, id=None):
                 event.save()
                 modified = True
 
-            first_comment = issue.events.first()
-            if first_comment.additionnal_section != comment:
-                first_comment.additionnal_section = comment
-                first_comment.save()
+            if issue.description != description:
+                issue.description = description
                 modified = True
 
             if modified:
@@ -177,9 +255,7 @@ def issue_edit(request, project, id=None):
             issue = Issue(title=title, author=author,
                     project=project, id=Issue.next_id(project))
             issue.save()
-            event = Event(issue=issue, author=author, code=Event.COMMENT,
-                    additionnal_section=comment)
-            event.save()
+            issue.description = description
             messages.success(request, 'Issue created successfully.')
 
         return redirect('show-issue', project.name, issue.id)
@@ -200,12 +276,17 @@ def issue(request, project, id):
     issue = get_object_or_404(Issue, project__name=project, id=id)
 
     projects = Project.objects.all()
+    labels = Label.objects.filter(project=issue.project, deleted=False) \
+            .exclude(id__in=issue.labels.all().values_list('id'))
+    milestones = Milestone.objects.filter(project=issue.project)
 
     events = issue.events.all()
 
     c = {
             'request': request,
             'projects': projects,
+            'labels': labels,
+            'milestones': milestones,
             'project': issue.project,
             'issue': issue,
             'events': events,
@@ -219,7 +300,7 @@ def issue_comment(request, project, id, comment=None):
 
     if comment:
         event = get_object_or_404(Event, code=Event.COMMENT, issue=issue, id=comment)
-        init_data = {'comment': comment.additionnal_section}
+        init_data = { 'comment': event.additionnal_section }
     else:
         event = None
         init_data = None
@@ -301,11 +382,31 @@ def issue_delete(request, project, id):
 
     return redirect('list-issue', project)
 
+def issue_add_label(request, project, issue, label):
+
+    issue = get_object_or_404(Issue, project__name=project, id=issue)
+    label = get_object_or_404(Label, project__name=project, id=label)
+    author = User.objects.get(username=request.user.username)
+
+    issue.add_label(author, label)
+
+    return redirect('show-issue', project, issue.id)
+
+def issue_remove_label(request, project, issue, label):
+
+    issue = get_object_or_404(Issue, project__name=project, id=issue)
+    label = get_object_or_404(Label, project__name=project, id=label)
+    author = User.objects.get(username=request.user.username)
+
+    issue.remove_label(author, label)
+
+    return redirect('show-issue', project, issue.id)
+
 def label_list(request, project):
 
     project = get_object_or_404(Project, name=project)
 
-    labels = project.labels.all()
+    labels = project.labels.filter(deleted=False)
 
     projects = Project.objects.all()
 
@@ -318,28 +419,51 @@ def label_list(request, project):
 
     return render(request, 'issue/label_list.html', c)
 
-def label_edit(request, project, label=None):
+def label_edit(request, project, id=None):
 
     project = get_object_or_404(Project, name=project)
 
-    if label:
-        label = get_object_or_404(Label, project=project, name=label)
+    if id:
+        label = get_object_or_404(Label, project=project, id=id)
+    else:
+        label = None
 
-    LabelForm = modelform_factory(Label, fields=['name', 'color'])
+    class LabelForm(forms.ModelForm):
+
+        class Meta:
+            model = Label
+            fields = ['name', 'color', 'inverted']
+
     form = LabelForm(request.POST or None, instance=label)
 
     if request.method == 'POST' and form.is_valid():
 
-        if label:
-            form.save()
-            messages.success(request, 'Label modified successfully.')
-        else:
-            label = form.save(commit=False)
-            label.project = project
-            label.save()
-            messages.success(request, 'Label added successfully.')
+        similar = Label.objects.filter(project=project,
+                name=form.cleaned_data['name'], deleted=False)
 
-        return redirect('list-label', project.name)
+        if label:
+            similar = similar.exclude(pk=label.pk)
+
+        if similar.count():
+
+            form._errors['name'] = ['There is already a label with this name.']
+
+        else:
+
+            if label:
+                form.save()
+                messages.success(request, 'Label modified successfully.')
+            else:
+                label = form.save(commit=False)
+                label.project = project
+                label.save()
+                messages.success(request, 'Label added successfully.')
+
+            issue = request.GET.get('issue')
+            if issue:
+                return redirect('add-label-to-issue', project.name, issue, label.id)
+
+            return redirect('list-label', project.name)
 
     projects = Project.objects.all()
 
@@ -347,11 +471,24 @@ def label_edit(request, project, label=None):
             'request': request,
             'projects': projects,
             'project': project,
-            'label': label,
             'form': form,
         }
 
     return render(request, 'issue/label_edit.html', c)
+
+def label_delete(request, project, id):
+
+    label = get_object_or_404(Label, project=project, id=id)
+    author = User.objects.get(username=request.user.username)
+
+    for issue in label.issues.all():
+        issue.remove_label(author, label)
+    label.deleted = True
+    label.save()
+
+    messages.success(request, "Label deleted successfully.")
+
+    return redirect('list-label', project)
 
 def milestone_list(request, project):
 

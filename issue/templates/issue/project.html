@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ project }}{% endblock %}
+{% block title %}{{ project }} - PonyTracker{% endblock %}
+{% block page_title %}{{ project }}{% endblock %}
 
 {% block projectmenu %}
-{% if request.user.is_authenticated and request.user.is_admin %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'edit-project' project.name %}">Modify this project</a></li>
 <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'delete-project' project.name %}">Delete this project</a></li>
-{% endif %}
 {% endblock %}
 
 {% block navbar %}

@@ -1,5 +1,7 @@
 {% extends 'issue/project.html' %}
 
+{% load humanize %}
+
 {% block issuetab %} class="active"{% endblock %}
 
 {% block content %}
@@ -14,14 +16,12 @@
           <div class="form-group">
             <div class="input-group">
               <div class="dropdown">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="filters-menu">
-                  Filters <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="filters-menu">
-                  <li role="presentation"><a role="menu-item" href="{% url 'list-issue' project.name %}?q=open">Open</a></li>
-                  <li role="presentation"><a role="menu-item" href="{% url 'list-issue' project.name %}?q=close">Close</a></li>
-                  <li role="presentation"><a role="menu-item" href="{% url 'list-issue' project.name %}?q=all">All</a></li>
-                </ul>
+                {% if is_all_query %}
+                <a href="{% url 'list-issue' project.name %}"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-remove"> Reset filter</span></button></a>
+                {% endif %}
+                <a href="{% url 'list-issue' project.name %}?q=is:open{% if is_all_query %} {{ is_all_query }}{% endif %}"><button type="button" class="btn btn-default btn-sm{{ is_open }}">Open</button></a>
+                <a href="{% url 'list-issue' project.name %}?q=is:close{% if is_all_query %} {{ is_all_query }}{% endif %}"><button type="button" class="btn btn-default btn-sm{{ is_close }}">Close</button></a>
+                <a href="{% url 'list-issue' project.name %}?q={% if is_all_query %}{{ is_all_query }}{% else %}*{% endif %}"><button type="button" class="btn btn-default btn-sm{{ is_all }}">Both</button></a>
               </div>
             </div>
           </div>
@@ -29,17 +29,13 @@
             <div class="input-group">
               <input class="form-control" name="q" type="text" placeholder="filter" value="{{ query }}"/>
               <div class="input-group-addon">
-                <a href="#" onclick="$('#filter-form').submit();">
-                  <span class="glyphicon glyphicon-search"></span>
-                </a>
+                <a href="#" onclick="$('#filter-form').submit();"><span class="glyphicon glyphicon-search"></span></a>
               </div>
             </div>
           </div>
           <div class="form-group">
             <div class="input-group">
-              <a href="{% url 'add-issue' project.name %}">
-                <button class="btn btn-success" type="button">New issue</button>
-              </a>
+              <a href="{% url 'add-issue' project.name %}"><button class="btn btn-success" type="button">New issue</button></a>
             </div>
           </div>
         </form>
@@ -52,16 +48,17 @@
     {% for issue in issues %}
     <tr>
       <td>
-        <span class="text-headline">
-          <a href="{% url 'show-issue' project.name issue.id %}">{{ issue }}</a>
-        </span>
+        {% if issue.closed %}
+        <span class="text-danger"><span class="glyphicon glyphicon-ok-circle"></span></span>
+        {% else %}
+        <span class="text-success"><span class="glyphicon glyphicon-hand-right"></span></span>
+        {% endif %}
+        <b><a href="{% url 'show-issue' project.name issue.id %}">{{ issue }}</a></b>
         {% for label in issue.labels.all %}
-        <a href="{% url 'list-issue' project.name %}?q=open%20label:{{ label.name }}">
-          <span class="label" style="{{ label.style }}">{{ label }}</span>
-        </a>
+        <a href="{% url 'list-issue' project.name %}?q=is:open%20label:{{ label.name }}"><span class="label" style="{{ label.style }}">{{ label }}</span></a>
         {% endfor %}
         <br />
-        <small>#{{ issue.id }} opened by {{ issue.author.username }} on {{ issue.opened_at }}</small>
+        <small>#{{ issue.id }} opened by <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ issue.author.username }}"><strong>{{ issue.author.username }}</strong></a> {{ issue.opened_at|naturaltime }}</small>
         <span class="badge">{{ issue.comments.count }}</span>
       </td>
     </tr>

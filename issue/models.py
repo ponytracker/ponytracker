@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import validate_slug
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
+from django.utils.html import escape
+from django.core.urlresolvers import reverse
 
 import json
 
@@ -9,17 +13,28 @@ from colorful.fields import RGBColorField
 
 class Project(models.Model):
 
-    name = models.CharField(primary_key=True, blank=False, max_length=32,
-            verbose_name="Short name (used in URL)",
-            validators=[validate_slug])
+    url_name_validator = RegexValidator(regex='^[a-z0-9_-]+$',
+            message="Please enter only lowercase characters, number, "
+                    "underscores or hyphens.")
 
-    display_name = models.CharField(max_length=32,
+    name = models.CharField(primary_key=True, blank=False, max_length=32,
+            verbose_name="Short name (used in URL, definitive)",
+            validators=[url_name_validator])
+
+    display_name = models.CharField(max_length=32, unique=True,
             verbose_name="Project name")
 
     description = models.TextField(blank=True, default="",
             verbose_name="Description")
 
+    def create_default_labels(self):
+
+        Label(project=self, name='bug', color='#FF0000').save()
+        Label(project=self, name='feature', color='#00A000').save()
+        Label(project=self, name='documentation', color='#1D3DBE').save()
+
     def __str__(self):
+
         return self.display_name
 
 class Label(models.Model):
@@ -28,12 +43,11 @@ class Label(models.Model):
 
     name = models.CharField(max_length=32)
 
-    class Meta:
-        unique_together = [ 'project', 'name' ]
+    deleted = models.BooleanField(default=False)
 
-    color = RGBColorField(default='#FFFFFF')
+    color = RGBColorField(default='#000000', verbose_name="Background color")
 
-    inverted = models.BooleanField(default=True)
+    inverted = models.BooleanField(default=True, verbose_name="Inverse text color")
 
     def style(self):
 
@@ -79,11 +93,11 @@ class Issue(models.Model):
 
     author = models.ForeignKey(User, related_name='+')
 
-    opened_at = models.DateTimeField(auto_now=True)
+    opened_at = models.DateTimeField(auto_now_add=True)
 
     closed = models.BooleanField(default=False)
 
-    labels = models.ManyToManyField(Label, blank=True, null=True)
+    labels = models.ManyToManyField(Label, blank=True, null=True, related_name='issues')
 
     assignee = models.ForeignKey(User, blank=True, null=True, related_name='+')
 
@@ -98,9 +112,47 @@ class Issue(models.Model):
 
     def comments(self):
 
-        comments = self.events.filter(code=Event.COMMENT)
+        comments = self.events.filter(issue=self,code=Event.COMMENT)
 
-        return comments[1:]
+        return comments
+
+    def getdesc(self):
+        desc = self.events.filter(issue=self,code=Event.DESCRIBE)
+        if desc.count():
+            return desc.first().additionnal_section
+        else:
+            return None
+    def setdesc(self, value):
+        desc = self.events.filter(issue=self,code=Event.DESCRIBE)
+        if desc.count():
+            desc = desc.first()
+            desc.additionnal_section = value
+            desc.save()
+        else:
+            desc = Event(issue=self, author=self.author, code=Event.DESCRIBE,
+                    additionnal_section=value)
+            desc.save()
+    def deldesc(self):
+        desc = self.events.filter(issue=self,code=Event.DESCRIBE)
+        if desc.count():
+            desc.first().delete()
+    description = property(getdesc, setdesc, deldesc)
+
+    def add_label(self, author, label, commit=True):
+        self.labels.add(label)
+        if commit:
+            self.save()
+        event = Event(issue=self, author=author,
+                code=Event.ADD_LABEL, args={'label': label.id})
+        event.save()
+
+    def remove_label(self, author, label, commit=True):
+        self.labels.remove(label)
+        if commit:
+            self.save()
+        event = Event(issue=self, author=author,
+                code=Event.DEL_LABEL, args={'label': label.id})
+        event.save()
 
     def __str__(self):
         return self.title
@@ -118,10 +170,11 @@ class Event(models.Model):
     DEL_MILESTONE = 8
     REFERENCE = 9
     COMMENT = 10
+    DESCRIBE = 11
 
     issue = models.ForeignKey(Issue, related_name="%(class)ss")
 
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateTimeField(auto_now_add=True)
 
     author = models.ForeignKey(User)
     
@@ -139,34 +192,73 @@ class Event(models.Model):
 
     additionnal_section = models.TextField(blank=True, default="")
 
+    def editable(self):
+
+        return self.code == Event.COMMENT or self.code == Event.DESCRIBE
+
     def boxed(self):
-        return self.code == Event.COMMENT
+
+        return self.code == Event.COMMENT or self.code == Event.DESCRIBE
+
+    def glyphicon(self):
+
+        if self.code == Event.COMMENT or self.code == Event.DESCRIBE:
+            return "pencil"
+        elif self.code == Event.CLOSE:
+            return "ban-circle"
+        elif self.code == Event.REOPEN:
+            return "refresh"
+        elif self.code == Event.RENAME:
+            return "transfer"
+        elif self.code == Event.ADD_LABEL:
+            return "tag"
+        elif self.code == Event.DEL_LABEL:
+            return "tag"
+        elif self.code == Event.SET_MILESTONE:
+            return "road"
+        elif self.code == Event.CHANGE_MILESTONE:
+            return "road"
+        elif self.code == Event.DEL_MILESTONE:
+            return "road"
+        elif self.code == Event.REFERENCE:
+            return "transfer"
+        else:
+            return "cog"
 
     def __str__(self):
 
         args = self.args
 
-        if self.code == Event.COMMENT:
-            description = "{author} commented"
+        if self.code == Event.COMMENT or self.code == Event.DESCRIBE:
+            description = "commented"
         elif self.code == Event.CLOSE:
-            description = "{author} closed this issue"
+            description = "closed this issue"
         elif self.code == Event.REOPEN:
-            description = "{author} reopened this issue"
+            description = "reopened this issue"
         elif self.code == Event.RENAME:
-            description = "{author} changed the title from {old_title} to {new_title}"
-        elif self.code == Event.ADD_LABEL:
-            description = "{author} added the {label} label"
-        elif self.code == Event.DEL_LABEL:
-            description = "{author} deleted the {label} label"
+            description = "changed the title from <mark>{old_title}</mark> to <mark>{new_title}</mark>"
+        elif self.code == Event.ADD_LABEL or self.code == Event.DEL_LABEL:
+            label = Label.objects.get(id=args['label'])
+            description = '{action} the <a href="{url}?q=is:open%20label:{label}"><span class="label" style="{style}">{label}</span></a> label'
+            args['label'] = label.name
+            args['url'] = reverse('list-issue', kwargs={'project': self.issue.project.name})
+            args['style'] = label.style()
+            if self.code == Event.ADD_LABEL:
+                args['action'] = 'added'
+            else:
+                args['action'] = 'removed'
         elif self.code == Event.SET_MILESTONE:
-            description = "{author} added this to the {milestone} milestone"
+            description = "added this to the {milestone} milestone"
         elif self.code == Event.CHANGE_MILESTONE:
-            description = "{author} moved this from the {old_milestone} milestone to the {new_mileston} milestone"
+            description = "moved this from the {old_milestone} milestone to the {new_mileston} milestone"
         elif self.code == Event.DEL_MILESTONE:
-            description = "{author} deleted this from the {milestone} milestone"
+            description = "deleted this from the {milestone} milestone"
         elif self.code == Event.REFERENCE:
-            description = "{author} referenced this issue"
+            description = "referenced this issue"
         else:
             return None
 
-        return description.format(author=self.author, **args)
+        # Escape args
+        safe_args = {k: escape(v) for k, v in args.items()}
+
+        return mark_safe(description.format(**safe_args))

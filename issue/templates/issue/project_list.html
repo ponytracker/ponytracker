@@ -1,22 +1,45 @@
 {% extends 'base.html' %}
 
+{% load django_markdown %}
+
 {% block content %}
 
-<h1>Projects</h1>
 
-<table class="table table-hover">
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-  </tr>
-  {% for project in projects %}
-  <tr>
-    <td><a href="{% url 'list-issue' project.name %}">{{ project }}</a></td>
-    <td>{{ project.description }}</td>
-  </tr>
-  {% endfor %}
-</table>
+<div class="panel panel-default">
 
-<a href="{% url 'add-project' %}"><button class="btn btn-success">Add project</button></a>
+  <div class="panel-heading">
+    <h1>
+      Projects
+      <div class="pull-right">
+        <a href="{% url 'add-project' %}"><button class="btn btn-success">Add project</button></a>
+      </div>
+    </h1>
+  </div>
+
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-3">
+        <strong>Name</strong>
+      </div>
+      <div class="col-md-8">
+        <strong>Description</strong>
+      </div>
+    </div>
+    {% for project in projects %}
+    <hr>
+    <div class="row">
+      <div class="col-md-3">
+        <a href="{% url 'list-issue' project.name %}">{{ project }}</a>
+      </div>
+      <div class="col-md-9">
+        {% if project.description %}
+        {{ project.description|linebreaksbr }}
+        {% else %}
+        <em>No description provided.</em>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 
 {% endblock %}

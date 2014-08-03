@@ -15,12 +15,16 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <title>Issue Tracker</title>
+    <title>{% block title %}PonyTracker{% endblock %}</title>
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/issue.css' %}" rel="stylesheet">
     {% block css %}{% endblock %}
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
     {% block js %}{% endblock %}
+
+    {% block media %}{% endblock %}
   </head>
 
   <body>
@@ -37,7 +41,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'list-project' %}">{% block title %}Issue Tracker{% endblock %}</a>
+            <a class="navbar-brand" href="{% url 'list-project' %}">{% block page_title %}PonyTracker{% endblock %}</a>
           </div>
           <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -74,7 +78,7 @@
 
       <div class="row">
 
-        <div class="col-md-offset-2 col-md-8">
+        <div class="col-md-offset-1 col-md-10">
 
           {% if messages %}
             {% for message in messages %}
@@ -91,9 +95,8 @@
 
       </div>
 
-      </div> <!-- /container -->
+    </div> <!-- /container -->
 
-    <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     {% block js_end %}{% endblock %}
   </body>

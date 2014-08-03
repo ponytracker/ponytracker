@@ -2,6 +2,8 @@
 
 {% load crispy_forms_tags %}
 
+{% block media %}{{ form.media }}{% endblock %}
+
 {% block issuetab %} class="active"{% endblock %}
 
 {% block content %}

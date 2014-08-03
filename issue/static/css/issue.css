@@ -6,3 +6,7 @@ body {
 .navbar {
     margin-bottom: 20px;
 }
+
+a .remove-label {
+  color: #CCC;
+}

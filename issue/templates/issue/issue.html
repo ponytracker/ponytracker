@@ -1,60 +1,149 @@
 {% extends 'issue/project.html' %}
 
+{% load humanize %}
+
 {% load django_markdown %}
 
 {% block issuetab %} class="active"{% endblock %}
 
 {% block content %}
 
-<div class="panel panel-default">
 
-  <div class="panel-heading">
-    <h1>{{ issue }} <small>#{{ issue.id }}</small></h1>
+<div class="well">
+  <h1>{{ issue }} <small>#{{ issue.id }}</small></h1>
 
-    {% if issue.closed %}
-    <span class="label label-danger">Closed</span>
-    {% else %}
-    <span class="label label-success">Open</span>
-    {% endif %}
-
-    {{ issue.author.username }} opened this issue on {{ issue.opened_at }}
+  {% if issue.closed %}
+  <span class="label label-danger" style="font-size: 120%;">Closed</span>
+  {% else %}
+  <span class="label label-success" style="font-size: 120%;">Open</span>
+  {% endif %}
+  &#160;
+  <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ issue.author.username }}"><strong>{{ issue.author.username }}</strong></a> opened this issue {{ issue.opened_at|naturaltime }}
   - {{ issue.comments.count }} comments
-  </div>
-
-  <table class="table">
-    {% for event in events %}
-    <tr>
-      <td>
-        {{ event }} on {{ event.date }}
-        {% if event.additionnal_section %}
-          {% if event.boxed %}
-          <br />
-          <br />
-          <div class="well">
-            {{ event.additionnal_section|markdown }}
-          </div>
-          {% else %}
-          <hr>
-          {{ event.additionnal_section|markdown }}
-          {% endif %}
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-
 </div>
 
-<a href="{% url 'comment-issue' project.name issue.id %}"><button class="btn btn-default">Comment this issue</button></a>
+<div class="row">
 
-<a href="{% url 'edit-issue' project.name issue.id %}"><button class="btn btn-default">Edit this issue</button></a>
+  <div class="col-md-10">
 
-{% if issue.closed %}
-<a href="{% url 'reopen-issue' project.name issue.id %}"><button class="btn btn-default">Reopen this issue</button></a>
-{% else %}
-<a href="{% url 'close-issue' project.name issue.id %}"><button class="btn btn-default">Close this issue</button></a>
-{% endif %}
+    {% for event in events %}
+    <div class="panel panel-default">
 
-<a href="{% url 'delete-issue' project.name issue.id %}"><button class="btn btn-default">Delete this issue</button></a>
+      <div class="panel-heading">
+        <span class="badge"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
+        &#160;
+        <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ event.author.username }}"><strong>{{ event.author}}</strong></a> {{ event }} {{ event.date|naturaltime }}
+        {% if event.code == event.DESCRIBE %}
+        <div class="pull-right">
+          <a href="{% url 'edit-issue' project.name issue.id %}">
+            <button class="btn btn-primary btn-xs">Edit</button>
+          </a>
+        </div>
+        {% elif event.code == event.COMMENT %}
+        <div class="pull-right">
+          <a href="{% url 'edit-comment' project.name issue.id event.id %}">
+            <button class="btn btn-primary btn-xs">Edit</button>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if event.additionnal_section %}
+      <div class="panel-body">
+        {{ event.additionnal_section|markdown }}
+      </div>
+      {% elif event.code == event.DESCRIBE %}
+      <div class="panel-body">
+        <em>No description provided.</em>
+      </div>
+      {% endif %}
+
+    </div>
+    {% endfor %}
+
+    <div class="row">
+
+      <div class="col-md-3">
+      <a href="{% url 'comment-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Add a comment</button></a>
+      </div>
+
+      <div class="col-md-3">
+      <a href="{% url 'edit-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Edit this issue</button></a>
+      </div>
+
+      <div class="col-md-3">
+      {% if issue.closed %}
+      <a href="{% url 'reopen-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Reopen this issue</button></a>
+      {% else %}
+      <a href="{% url 'close-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Close this issue</button></a>
+      {% endif %}
+      </div>
+
+      <div class="col-md-3">
+      <a href="{% url 'delete-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Delete this issue</button></a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="col-md-2">
+    <b>Labels</b>
+    <div class="pull-right">
+      <div class="dropdown">
+        <button class="btn btn-default btn-xs" type="button" id="labels-menu" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="labels-menu">
+          {% if labels.count %}
+          {% for label in labels %}
+          <li role="presentation">
+            <a href="{% url 'add-label-to-issue' project.name issue.id label.id %}">
+              <span class="label" style="{{ label.style }}">{{ label }}</span>
+            </a>
+          </li>
+          {% endfor %}
+          <li role="presentation" class="divider"></li>
+          {% endif %}
+          <li role="presentation">
+            <a href="{% url 'add-label' project.name %}?issue={{ issue.id }}">
+              <button class="btn btn-success btn-xs btn-block">New label...</button>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <br /><br />
+    {% if issue.labels.count %}
+    {% for label in issue.labels.all %}
+    <div class="row">
+      <a href="{% url 'remove-label-from-issue' project.name issue.id label.id %}">
+        <span class="glyphicon glyphicon-remove remove-label"></span>
+      </a>
+      <a href="{% url 'list-issue' project.name %}?q=is:open%20label:{{ label.name  }}">
+        <span class="label" style="{{ label.style }}">{{ label }}</span>
+      </a>
+    </div>
+    {% endfor %}
+    {% else %}
+    None yet
+    {% endif %}
+    <hr>
+    <h5>
+      <b>Milestons</b>
+      <div class="pull-right">
+        <a href="#">
+          <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+        </a>
+      </div>
+    </h5>
+    {% if issue.milestones.count %}
+    {% for milestone in issue.milestones.all %}
+    {{ milestone }}
+    {% endfor %}
+    {% else %}
+    No milestone
+    {% endif %}
+  </div>
+
+</div>
 
 {% endblock %}
