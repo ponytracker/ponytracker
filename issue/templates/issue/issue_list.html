@@ -8,7 +8,7 @@
 
 <div class="panel panel-default">
 
-  <div class="panel-heading">
+  <div class="panel-heading clearfix">
     <h1>
       Issues
       <div class="pull-right">
@@ -59,7 +59,11 @@
         {% endfor %}
         <br />
         <small>#{{ issue.id }} opened by <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ issue.author.username }}"><strong>{{ issue.author.username }}</strong></a> {{ issue.opened_at|naturaltime }}</small>
-        <span class="badge">{{ issue.comments.count }}</span>
+        {% if issue.milestone %}
+        &#160;–&#160;&#160;<span class="glyphicon glyphicon-road"></span> {{ issue.milestone }}
+        {% endif %}
+        <!--&#160;&#160;<span class="badge"><span class="glyphicon glyphicon-comment"></span> {{ issue.comments.count }}</span>-->
+        &#160;–&#160;&#160;<span class="badge">{{ issue.comments.count }}</span>
       </td>
     </tr>
     {% endfor %}

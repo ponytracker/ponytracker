@@ -6,7 +6,7 @@
 
 <div class="panel panel-default">
 
-  <div class="panel-heading">
+  <div class="panel-heading clearfix">
     <h1>
       Milestone
       <div class="pull-right">
@@ -21,19 +21,15 @@
     <tr>
       <td>
         <div class="pull-right">
-          <a href="{% url 'edit-milestone' project.name milestone.name %}">
-            <button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button>
-          </a>
-          <a href="{% url 'delete-milestone' project.name milestone.name %}">
-            <button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button>
-          </a>
+          <a href="{% url 'edit-milestone' project.name milestone.name %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
+          <a href="{% url 'delete-milestone' project.name milestone.name %}"><button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
         </div>
         <b style="font-size: 200%;">
           <a href="{% url 'list-issue' project.name %}?q=is:open%20milestone:{{ milestone.name }}">{{ milestone }}</a>
         </b>
         &#160;
         <small>
-          <span class="glyphicon glyphicon-calendar"></span> {% if milestone.due_date %}Due by {{ milestone.due_date }}{% else %}No due date{% endif %}
+          <span style="white-space: nowrap;"><span class="glyphicon glyphicon-calendar"></span> {% if milestone.due_date %}Due by {{ milestone.due_date }}{% else %}No due date{% endif %}</span>
         </small>
         <br /><br />
         <div class="progress">

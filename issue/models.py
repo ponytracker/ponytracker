@@ -245,9 +245,9 @@ class Event(models.Model):
     def glyphicon(self):
 
         if self.code == Event.COMMENT:
-            return "bullhorn"
+            return "comment"
         elif self.code == Event.DESCRIBE:
-            return "pencil"
+            return "edit"
         elif self.code == Event.CLOSE:
             return "ban-circle"
         elif self.code == Event.REOPEN:

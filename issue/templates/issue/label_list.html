@@ -6,7 +6,7 @@
 
 <div class="panel panel-default">
 
-  <div class="panel-heading">
+  <div class="panel-heading clearfix">
     <h1>
       Labels
       <div class="pull-right">
@@ -20,18 +20,10 @@
     {% for label in labels %}
     <tr>
       <td>
-        <a href="{% url 'list-issue' project.name %}?q=is:open%20label:{{ label.name }}">
-          <button class="btn" style="{{ label.style }}">
-            <span class="glyphicon glyphicon-tag" style="font-size: 100%;"></span> {{ label }}
-          </button>
-        </a>
+        <a href="{% url 'list-issue' project.name %}?q=is:open%20label:{{ label.name }}"><button class="btn" style="{{ label.style }}"><span class="glyphicon glyphicon-tag" style="font-size: 100%;"></span> {{ label }}</button></a>
         <div class="pull-right">
-          <a href="{% url 'edit-label' project.name label.id %}">
-            <button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button>
-          </a>
-          <a href="{% url 'delete-label' project.name label.id %}">
-            <button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button>
-          </a>
+          <a href="{% url 'edit-label' project.name label.id %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
+          <a href="{% url 'delete-label' project.name label.id %}"><button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
         </div>
       </td>
     </tr>

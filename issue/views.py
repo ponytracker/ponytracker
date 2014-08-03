@@ -215,12 +215,12 @@ def issue_list(request, project):
 
     return render(request, 'issue/issue_list.html', c)
 
-def issue_edit(request, project, id=None):
+def issue_edit(request, project, issue=None):
 
     project = get_object_or_404(Project, name=project)
 
-    if id:
-        issue = get_object_or_404(Issue, project__name=project.name, id=id)
+    if issue:
+        issue = get_object_or_404(Issue, project__name=project.name, id=issue)
         init_data = {'title': issue.title,
                      'description': issue.description}
     else:
@@ -284,9 +284,9 @@ def issue_edit(request, project, id=None):
 
     return render(request, 'issue/issue_edit.html', c)
 
-def issue(request, project, id):
+def issue(request, project, issue):
 
-    issue = get_object_or_404(Issue, project__name=project, id=id)
+    issue = get_object_or_404(Issue, project__name=project, id=issue)
 
     projects = Project.objects.all()
     labels = Label.objects.filter(project=issue.project, deleted=False) \
@@ -309,9 +309,9 @@ def issue(request, project, id):
 
     return render(request, 'issue/issue.html', c)
 
-def issue_comment(request, project, id, comment=None):
+def issue_comment(request, project, issue, comment=None):
 
-    issue = get_object_or_404(Issue, project__name=project, id=id)
+    issue = get_object_or_404(Issue, project__name=project, id=issue)
 
     if comment:
         event = get_object_or_404(Event, code=Event.COMMENT, issue=issue, id=comment)
@@ -361,9 +361,9 @@ def issue_comment(request, project, id, comment=None):
 
     return render(request, 'issue/issue_comment.html', c)
 
-def issue_close(request, project, id):
+def issue_close(request, project, issue):
 
-    issue = get_object_or_404(Issue, project__name=project, id=id, closed=False)
+    issue = get_object_or_404(Issue, project__name=project, id=issue, closed=False)
 
     issue.closed = True
     issue.save()
@@ -374,9 +374,9 @@ def issue_close(request, project, id):
 
     return redirect('list-issue', project)
 
-def issue_reopen(request, project, id):
+def issue_reopen(request, project, issue):
 
-    issue = get_object_or_404(Issue, project__name=project, id=id, closed=True)
+    issue = get_object_or_404(Issue, project__name=project, id=issue, closed=True)
 
     issue.closed = False
     issue.save()
@@ -387,9 +387,9 @@ def issue_reopen(request, project, id):
 
     return redirect('show-issue', project, issue.id)
 
-def issue_delete(request, project, id):
+def issue_delete(request, project, issue):
 
-    issue = get_object_or_404(Issue, project__name=project, id=id)
+    issue = get_object_or_404(Issue, project__name=project, id=issue)
 
     issue.delete()
 
