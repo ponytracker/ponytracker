@@ -10,6 +10,9 @@
     <h1>
       Milestone
       <div class="pull-right">
+        <a href="{% url 'list-milestone' project.name %}?show=open"><button class="btn btn-default btn-sm{% if show == 'open' %} active{% endif %}">Open</button></a>
+        <a href="{% url 'list-milestone' project.name %}?show=close"><button class="btn btn-default btn-sm{% if show == 'close' %} active{% endif %}">Close</button></a>
+        <a href="{% url 'list-milestone' project.name %}?show=all"><button class="btn btn-default btn-sm{% if show == 'all' %} active{% endif %}">All</button></a>
         <a href="{% url 'add-milestone' project.name %}"><button class="btn btn-success">New milestone</button></a>
       </div>
     </h1>
@@ -21,6 +24,11 @@
     <tr>
       <td>
         <div class="pull-right">
+          {% if milestone.closed %}
+          <a href="{% url 'reopen-milestone' project.name milestone.name %}"><button class="btn btn-info"><span class="glyphicon glyphicon-repeat"></span> Reopen</button></a>
+          {% else %}
+          <a href="{% url 'close-milestone' project.name milestone.name %}"><button class="btn btn-info"><span class="glyphicon glyphicon-ok-circle"></span> Close</button></a>
+          {% endif %}
           <a href="{% url 'edit-milestone' project.name milestone.name %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
           <a href="{% url 'delete-milestone' project.name milestone.name %}"><button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
         </div>
@@ -43,7 +51,8 @@
   </table>
   {% else %}
   <div class="panel-body">
-    There aren't any milestones for this repository quite yet.
+    {{ no_milestone_message }}
+    There aren't any milestones matching your desired criteria.
   </div>
   {% endif %}
 

@@ -78,6 +78,8 @@ class Milestone(models.Model):
 
     due_date = models.DateTimeField(blank=True,null=True)
 
+    closed = models.BooleanField(default=False)
+
     def closed_issues(self):
 
         return self.issues.filter(closed=True).count()

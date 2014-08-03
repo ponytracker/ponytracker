@@ -524,10 +524,23 @@ def milestone_list(request, project):
 
     project = get_object_or_404(Project, name=project)
 
+    show = request.GET.get('show', 'open')
+
+    if show == 'open':
+        milestones = project.milestones.filter(closed=False)
+    elif show == 'close':
+        milestones = project.milestones.filter(closed=True)
+    elif show == 'all':
+        milestones = project.milestones.all()
+    else:
+        messages.error(request, 'There is an error in your filter.')
+        milestones = None
+
     c = {
             'request': request,
             'project': project,
-            'milestones': project.milestones.all(),
+            'milestones': milestones,
+            'show': show,
         }
 
     return render(request, 'issue/milestone_list.html', c)
@@ -597,6 +610,24 @@ def milestone_edit(request, project, name=None):
         }
 
     return render(request, 'issue/milestone_edit.html', c)
+
+def milestone_close(request, project, name):
+
+    milestone = get_object_or_404(Milestone, project=project, name=name)
+
+    milestone.closed = True
+    milestone.save()
+
+    return redirect('list-milestone', project)
+
+def milestone_reopen(request, project, name):
+
+    milestone = get_object_or_404(Milestone, project=project, name=name)
+
+    milestone.closed = False
+    milestone.save()
+
+    return redirect('list-milestone', project)
 
 def milestone_delete(request, project, name):
 
