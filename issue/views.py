@@ -188,7 +188,7 @@ def issue_list(request, project):
                 issues = issues.filter(author=author)
 
         else:
-            messages.error(request, "Unknow '%s' filtering criterion." %keyword)
+            messages.error(request, "Unknow '%s' filtering criterion." %key)
             issues = None
             break
 
