@@ -1,5 +1,5 @@
 """
-Django settings for issuetracker project.
+Django settings for ponytracker project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
@@ -58,9 +58,9 @@ MIDDLEWARE_CLASSES = (
     'stronghold.middleware.LoginRequiredMiddleware',
 )
 
-ROOT_URLCONF = 'issuetracker.urls'
+ROOT_URLCONF = 'ponytracker.urls'
 
-WSGI_APPLICATION = 'issuetracker.wsgi.application'
+WSGI_APPLICATION = 'ponytracker.wsgi.application'
 
 
 # Database

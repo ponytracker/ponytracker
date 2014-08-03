@@ -1,1 +1,0 @@
-from issuetracker.settings import *
