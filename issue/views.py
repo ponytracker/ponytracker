@@ -600,4 +600,13 @@ def milestone_edit(request, project, name=None):
 
 def milestone_delete(request, project, name):
 
+    milestone = get_object_or_404(Milestone, project=project, name=name)
+    author = User.objects.get(username=request.user.username)
+
+    for issue in milestone.issues.all():
+        issue.remove_milestone(author, milestone)
+    milestone.delete()
+
+    messages.success(request, "Label deleted successfully.")
+
     return redirect('list-milestone', project)
