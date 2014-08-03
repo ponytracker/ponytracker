@@ -171,6 +171,8 @@ class Event(models.Model):
     REFERENCE = 9
     COMMENT = 10
     DESCRIBE = 11
+    ASSIGN = 12
+    UNASSIGN = 13
 
     issue = models.ForeignKey(Issue, related_name="%(class)ss")
 
@@ -202,7 +204,8 @@ class Event(models.Model):
 
     def glyphicon(self):
 
-        if self.code == Event.COMMENT or self.code == Event.DESCRIBE:
+        if self.code == Event.COMMENT \
+                or self.code == Event.DESCRIBE:
             return "pencil"
         elif self.code == Event.CLOSE:
             return "ban-circle"
@@ -210,18 +213,18 @@ class Event(models.Model):
             return "refresh"
         elif self.code == Event.RENAME:
             return "transfer"
-        elif self.code == Event.ADD_LABEL:
+        elif self.code == Event.ADD_LABEL \
+                or self.code == Event.DEL_LABEL:
             return "tag"
-        elif self.code == Event.DEL_LABEL:
-            return "tag"
-        elif self.code == Event.SET_MILESTONE:
-            return "road"
-        elif self.code == Event.CHANGE_MILESTONE:
-            return "road"
-        elif self.code == Event.DEL_MILESTONE:
+        elif self.code == Event.SET_MILESTONE \
+                or self.code == Event.CHANGE_MILESTONE \
+                or self.code == Event.DEL_MILESTONE:
             return "road"
         elif self.code == Event.REFERENCE:
             return "transfer"
+        elif self.code == Event.ASSIGN \
+                or self.code == Event.UNASSIGN:
+            return "user"
         else:
             return "cog"
 

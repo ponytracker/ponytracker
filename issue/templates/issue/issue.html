@@ -96,17 +96,13 @@
           {% if labels.count %}
           {% for label in labels %}
           <li role="presentation">
-            <a href="{% url 'add-label-to-issue' project.name issue.id label.id %}">
-              <span class="label" style="{{ label.style }}">{{ label }}</span>
-            </a>
+            <a href="{% url 'add-label-to-issue' project.name issue.id label.id %}"><span class="label" style="{{ label.style }}">{{ label }}</span></a>
           </li>
           {% endfor %}
           <li role="presentation" class="divider"></li>
           {% endif %}
           <li role="presentation">
-            <a href="{% url 'add-label' project.name %}?issue={{ issue.id }}">
-              <button class="btn btn-success btn-xs btn-block">New label...</button>
-            </a>
+            <a href="{% url 'add-label' project.name %}?issue={{ issue.id }}"><button class="btn btn-success btn-xs btn-block">New label...</button></a>
           </li>
         </ul>
       </div>
@@ -115,12 +111,8 @@
     {% if issue.labels.count %}
     {% for label in issue.labels.all %}
     <div class="row">
-      <a href="{% url 'remove-label-from-issue' project.name issue.id label.id %}">
-        <span class="glyphicon glyphicon-remove remove-label"></span>
-      </a>
-      <a href="{% url 'list-issue' project.name %}?q=is:open%20label:{{ label.name  }}">
-        <span class="label" style="{{ label.style }}">{{ label }}</span>
-      </a>
+      <a href="{% url 'remove-label-from-issue' project.name issue.id label.id %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
+      <a href="{% url 'list-issue' project.name %}?q=is:open%20label:{{ label.name  }}"><span class="label" style="{{ label.style }}">{{ label }}</span></a>
     </div>
     {% endfor %}
     {% else %}
@@ -130,9 +122,7 @@
     <h5>
       <b>Milestons</b>
       <div class="pull-right">
-        <a href="#">
-          <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
-        </a>
+        <a href="#"><button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span></button></a>
       </div>
     </h5>
     {% if issue.milestones.count %}
@@ -141,6 +131,18 @@
     {% endfor %}
     {% else %}
     No milestone
+    {% endif %}
+    <hr>
+    <h5>
+      <b>Assignee</b>
+      <div class="pull-right">
+        <a href="#"><button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span></button></a>
+      </div>
+    </h5>
+    {% if issue.assignee %}
+    <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ assignee.username }}"><b>{{ assignee.username }}</b></a>
+    {% else %}
+    No one assigned
     {% endif %}
   </div>
 
