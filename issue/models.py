@@ -27,12 +27,6 @@ class Project(models.Model):
     description = models.TextField(blank=True, default="",
             verbose_name="Description")
 
-    def create_default_labels(self):
-
-        Label(project=self, name='bug', color='#FF0000').save()
-        Label(project=self, name='feature', color='#00A000').save()
-        Label(project=self, name='documentation', color='#1D3DBE').save()
-
     def __str__(self):
 
         return self.display_name

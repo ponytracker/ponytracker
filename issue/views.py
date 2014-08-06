@@ -46,8 +46,6 @@ def project_add(request):
 
             project = form.save()
 
-            project.create_default_labels()
-
             messages.success(request, 'Project added successfully.')
 
             return redirect('list-issue', project.name)
