@@ -29,7 +29,7 @@ def project_add(request):
 
         if Project.objects \
                 .filter(display_name__iexact=form.cleaned_data['display_name']) \
-                .count():
+                .exists():
 
             form._errors['display_name'] = ['There is already a project with a similar name.']
 
@@ -57,7 +57,7 @@ def project_edit(request, project):
 
         if Project.objects \
                 .filter(display_name__iexact=form.cleaned_data['display_name']) \
-                .exclude(pk=project.pk).count():
+                .exclude(pk=project.pk).exists():
 
             form._errors['display_name'] = ['There is already a project with a similar name.']
 
@@ -422,7 +422,7 @@ def label_edit(request, project, id=None):
         if label:
             similar = similar.exclude(pk=label.pk)
 
-        if similar.count():
+        if similar.exists():
 
             form._errors['name'] = ['There is already a label with this name.']
 
@@ -507,7 +507,7 @@ def milestone_edit(request, project, name=None):
         if milestone:
             similar = similar.exclude(pk=milestone.pk)
 
-        if similar.count():
+        if similar.exists():
 
             form._errors['name'] = ['There is already a milestone with this name.']
 

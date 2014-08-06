@@ -135,13 +135,13 @@ class Issue(models.Model):
 
     def getdesc(self):
         desc = self.events.filter(issue=self,code=Event.DESCRIBE)
-        if desc.count():
+        if desc.exists():
             return desc.first().additionnal_section
         else:
             return None
     def setdesc(self, value):
         desc = self.events.filter(issue=self,code=Event.DESCRIBE)
-        if desc.count():
+        if desc.exists():
             desc = desc.first()
             desc.additionnal_section = value
             desc.save()
@@ -151,7 +151,7 @@ class Issue(models.Model):
             desc.save()
     def deldesc(self):
         desc = self.events.filter(issue=self,code=Event.DESCRIBE)
-        if desc.count():
+        if desc.exists():
             desc.first().delete()
     description = property(getdesc, setdesc, deldesc)
 
