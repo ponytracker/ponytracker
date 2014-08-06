@@ -7,6 +7,7 @@ from stronghold.decorators import public
 from issue.models import *
 from issue.forms import *
 
+import shlex
 
 
 @public
@@ -101,10 +102,7 @@ def issue_list(request, project):
         query = 'is:open'
 
     syntaxe_error = False
-    for constraint in query.split(' '):
-
-        if constraint == '':
-            continue
+    for constraint in shlex.split(query):
 
         if constraint == '*':
             continue
