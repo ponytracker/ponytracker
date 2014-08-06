@@ -6,9 +6,11 @@ from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
 
+from colorful.fields import RGBColorField
+
 import json
 
-from colorful.fields import RGBColorField
+from issue.templatetags.issue_tags import same_label, labeled
 
 
 class Project(models.Model):
@@ -43,16 +45,13 @@ class Label(models.Model):
 
     inverted = models.BooleanField(default=True, verbose_name="Inverse text color")
 
-    def style(self):
-
-        style = "background-color: {bg}; color: {fg};"
-        
-        if self.inverted:
-            fg = '#fff'
+    @property
+    def quotted_name(self):
+        if ' ' in self.name:
+            name = '&quot;' + escape(self.name) + '&quot'
         else:
-            fg = '#000'
-
-        return style.format(bg=self.color, fg=fg)
+            name = escape(self.name)
+        return mark_safe(name)
 
     def __str__(self):
         return self.name
@@ -279,14 +278,11 @@ class Event(models.Model):
             description = "changed the title from <mark>{old_title}</mark> to <mark>{new_title}</mark>"
         elif self.code == Event.ADD_LABEL or self.code == Event.DEL_LABEL:
             label = Label.objects.get(id=args['label'])
-            description = '{action} the <a href="{url}?q=is:open%20label:{label}"><span class="label" style="{style}">{label}</span></a> label'
-            args['label'] = label.name
-            args['url'] = reverse('list-issue', kwargs={'project': self.issue.project.name})
-            args['style'] = label.style()
             if self.code == Event.ADD_LABEL:
-                args['action'] = 'added'
+                action = 'added'
             else:
-                args['action'] = 'removed'
+                action = 'removed'
+            description = '%s the <a href="%s">%s</a> label' %(action, same_label(label), labeled(label))
         elif self.code == Event.SET_MILESTONE:
             description = "added this to the {milestone} milestone"
         elif self.code == Event.CHANGE_MILESTONE:

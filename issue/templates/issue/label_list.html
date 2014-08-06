@@ -1,5 +1,7 @@
 {% extends 'issue/project.html' %}
 
+{% load issue_tags %}
+
 {% block labeltab %} class="active"{% endblock %}
 
 {% block content %}
@@ -20,7 +22,7 @@
     {% for label in labels %}
     <tr>
       <td>
-        <a href="{% url 'list-issue' project.name %}?q=is:open%20label:{{ label.name }}"><button class="btn" style="{{ label.style }}"><span class="glyphicon glyphicon-tag" style="font-size: 100%;"></span> {{ label }}</button></a>
+        <a href="{% same_label label %}"><button class="btn" style="{% label_style label %}"><span class="glyphicon glyphicon-tag" style="font-size: 100%;"></span> {{ label }}</button></a>
         <div class="pull-right">
           <a href="{% url 'edit-label' project.name label.id %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
           <a href="{% url 'delete-label' project.name label.id %}"><button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>

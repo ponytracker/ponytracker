@@ -1,8 +1,8 @@
 {% extends 'issue/project.html' %}
 
 {% load humanize %}
-
 {% load django_markdown %}
+{% load issue_tags %}
 
 {% block issuetab %} class="active"{% endblock %}
 
@@ -18,7 +18,7 @@
   <span class="label label-success" style="font-size: 120%;">Open</span>
   {% endif %}
   &#160;
-  <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ issue.author.username }}"><strong>{{ issue.author.username }}</strong></a> opened this issue {{ issue.opened_at|naturaltime }}
+  <a href="{% same_author issue.author %}"><b>{{ issue.author}}</b></a> opened this issue {{ issue.opened_at|naturaltime }}
   - {{ issue.comments.count }} comments
 </div>
 
@@ -32,7 +32,7 @@
       <div class="panel-heading">
         <span class="badge"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
         &#160;
-        <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ event.author.username }}"><strong>{{ event.author}}</strong></a> {{ event }} {{ event.date|naturaltime }}
+        <a href="{% same_author event.author %}"><b>{{ event.author}}</b></a> {{ event }} {{ event.date|naturaltime }}
         {% if event.code == event.DESCRIBE %}
         <div class="pull-right">
           <a href="{% url 'edit-issue' project.name issue.id %}"><button class="btn btn-primary btn-xs">Edit</button></a>
@@ -92,7 +92,7 @@
           {% if labels.count %}
           {% for label in labels %}
           <li role="presentation">
-            <a href="{% url 'add-label-to-issue' project.name issue.id label.id %}"><span class="label" style="{{ label.style }}">{{ label }}</span></a>
+            <a href="{% url 'add-label-to-issue' project.name issue.id label.id %}">{% labeled label %}</a>
           </li>
           {% endfor %}
           <li role="presentation" class="divider"></li>
@@ -108,7 +108,7 @@
     {% for label in issue.labels.all %}
     <div class="row">
       <a href="{% url 'remove-label-from-issue' project.name issue.id label.id %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
-      <a href="{% url 'list-issue' project.name %}?q=is:open%20label:{{ label.name  }}"><span class="label" style="{{ label.style }}">{{ label }}</span></a>
+      <a href="{% same_label label %}">{% labeled label %}</a>
     </div>
     {% endfor %}
     {% else %}
@@ -137,7 +137,7 @@
     <br /><br />
     {% if issue.milestone %}
     <a href="{% url 'remove-milestone-from-issue' project.name issue.id issue.milestone.name %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
-    <a href="{% url 'list-issue' project.name %}?q=is:open%20milestone:{{ issue.milestone.name  }}"><b>{{ issue.milestone }}</b></a>
+    <a href="{% same_milestone issue.milestone  %}"><b>{{ issue.milestone }}</b></a>
     {% else %}
     No milestone
     {% endif %}
@@ -149,7 +149,7 @@
       </div>
     </h5>
     {% if issue.assignee %}
-    <a href="{% url 'list-issue' project.name %}?q=is:open%20author:{{ assignee.username }}"><b>{{ assignee.username }}</b></a>
+    <a href="{% same_author assignee %}"><b>{{ assignee.username }}</b></a>
     {% else %}
     No one assigned
     {% endif %}
