@@ -1,14 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django import forms
-from django.forms.models import modelform_factory
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 
-from issue.models import *
-
-from django_markdown.widgets import MarkdownWidget
 from stronghold.decorators import public
-from bootstrap3_datetime.widgets import DateTimePicker
+
+from issue.models import *
+from issue.forms import *
+
 
 
 @public
@@ -24,8 +22,7 @@ def project_list(request):
 
 def project_add(request):
 
-    ProjectForm = modelform_factory(Project, fields=['display_name', 'name', 'description'])
-    form = ProjectForm(request.POST or None)
+    form = AddProjectForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
 
@@ -53,8 +50,7 @@ def project_edit(request, project):
 
     project = get_object_or_404(Project, name=project)
 
-    ProjectForm = modelform_factory(Project, fields=['display_name', 'description'])
-    form = ProjectForm(request.POST or None, instance=project)
+    form = EditProjectForm(request.POST or None, instance=project)
 
     if request.method == 'POST' and form.is_valid():
 
@@ -206,11 +202,6 @@ def issue_edit(request, project, issue=None):
         issue = None
         init_data = None
 
-    class IssueForm(forms.Form):
-
-        title = forms.CharField(max_length=128)
-        description = forms.CharField(widget=MarkdownWidget, required=False)
-
     form = IssueForm(request.POST or init_data)
 
     if request.method == 'POST' and form.is_valid():
@@ -291,10 +282,6 @@ def issue_comment(request, project, issue, comment=None):
     else:
         event = None
         init_data = None
-
-    class CommentForm(forms.Form):
-
-        comment = forms.CharField(widget=MarkdownWidget)
 
     form = CommentForm(request.POST or init_data)
 
@@ -427,7 +414,6 @@ def label_edit(request, project, id=None):
     else:
         label = None
 
-    LabelForm = modelform_factory(Label, fields=['name', 'color', 'inverted'])
     form = LabelForm(request.POST or None, instance=label)
 
     if request.method == 'POST' and form.is_valid():
@@ -512,15 +498,6 @@ def milestone_edit(request, project, name=None):
         milestone = get_object_or_404(Milestone, project=project, name=name)
     else:
         milestone = None
-
-    class MilestoneForm(forms.ModelForm):
-
-        class Meta:
-            model = Milestone
-            fields = ['name', 'due_date']
-            widgets = {
-                    'due_date': DateTimePicker(format="YYYY-MM-DD HH:mm"),
-            }
 
     form = MilestoneForm(request.POST or None, instance=milestone)
 
