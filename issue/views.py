@@ -136,7 +136,7 @@ def issue_list(request, project):
             try:
                 label = Label.objects.get(project=project,name=value,deleted=False)
             except ObjectDoesNotExist:
-                messages.error(request, "The label '%s' does not exist." %value)
+                messages.error(request, "The label '%s' does not exist or has been deleted." %value)
                 issues = None
                 break
             else:
