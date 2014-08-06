@@ -14,20 +14,13 @@ from bootstrap3_datetime.widgets import DateTimePicker
 @public
 def project_list(request):
 
-    projects = Project.objects.all()
-
-    if not projects.count():
+    if not Project.objects.exists():
 
         messages.info(request, 'Start by creating a project.')
 
         return redirect('add-project')
 
-    c = {
-            'request': request,
-            'projects': projects,
-        }
-
-    return render(request, 'issue/project_list.html', c)
+    return render(request, 'issue/project_list.html')
 
 def project_add(request):
 
@@ -50,11 +43,7 @@ def project_add(request):
 
             return redirect('list-issue', project.name)
 
-    projects = Project.objects.all()
-
     c = {
-            'request': request,
-            'projects': projects,
             'form': form,
         }
 
@@ -83,11 +72,7 @@ def project_edit(request, project):
 
             return redirect('list-issue', project.name)
 
-    projects = Project.objects.all()
-
     c = {
-            'request': request,
-            'projects': projects,
             'form': form,
         }
 
@@ -106,8 +91,6 @@ def project_delete(request, project):
 def issue_list(request, project):
 
     project = get_object_or_404(Project, name=project)
-
-    projects = Project.objects.all()
 
     issues = project.issues
 
@@ -200,8 +183,6 @@ def issue_list(request, project):
         is_all = ' active'
 
     c = {
-            'request': request,
-            'projects': projects,
             'project': project,
             'issues': issues,
             'query': query,
@@ -271,11 +252,7 @@ def issue_edit(request, project, issue=None):
 
         return redirect('show-issue', project.name, issue.id)
 
-    projects = Project.objects.all()
-
     c = {
-            'request': request,
-            'projects': projects,
             'project': project,
             'form': form,
         }
@@ -286,7 +263,6 @@ def issue(request, project, issue):
 
     issue = get_object_or_404(Issue, project__name=project, id=issue)
 
-    projects = Project.objects.all()
     labels = Label.objects.filter(project=issue.project, deleted=False) \
             .exclude(id__in=issue.labels.all().values_list('id'))
     milestones = Milestone.objects.filter(project=issue.project)
@@ -296,8 +272,6 @@ def issue(request, project, issue):
     events = issue.events.all()
 
     c = {
-            'request': request,
-            'projects': projects,
             'labels': labels,
             'milestones': milestones,
             'project': issue.project,
@@ -347,11 +321,7 @@ def issue_comment(request, project, issue, comment=None):
 
         return redirect('show-issue', issue.project.name, issue.id)
 
-    projects = Project.objects.all()
-
     c = {
-            'request': request,
-            'projects': projects,
             'project': issue.project,
             'issue': issue,
             'form': form,
@@ -441,11 +411,7 @@ def label_list(request, project):
 
     labels = project.labels.filter(deleted=False)
 
-    projects = Project.objects.all()
-
     c = {
-            'request': request,
-            'projects': projects,
             'project': project,
             'labels': labels,
         }
@@ -493,11 +459,7 @@ def label_edit(request, project, id=None):
 
             return redirect('list-label', project.name)
 
-    projects = Project.objects.all()
-
     c = {
-            'request': request,
-            'projects': projects,
             'project': project,
             'form': form,
         }
@@ -535,7 +497,6 @@ def milestone_list(request, project):
         milestones = None
 
     c = {
-            'request': request,
             'project': project,
             'milestones': milestones,
             'show': show,
@@ -598,11 +559,7 @@ def milestone_edit(request, project, name=None):
 
             return redirect('list-milestone', project.name)
 
-    projects = Project.objects.all()
-
     c = {
-            'request': request,
-            'projects': projects,
             'project': project,
             'form': form,
         }
