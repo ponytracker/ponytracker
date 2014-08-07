@@ -144,14 +144,12 @@ def issue_list(request, project):
                 issues = issues.filter(milestone=milestone)
 
         elif key == 'author' or key == 'user':
-            try:
-                author = User.objects.get(username=value)
-            except ObjectDoesNotExist:
+            if User.objects.filter(username=value).exists():
+                issues = issues.filter(author__username=value)
+            else:
                 messages.error(request, "The user '%s' does not exist." %value)
                 issues = None
                 break
-            else:
-                issues = issues.filter(author=author)
 
         else:
             messages.error(request, "Unknow '%s' filtering criterion." %key)
