@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'django.contrib.humanize',
+    'django.contrib.sites',
 
     'django_markdown',
     'bootstrap3_datetime',
@@ -109,3 +110,5 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'issue.context_processors.projects',
 )
+
+SITE_ID = 1

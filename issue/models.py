@@ -1,10 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.db.models import Q
+from django.contrib import auth
+from django.contrib.auth.models import Group
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
+from django.contrib.sites.models import Site
+from django.contrib.contenttypes.models import ContentType
 
 from colorful.fields import RGBColorField
 
@@ -12,6 +16,15 @@ import json
 
 from issue.templatetags.issue_tags import same_label, labeled
 
+
+class User(auth.models.User):
+
+    class Meta:
+        proxy = True
+
+    @property
+    def teams(self):
+        return Team.objects.filter(Q(groups__in=self.groups.all()) | Q(users=self))
 
 class Project(models.Model):
 
@@ -301,3 +314,73 @@ class Event(models.Model):
         safe_args = {k: escape(v) for k, v in args.items()}
 
         return mark_safe(description.format(**safe_args))
+
+class Settings(models.Model):
+
+    site = models.OneToOneField(Site)
+
+    class Meta:
+        verbose_name_plural = 'Settings'
+
+class Team(models.Model):
+
+    name = models.CharField(max_length=128, unique=True)
+
+    users = models.ManyToManyField(auth.models.User, blank=True, null=True, related_name='teams')
+    groups = models.ManyToManyField(auth.models.Group, blank=True, null=True, related_name='teams')
+
+    def __str__(self):
+        return self.name
+
+class PermissionModel(models.Model):
+
+    grantee = models.CharField(max_length=50)
+    # type of grantee (user,  group, team)
+    content_type = models.ForeignKey(ContentType)
+
+    class Meta:
+        abstract = True
+
+    def granted_to(self, user):
+        if self.content_type == ContentType.objects.get_for_model(User):
+            return user.username == grantee
+        elif self.content_type == ContentType.objects.get_for_model(Group):
+            group = self.content_type.get_object_for_this_type(name=grantee)
+            return user.groups.filter(name=grantee).exists()
+        elif self.content_type == ContentType.objects.get_for_model(Team):
+            team = self.content_type.get_object_for_this_type(name=grantee)
+            return team in user.teams
+        else:
+            return False
+
+class GlobalPermission(PermissionModel):
+
+    create_project = models.BooleanField(default=True)
+    modify_project = models.BooleanField(default=False)
+    delete_project = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.grantee + "'s global permissions"
+
+class ProjectPermission(PermissionModel):
+
+    project = models.ForeignKey(Project, related_name='permissions')
+
+    create_issue = models.BooleanField(default=True)
+    modify_issue = models.BooleanField(default=False)
+    delete_issue = models.BooleanField(default=False)
+
+    create_comment = models.BooleanField(default=True)
+    modify_comment = models.BooleanField(default=False)
+    delete_comment = models.BooleanField(default=False)
+
+    create_label = models.BooleanField(default=True)
+    modify_label = models.BooleanField(default=False)
+    delete_label = models.BooleanField(default=False)
+
+    create_milestone = models.BooleanField(default=True)
+    modify_milestone = models.BooleanField(default=False)
+    delete_milestone = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.grantee + "'s permissions on " + self.project.name + " project"
