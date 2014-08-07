@@ -55,6 +55,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
+    'issue.middleware.ProjectMiddleware',
 )
 
 ROOT_URLCONF = 'ponytracker.urls'

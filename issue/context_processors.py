@@ -2,5 +2,8 @@ from issue.models import Project
 
 
 def projects(request):
-    projects = Project.objects.all()
-    return {'projects': projects}
+
+    if hasattr(request, 'projects'):
+        return {'projects': request.projects}
+    else:
+        return {}
