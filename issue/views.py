@@ -46,8 +46,6 @@ def project_add(request):
 
 def project_edit(request, project):
 
-    project = get_object_or_404(Project, name=project)
-
     form = EditProjectForm(request.POST or None, instance=project)
 
     if request.method == 'POST' and form.is_valid():
@@ -74,8 +72,6 @@ def project_edit(request, project):
 
 def project_delete(request, project):
 
-    project = get_object_or_404(Project, name=project)
-
     project.delete()
 
     messages.success(request, 'Project deleted successfully.')
@@ -83,8 +79,6 @@ def project_delete(request, project):
     return redirect('list-project')
 
 def issue_list(request, project):
-
-    project = get_object_or_404(Project, name=project)
 
     issues = project.issues
 
@@ -187,10 +181,8 @@ def issue_list(request, project):
 
 def issue_edit(request, project, issue=None):
 
-    project = get_object_or_404(Project, name=project)
-
     if issue:
-        issue = get_object_or_404(Issue, project__name=project.name, id=issue)
+        issue = get_object_or_404(Issue, project=project.name, id=issue)
         init_data = {'title': issue.title,
                      'description': issue.description}
     else:
@@ -247,7 +239,7 @@ def issue_edit(request, project, issue=None):
 
 def issue(request, project, issue):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue)
+    issue = get_object_or_404(Issue, project=project, id=issue)
 
     labels = Label.objects.filter(project=issue.project, deleted=False) \
             .exclude(id__in=issue.labels.all().values_list('id'))
@@ -269,7 +261,7 @@ def issue(request, project, issue):
 
 def issue_comment(request, project, issue, comment=None):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue)
+    issue = get_object_or_404(Issue, project=project, id=issue)
 
     if comment:
         event = get_object_or_404(Event, code=Event.COMMENT, issue=issue, id=comment)
@@ -313,7 +305,7 @@ def issue_comment(request, project, issue, comment=None):
 
 def issue_close(request, project, issue):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue, closed=False)
+    issue = get_object_or_404(Issue, project=project, id=issue, closed=False)
 
     issue.closed = True
     issue.save()
@@ -326,7 +318,7 @@ def issue_close(request, project, issue):
 
 def issue_reopen(request, project, issue):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue, closed=True)
+    issue = get_object_or_404(Issue, project=project, id=issue, closed=True)
 
     issue.closed = False
     issue.save()
@@ -339,7 +331,7 @@ def issue_reopen(request, project, issue):
 
 def issue_delete(request, project, issue):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue)
+    issue = get_object_or_404(Issue, project=project, id=issue)
 
     issue.delete()
 
@@ -349,8 +341,8 @@ def issue_delete(request, project, issue):
 
 def issue_add_label(request, project, issue, label):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue)
-    label = get_object_or_404(Label, project__name=project, id=label)
+    issue = get_object_or_404(Issue, project=project, id=issue)
+    label = get_object_or_404(Label, project=project, id=label)
     author = User.objects.get(username=request.user.username)
 
     issue.add_label(author, label)
@@ -359,8 +351,8 @@ def issue_add_label(request, project, issue, label):
 
 def issue_remove_label(request, project, issue, label):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue)
-    label = get_object_or_404(Label, project__name=project, id=label)
+    issue = get_object_or_404(Issue, project=project, id=issue)
+    label = get_object_or_404(Label, project=project, id=label)
     author = User.objects.get(username=request.user.username)
 
     issue.remove_label(author, label)
@@ -369,8 +361,8 @@ def issue_remove_label(request, project, issue, label):
 
 def issue_add_milestone(request, project, issue, milestone):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue)
-    milestone = get_object_or_404(Milestone, project__name=project, name=milestone)
+    issue = get_object_or_404(Issue, project=project, id=issue)
+    milestone = get_object_or_404(Milestone, project=project, name=milestone)
     author = User.objects.get(username=request.user.username)
 
     issue.add_milestone(author, milestone)
@@ -379,8 +371,8 @@ def issue_add_milestone(request, project, issue, milestone):
 
 def issue_remove_milestone(request, project, issue, milestone):
 
-    issue = get_object_or_404(Issue, project__name=project, id=issue)
-    milestone = get_object_or_404(Milestone, project__name=project, name=milestone)
+    issue = get_object_or_404(Issue, project=project, id=issue)
+    milestone = get_object_or_404(Milestone, project=project, name=milestone)
     author = User.objects.get(username=request.user.username)
 
     issue.remove_milestone(author, milestone)
@@ -388,8 +380,6 @@ def issue_remove_milestone(request, project, issue, milestone):
     return redirect('show-issue', project, issue.id)
 
 def label_list(request, project):
-
-    project = get_object_or_404(Project, name=project)
 
     labels = project.labels.filter(deleted=False)
 
@@ -401,8 +391,6 @@ def label_list(request, project):
     return render(request, 'issue/label_list.html', c)
 
 def label_edit(request, project, id=None):
-
-    project = get_object_or_404(Project, name=project)
 
     if id:
         label = get_object_or_404(Label, project=project, id=id)
@@ -463,8 +451,6 @@ def label_delete(request, project, id):
 
 def milestone_list(request, project):
 
-    project = get_object_or_404(Project, name=project)
-
     show = request.GET.get('show', 'open')
 
     if show == 'open':
@@ -486,8 +472,6 @@ def milestone_list(request, project):
     return render(request, 'issue/milestone_list.html', c)
 
 def milestone_edit(request, project, name=None):
-
-    project = get_object_or_404(Project, name=project)
 
     if name:
         milestone = get_object_or_404(Milestone, project=project, name=name)
