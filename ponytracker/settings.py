@@ -111,4 +111,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'issue.context_processors.projects',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'issue.backends.ProjectBackend',
+)
+
 SITE_ID = 1
