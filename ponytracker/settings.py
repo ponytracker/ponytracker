@@ -39,7 +39,6 @@ INSTALLED_APPS = (
 
     'django.contrib.humanize',
 
-    'stronghold',
     'django_markdown',
     'bootstrap3_datetime',
     'crispy_forms',
@@ -56,7 +55,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'stronghold.middleware.LoginRequiredMiddleware',
 )
 
 ROOT_URLCONF = 'ponytracker.urls'

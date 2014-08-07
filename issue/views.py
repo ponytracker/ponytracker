@@ -2,15 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 
-from stronghold.decorators import public
-
 from issue.models import *
 from issue.forms import *
 
 import shlex
 
 
-@public
 def project_list(request):
 
     if not Project.objects.exists():
