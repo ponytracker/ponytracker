@@ -8,5 +8,5 @@ class ProjectMiddleware:
         if view.__module__ != 'issue.views':
             return
 
-        projects = Project.objects.all()
+        projects = Project.objects.filter(public=True)
         request.projects = projects

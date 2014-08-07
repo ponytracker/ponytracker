@@ -10,7 +10,7 @@ import shlex
 
 def project_list(request):
 
-    if not Project.objects.exists():
+    if not request.projects.exists():
 
         messages.info(request, 'Start by creating a project.')
 

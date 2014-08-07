@@ -7,8 +7,8 @@ from django_markdown.widgets import MarkdownWidget
 from issue.models import *
 
 
-AddProjectForm = modelform_factory(Project, fields=['display_name', 'name', 'description'])
-EditProjectForm = modelform_factory(Project, fields=['display_name', 'description'])
+AddProjectForm = modelform_factory(Project, fields=['display_name', 'name', 'description', 'public'])
+EditProjectForm = modelform_factory(Project, fields=['display_name', 'description', 'public'])
 LabelForm = modelform_factory(Label, fields=['name', 'color', 'inverted'])
 
 class MilestoneForm(forms.ModelForm):

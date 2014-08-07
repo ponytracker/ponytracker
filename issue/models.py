@@ -29,6 +29,9 @@ class Project(models.Model):
     description = models.TextField(blank=True, default="",
             verbose_name="Description")
 
+    public = models.BooleanField(default=True,
+            verbose_name="Do unregistered users have read access to this project?")
+
     def __str__(self):
 
         return self.display_name
