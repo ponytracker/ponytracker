@@ -42,7 +42,7 @@
         </form>
       </div>
     </h1>
-    <i>{{ issues.count }} issues displayed</i>
+    <i>{{ issues.count }} issue{{ issues.count|pluralize }} displayed</i>
   </div>
 
   {% if issues.count %}

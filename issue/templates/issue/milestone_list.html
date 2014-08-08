@@ -16,7 +16,7 @@
         <a href="{% url 'add-milestone' project.name %}"><button class="btn btn-success">New milestone</button></a>
       </div>
     </h1>
-    <i>{{ milestones.count }} milestones displayed</i>
+    <i>{{ milestones.count }} milestone{{ milestones.count|pluralize }} displayed</i>
   </div>
 
   {% if milestones.count %}
