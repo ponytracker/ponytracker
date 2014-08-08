@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 
 from issue.models import *
 from issue.forms import *
@@ -18,6 +19,65 @@ def profile(request):
         }
 
     return render(request, 'issue/profile.html', c)
+
+def global_permission_list(request):
+
+    permissions = GlobalPermission.objects.all()
+
+    c = {
+            'permissions': permissions,
+    }
+
+    return render(request, 'issue/global_permission_list.html', c)
+
+def global_permission_edit(request, id=None):
+
+    if id:
+        permission = get_object_or_404(GlobalPermission, id=id)
+    else:
+        permission = None
+
+    form = GlobalPermissionForm(request.POST or None, instance=permission)
+
+    if request.method == 'POST' and form.is_valid():
+
+        permission = form.save()
+
+        messages.success(request, 'Permission added successfully.')
+
+        return redirect('list-global-permission')
+
+    c = {
+            'form': form,
+        }
+
+    return render(request, 'issue/global_permission_edit.html', c)
+
+def global_permission_toggle(request, id, perm):
+
+    permission = get_object_or_404(GlobalPermission, id=id)
+
+    # to be sure to dont modify other attribut with the following trick
+    if not '-' in perm:
+        raise Http404
+    perm = perm.replace('-', '_')
+
+    if hasattr(permission, perm):
+        print(type(getattr(permission, perm)))
+        setattr(permission, perm, not getattr(permission, perm))
+        permission.save()
+    else:
+        raise Http404
+
+    return redirect('list-global-permission')
+
+def global_permission_delete(request, id):
+
+    permission = get_object_or_404(GlobalPermission, id=id)
+
+    permission.delete()
+
+    return redirect('list-global-permission')
 
 def project_list(request):
 

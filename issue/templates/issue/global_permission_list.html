@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% load django_markdown %}
+{% load issue_filters %}
+
+{% block content %}
+
+
+<div class="panel panel-default">
+
+  <div class="panel-heading">
+    <h1>
+      Permissions
+      <div class="pull-right">
+        <a href="{% url 'add-global-permission' %}"><button class="btn btn-success">Add new permission</button></a>
+      </div>
+    </h1>
+  </div>
+
+  {% if permissions.count %}
+  <table class="table">
+    <tr>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Create project?</th>
+      <th>Modify project?</th>
+      <th>Delete project?</th>
+      <th class="col-md-2"></th>
+    </tr>
+    {% for perm in permissions %}
+    <tr>
+      <td>{{ perm.type }}</td>
+      <td>{{ perm.name }}</td>
+      <td><a href="{% url 'toggle-global-permission' perm.id 'create-project' %}">{{ perm.create_project|boolean }}</a></td>
+      <td><a href="{% url 'toggle-global-permission' perm.id 'modify-project' %}">{{ perm.modify_project|boolean }}</a></td>
+      <td><a href="{% url 'toggle-global-permission' perm.id 'delete-project' %}">{{ perm.delete_project|boolean }}</a></td>
+      <td class="text-right">
+        <a href="{% url 'edit-global-permission' perm.id %}"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
+        <a href="{% url 'delete-global-permission' perm.id %}"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="panel-body">
+      There aren't any permissions defined yet.
+  </div>
+  {% endif %}
+
+{% endblock %}

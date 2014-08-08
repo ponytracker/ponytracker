@@ -6,7 +6,6 @@ from django_markdown.widgets import MarkdownWidget
 
 from issue.models import *
 
-
 AddProjectForm = modelform_factory(Project, fields=['display_name', 'name', 'description', 'public'])
 EditProjectForm = modelform_factory(Project, fields=['display_name', 'description', 'public'])
 LabelForm = modelform_factory(Label, fields=['name', 'color', 'inverted'])
@@ -26,3 +25,26 @@ class IssueForm(forms.Form):
 
 class CommentForm(forms.Form):
     comment = forms.CharField(widget=MarkdownWidget)
+
+class GlobalPermissionForm(forms.ModelForm):
+
+    class Meta:
+        model = GlobalPermission
+        exclude = ['content_type']
+
+    def clean(self):
+
+        data = super(GlobalPermissionForm, self).clean()
+        name = data['grantee_name']
+
+        if int(data['grantee_type']) == PermissionModel.GRANTEE_USER:
+            if not User.objects.filter(username=name).exists():
+                raise ValidationError("User '%s' does not exists." %name)
+        elif int(data['grantee_type']) == PermissionModel.GRANTEE_GROUP:
+            if not Group.objects.filter(name=name).exists():
+                raise ValidationError("Group '%s' does not exists." %name)
+        elif int(data['grantee_type']) == PermissionModel.GRANTEE_TEAM:
+            if not Team.objects.filter(name=name).exists():
+                raise ValidationError("Team '%s' does not exists." %name)
+
+        return data
