@@ -8,6 +8,17 @@ from issue.forms import *
 import shlex
 
 
+def profile(request):
+
+    user = User.objects.get(username=request.user)
+
+    c = {
+            'groups': user.groups.all(),
+            'teams': user.teams.all(),
+        }
+
+    return render(request, 'issue/profile.html', c)
+
 def project_list(request):
 
     if not request.projects.exists():

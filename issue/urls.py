@@ -29,5 +29,6 @@ urlpatterns = [
     url(r'^(?P<project>[a-z0-9_-]+)/milestones/(?P<name>[a-z0-9_.-]+)/reopen$', 'issue.views.milestone_reopen', name='reopen-milestone'),
     url(r'^(?P<project>[a-z0-9_-]+)/milestones/(?P<name>[a-z0-9_.-]+)/delete$', 'issue.views.milestone_delete', name='delete-milestone'),
     url(r'^login$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}, name='login'),
+    url(r'^profile$', 'issue.views.profile', name='profile'),
     url(r'^logout$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='logout'),
 ]
