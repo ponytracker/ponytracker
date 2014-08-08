@@ -29,18 +29,21 @@ class ProjectMiddleware:
         if request.user.is_authenticated():
             user = User.objects.get(username=request.user)
 
-        query = Q(public=True)
-        if user:
-            # access granted through a team
-            query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_TEAM,
-                    permissions__grantee_name__in=user.teams.values_list('name'))
-            # access granted through a group
-            query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_GROUP,
-                    permissions__grantee_name__in=user.groups.values_list('name'))
-            # access granted by specific permission
-            query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_USER,
-                    permissions__grantee_name=user.username)
-        projects = Project.objects.filter(query)
+        if user and user.is_staff:
+            projects = Project.objects.all()
+        else:
+            query = Q(public=True)
+            if user:
+                # access granted through a team
+                query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_TEAM,
+                        permissions__grantee_name__in=user.teams.values_list('name'))
+                # access granted through a group
+                query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_GROUP,
+                        permissions__grantee_name__in=user.groups.values_list('name'))
+                # access granted by specific permission
+                query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_USER,
+                        permissions__grantee_name=user.username)
+            projects = Project.objects.filter(query)
         request.projects = projects
 
         project = view_kwargs.get('project')
