@@ -4,8 +4,10 @@
 {% block page_title %}{{ project }}{% endblock %}
 
 {% block projectmenu %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-project-permission' project.name %}">Manage permissions</a></li>
 <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'edit-project' project.name %}">Modify this project</a></li>
 <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'delete-project' project.name %}">Delete this project</a></li>
+<li role="presentation" class="divider"></li>
 {% endblock %}
 
 {% block navbar %}

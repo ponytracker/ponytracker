@@ -34,8 +34,10 @@ def global_permission_edit(request, id=None):
 
     if id:
         permission = get_object_or_404(GlobalPermission, id=id)
+        new = False
     else:
         permission = None
+        new = True
 
     form = GlobalPermissionForm(request.POST or None, instance=permission)
 
@@ -43,7 +45,10 @@ def global_permission_edit(request, id=None):
 
         permission = form.save()
 
-        messages.success(request, 'Permission added successfully.')
+        if new:
+            messages.success(request, 'Permission added successfully.')
+        else:
+            messages.success(request, 'Permission updated successfully.')
 
         return redirect('list-global-permission')
 
@@ -77,7 +82,76 @@ def global_permission_delete(request, id):
 
     permission.delete()
 
+    messages.success(request, 'Permission deleted successfully.')
+
     return redirect('list-global-permission')
+
+def project_permission_list(request, project):
+
+    permissions = ProjectPermission.objects.filter(project=project)
+
+    c = {
+            'project': project,
+            'permissions': permissions,
+    }
+
+    return render(request, 'issue/project_permission_list.html', c)
+
+def project_permission_edit(request, project, id=None):
+
+    if id:
+        permission = get_object_or_404(ProjectPermission, project=project, id=id)
+    else:
+        permission = None
+
+    form = ProjectPermissionForm(request.POST or None, instance=permission)
+
+    if request.method == 'POST' and form.is_valid():
+
+        permission = form.save(commit=False)
+        if not hasattr(permission, 'project'):
+            permission.project = project
+            messages.success(request, 'Permission added successfully.')
+        else:
+            messages.success(request, 'Permission updated successfully.')
+        permission.save()
+
+        return redirect('list-project-permission', project.name)
+
+    c = {
+            'project': project,
+            'form': form,
+        }
+
+    return render(request, 'issue/project_permission_edit.html', c)
+
+def project_permission_toggle(request, project, id, perm):
+
+    permission = get_object_or_404(ProjectPermission, project=project, id=id)
+
+    # to be sure to dont modify other attribut with the following trick
+    if not '-' in perm:
+        raise Http404
+    perm = perm.replace('-', '_')
+
+    if hasattr(permission, perm):
+        print(type(getattr(permission, perm)))
+        setattr(permission, perm, not getattr(permission, perm))
+        permission.save()
+    else:
+        raise Http404
+
+    return redirect('list-project-permission', project.name)
+
+def project_permission_delete(request, project, id):
+
+    permission = get_object_or_404(ProjectPermission, project=project, id=id)
+
+    permission.delete()
+
+    messages.success(request, 'Permission deleted successfully.')
+
+    return redirect('list-project-permission', project.name)
 
 def project_list(request):
 
@@ -113,7 +187,7 @@ def project_add(request):
             'form': form,
         }
 
-    return render(request, 'issue/project_edit.html', c)
+    return render(request, 'issue/project_add.html', c)
 
 def project_edit(request, project):
 
@@ -136,6 +210,7 @@ def project_edit(request, project):
             return redirect('list-issue', project.name)
 
     c = {
+            'project': project,
             'form': form,
         }
 

@@ -388,7 +388,7 @@ class GlobalPermission(PermissionModel):
 
 class ProjectPermission(PermissionModel):
 
-    project = models.ForeignKey(Project, related_name='permissions')
+    project = models.ForeignKey(Project, related_name='permissions', editable=False)
 
     create_issue = models.BooleanField(default=True)
     modify_issue = models.BooleanField(default=False)

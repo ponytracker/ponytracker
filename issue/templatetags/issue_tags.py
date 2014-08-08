@@ -48,3 +48,7 @@ def same_author(context, author):
     url += '?q=is:open%20author:' + author.username
 
     return mark_safe(url)
+
+@register.simple_tag
+def vertical(string):
+    return string.replace("", "\0").strip("\0").replace("\0", "<br />")

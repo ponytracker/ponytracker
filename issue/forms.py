@@ -26,15 +26,21 @@ class IssueForm(forms.Form):
 class CommentForm(forms.Form):
     comment = forms.CharField(widget=MarkdownWidget)
 
-class GlobalPermissionForm(forms.ModelForm):
+class PermissionForm(forms.ModelForm):
 
     class Meta:
-        model = GlobalPermission
-        exclude = ['content_type']
+        model = PermissionModel
+        exclude = []
+        abstract = True
 
     def clean(self):
 
-        data = super(GlobalPermissionForm, self).clean()
+        data = super(PermissionForm, self).clean()
+
+        if not 'grantee_name' in data or not 'grantee_type' in data:
+            # a field required error will be printed so we dont care
+            return data
+
         name = data['grantee_name']
 
         if int(data['grantee_type']) == PermissionModel.GRANTEE_USER:
@@ -48,3 +54,15 @@ class GlobalPermissionForm(forms.ModelForm):
                 raise ValidationError("Team '%s' does not exists." %name)
 
         return data
+
+class GlobalPermissionForm(PermissionForm):
+
+    class Meta:
+        model = GlobalPermission
+        exclude = []
+
+class ProjectPermissionForm(PermissionForm):
+
+    class Meta:
+        model = ProjectPermission
+        exclude = []
