@@ -334,24 +334,43 @@ class Team(models.Model):
 
 class PermissionModel(models.Model):
 
-    grantee = models.CharField(max_length=50)
-    # type of grantee (user,  group, team)
-    content_type = models.ForeignKey(ContentType)
+    GRANTEE_USER = 0
+    GRANTEE_GROUP = 1
+    GRANTEE_TEAM = 2
+    GRANTEE_TYPE = (
+        (GRANTEE_USER, 'User'),
+        (GRANTEE_GROUP, 'Group'),
+        (GRANTEE_TEAM, 'Team'),
+    )
+
+    grantee_type = models.IntegerField(choices=GRANTEE_TYPE,
+            default=GRANTEE_USER, verbose_name="Type")
+    grantee_name = models.CharField(max_length=50,
+            verbose_name="Name")
 
     class Meta:
         abstract = True
 
     def granted_to(self, user):
-        if self.content_type == ContentType.objects.get_for_model(User):
-            return user.username == grantee
-        elif self.content_type == ContentType.objects.get_for_model(Group):
-            group = self.content_type.get_object_for_this_type(name=grantee)
-            return user.groups.filter(name=grantee).exists()
-        elif self.content_type == ContentType.objects.get_for_model(Team):
-            team = self.content_type.get_object_for_this_type(name=grantee)
-            return team in user.teams
+        if self.grantee_type == self.GRANTEE_USER:
+            return user.username == self.grantee_name
+        elif self.grantee_type == self.GRANTEE_GROUP:
+            return user.groups.filter(name=self.grantee_name).exists()
+        elif self.grantee_type == self.GRANTEE_TEAM:
+            return Team.objects.filter(name=self.grantee_name) \
+                    .filter(Q(groups__in=user.groups.all()) | Q(users=user)) \
+                    .exists()
         else:
             return False
+
+    def type(self):
+        return dict(self.GRANTEE_TYPE)[self.grantee_type]
+
+    def name(self):
+        return self.grantee_name
+
+    def __str__(self):
+        return self.grantee_name
 
 class GlobalPermission(PermissionModel):
 
@@ -360,7 +379,7 @@ class GlobalPermission(PermissionModel):
     delete_project = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.grantee + "'s global permissions"
+        return self.grantee_name + "'s global permissions"
 
 class ProjectPermission(PermissionModel):
 
@@ -383,4 +402,4 @@ class ProjectPermission(PermissionModel):
     delete_milestone = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.grantee + "'s permissions on " + self.project.name + " project"
+        return self.grantee_name + "'s permissions on " + self.project.name + " project"
