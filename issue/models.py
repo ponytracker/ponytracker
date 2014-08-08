@@ -378,6 +378,11 @@ class GlobalPermission(PermissionModel):
     modify_project = models.BooleanField(default=False)
     delete_project = models.BooleanField(default=False)
 
+    add_team = models.BooleanField(default=True)
+    manage_team = models.BooleanField(default=False)
+
+    manage_permission = models.BooleanField(default=False)
+
     def __str__(self):
         return self.grantee_name + "'s global permissions"
 
