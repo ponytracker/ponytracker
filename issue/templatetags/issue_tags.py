@@ -3,7 +3,6 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
 
-#from issue.models import User, Label, Milestone
 
 register = template.Library()
 
