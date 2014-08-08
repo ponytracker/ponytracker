@@ -2,3 +2,7 @@
 *.swp
 *.sqlite3
 env/
+*.rej
+*.orig
+*.bak
+*.patch
