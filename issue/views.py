@@ -377,6 +377,7 @@ def issue_edit(request, project, issue=None):
     c = {
             'project': project,
             'form': form,
+            'issue': issue,
         }
 
     return render(request, 'issue/issue_edit.html', c)
@@ -575,6 +576,7 @@ def label_edit(request, project, id=None):
     c = {
             'project': project,
             'form': form,
+            'label': label,
         }
 
     return render(request, 'issue/label_edit.html', c)
@@ -662,6 +664,7 @@ def milestone_edit(request, project, name=None):
     c = {
             'project': project,
             'form': form,
+            'milestone': milestone,
         }
 
     return render(request, 'issue/milestone_edit.html', c)

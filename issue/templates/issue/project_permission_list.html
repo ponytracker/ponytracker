@@ -4,14 +4,15 @@
 {% load issue_filters %}
 {% load issue_tags %}
 
-{% block content %}
+{% block permissiontab %} class="active"{% endblock %}
 
+{% block content %}
 
 <div class="panel panel-default">
 
   <div class="panel-heading">
     <h1>
-      Permissions of {{ project }} project
+      Permissions of '{{ project }}' project
       <div class="pull-right">
         <a href="{% url 'add-project-permission' project.name %}"><button class="btn btn-success">Add new permission</button></a>
       </div>
@@ -27,7 +28,7 @@
       <th colspan="3" class="text-center">Comment</th>
       <th colspan="3" class="text-center">Label</th>
       <th colspan="3" class="text-center">Milestone</th>
-      <th class="col-md-2"></th>
+      <th rowspan="2" class="col-md-2"></th>
     </tr>
     <tr>
       <th class="text-center">{% vertical 'Create?' %}</th>
@@ -42,7 +43,6 @@
       <th class="text-center">{% vertical 'Create?' %}</th>
       <th class="text-center">{% vertical 'Modify?' %}</th>
       <th class="text-center">{% vertical 'Delete?' %}</th>
-      <th class="col-md-2"></th>
     </tr>
     {% for perm in permissions %}
     <tr>

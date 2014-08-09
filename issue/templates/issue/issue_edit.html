@@ -10,10 +10,32 @@
 
 {% block content %}
 
-<form action="" method="post" role="form">
-  {{ form|crispy }}
-  {% csrf_token %}
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="panel panel-default">
 
+  <div class="panel-heading">
+    <h1>
+      {% if issue %}
+      Edit issue
+      {% else %}
+      New issue
+      {% endif %}
+      <div class="pull-right">
+        {% if issue %}
+        <a href="{% url 'show-issue' project.name issue.id %}"><button class="btn btn-warning">Go back to issue</button></a>
+        {% else %}
+        <a href="{% url 'list-issue' project.name %}"><button class="btn btn-warning">Go back to issues</button></a>
+        {% endif %}
+      </div>
+    </h1>
+  </div>
+
+  <div class="panel-body">
+    <form action="" method="post" role="form">
+      {{ form|crispy }}
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+
+</div>
 {% endblock %}

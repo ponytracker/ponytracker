@@ -20,12 +20,20 @@
   {% if permissions.count %}
   <table class="table table-bordered">
     <tr>
-      <th>Type</th>
-      <th>Name</th>
-      <th class="text-center">Create project?</th>
-      <th class="text-center">Modify project?</th>
-      <th class="text-center">Delete project?</th>
-      <th class="col-md-2"></th>
+      <th rowspan="2">Type</th>
+      <th rowspan="2">Name</th>
+      <th colspan="3" class="text-center">Project</th>
+      <th colspan="2" class="text-center">Team</th>
+      <th class="text-center">Permissions</th>
+      <th rowspan="2" class="col-md-2"></th>
+    </tr>
+    <tr>
+      <th class="text-center">Create?</th>
+      <th class="text-center">Modify?</th>
+      <th class="text-center">Delete?</th>
+      <th class="text-center">Add?</th>
+      <th class="text-center">Manage?</th>
+      <th class="text-center">Manage?</th>
     </tr>
     {% for perm in permissions %}
     <tr>
@@ -34,6 +42,9 @@
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'create-project' %}">{{ perm.create_project|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'modify-project' %}">{{ perm.modify_project|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'delete-project' %}">{{ perm.delete_project|boolean }}</a></td>
+      <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'add-team' %}">{{ perm.add_team|boolean }}</a></td>
+      <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'manage-team' %}">{{ perm.manage_team|boolean }}</a></td>
+      <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'manage-permission' %}">{{ perm.manage_permission|boolean }}</a></td>
       <td class="text-center">
         <a href="{% url 'edit-global-permission' perm.id %}"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
         <a href="{% url 'delete-global-permission' perm.id %}"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>

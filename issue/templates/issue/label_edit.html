@@ -6,16 +6,31 @@
 
 {% block content %}
 
-<div class="row">
-  <div class="col-md-offset-4 col-md-4">
+<div class="panel panel-default">
 
-    <form action="" method="post" role="form">
-      {{ form|crispy }}
-      {% csrf_token %}
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-
+  <div class="panel-heading">
+    <h1>
+      {% if label %}
+      Edit label
+      {% else %}
+      New label
+      {% endif %}
+      <div class="pull-right">
+        <a href="{% url 'list-label' project.name %}"><button class="btn btn-warning">Go back to labels</button></a>
+      </div>
+    </h1>
   </div>
+
+  <div class="panel-body">
+    <div class="col-md-offset-4 col-md-4">
+      <form action="" method="post" role="form">
+        {{ form|crispy }}
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+
 </div>
 
 {% endblock %}

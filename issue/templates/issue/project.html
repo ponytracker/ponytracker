@@ -14,4 +14,5 @@
 <li{% block issuetab %}{% endblock %}><a href="{% url 'list-issue' project.name %}">Issues</a></li>
 <li{% block labeltab %}{% endblock %}><a href="{% url 'list-label' project.name %}">Labels</a></li>
 <li{% block milestonetab %}{% endblock %}><a href="{% url 'list-milestone' project.name %}">Milestones</a></li>
+<li{% block permissiontab %}{% endblock %}><a href="{% url 'list-project-permission' project.name %}">Permissions</a></li>
 {% endblock %}

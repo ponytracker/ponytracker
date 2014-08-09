@@ -2,13 +2,15 @@
 
 {% load crispy_forms_tags %}
 
+{% block permissiontab %} class="active"{% endblock %}
+
 {% block content %}
 
 <div class="panel panel-default">
 
   <div class="panel-heading clearfix">
     <h1>
-      Permissions of {{ project }} project
+      Permissions of '{{ project }}' project
       <div class="pull-right">
         <a href="{% url 'list-project-permission' project.name %}"><button class="btn btn-warning">Go back to list</button></a>
       </div>
