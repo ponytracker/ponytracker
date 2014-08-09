@@ -1,6 +1,6 @@
 {% extends 'issue/project.html' %}
 
-{% load crispy_forms_tags %}
+{% load bootstrap_tags %}
 
 {% block media %}{{ form.media }}{% endblock %}
 
@@ -9,7 +9,7 @@
 {% block content %}
 
 <form action="" method="post" role="form">
-  {{ form|crispy }}
+  {{ form|as_bootstrap }}
   {% csrf_token %}
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>

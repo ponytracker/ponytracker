@@ -42,7 +42,7 @@ INSTALLED_APPS = (
 
     'django_markdown',
     'bootstrap3_datetime',
-    'crispy_forms',
+    'django_forms_bootstrap',
     'colorful',
     'issue',
 )

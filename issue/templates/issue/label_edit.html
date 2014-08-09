@@ -1,6 +1,6 @@
 {% extends 'issue/project.html' %}
 
-{% load crispy_forms_tags %}
+{% load bootstrap_tags %}
 
 {% block labeltab %} class="active"{% endblock %}
 
@@ -24,7 +24,7 @@
   <div class="panel-body">
     <div class="col-md-offset-4 col-md-4">
       <form action="" method="post" role="form">
-        {{ form|crispy }}
+        {{ form|as_bootstrap }}
         {% csrf_token %}
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>

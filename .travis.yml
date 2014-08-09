@@ -10,17 +10,16 @@ env:
 
 install:
   - if [[ $DJANGO == '1.6' ]]; then pip install django==1.6; fi
-  - if [[ $DJANGO == '1.7' ]]; then pip install -e git+git://github.com/django/django.git@1.7c2#egg=django1.7rc2; fi
+  - if [[ $DJANGO != '1.6' ]]; then pip install -e git+git://github.com/django/django.git@1.7c2#egg=django1.7rc2; fi
   - pip install django-markdown
   - pip install django-colorful
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install git+git://github.com/bouttier/django-crispy-forms@master; fi
-  - if [[ $TRAVIS_PYTHON_VERSION != '3.2' ]]; then pip install django-crispy-forms; fi
+  - pip install git+git://github.com/bouttier/django-forms-bootstrap.git@master
   - pip install django-bootstrap3-datetimepicker
-  - pip install coveralls
+  - if [[ $DJANGO == '1.6' ]]; then pip install coveralls; fi
 
 script:
   - if [[ $DJANGO == '1.6' ]]; then coverage run --branch --source=issue --omit=issue/migrations/*.py manage.py test; fi
-  - if [[ $DJANGO == '1.7' ]]; then python manage.py test; fi
+  - if [[ $DJANGO != '1.6' ]]; then python manage.py test; fi
 
 after_success:
   if [[ $DJANGO == '1.6' ]]; then coveralls; fi
