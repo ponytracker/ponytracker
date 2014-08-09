@@ -9,6 +9,7 @@ from django.utils.html import escape
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
+from django.utils.encoding import python_2_unicode_compatible
 
 from colorful.fields import RGBColorField
 
@@ -216,6 +217,7 @@ class Issue(models.Model):
     def __str__(self):
         return self.title
 
+@python_2_unicode_compatible
 class Event(models.Model):
 
     UNKNOW = 0
