@@ -172,6 +172,8 @@ class Issue(models.Model):
     description = property(getdesc, setdesc, deldesc)
 
     def add_label(self, author, label, commit=True):
+        if self.labels.filter(pk=label.pk).exists():
+            return
         self.labels.add(label)
         if commit:
             self.save()
@@ -188,6 +190,8 @@ class Issue(models.Model):
         event.save()
 
     def add_milestone(self, author, milestone, commit=True):
+        if self.milestone == milestone:
+            return
         if self.milestone:
             event = Event(issue=self, author=author, code=Event.CHANGE_MILESTONE,
                     args={'old_milestone': self.milestone.name,
