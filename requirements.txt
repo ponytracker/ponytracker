@@ -1,7 +1,5 @@
-Django==1.7c2
-Markdown==2.4.1
-django-bootstrap3-datetimepicker==2.2.3
-django-colorful==1.0.1
-django-crispy-forms==1.4.0
-django-markdown==0.6.1
-pyinotify==0.9.4
+django
+django-markdown
+django-colorful
+django-crispy-forms
+django-bootstrap3-datetimepicker
