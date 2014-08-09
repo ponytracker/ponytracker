@@ -385,9 +385,9 @@ def issue(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
-    labels = Label.objects.filter(project=issue.project, deleted=False) \
+    labels = Label.objects.filter(project=project, deleted=False) \
             .exclude(id__in=issue.labels.all().values_list('id'))
-    milestones = Milestone.objects.filter(project=issue.project)
+    milestones = Milestone.objects.filter(project=project)
     if issue.milestone:
         milestones = milestones.exclude(name=issue.milestone.name)
 
@@ -396,7 +396,7 @@ def issue(request, project, issue):
     c = {
             'labels': labels,
             'milestones': milestones,
-            'project': issue.project,
+            'project': project,
             'issue': issue,
             'events': events,
         }
@@ -437,10 +437,10 @@ def issue_comment(request, project, issue, comment=None):
             event.save()
             messages.success(request, 'Comment added successfully.')
 
-        return redirect('show-issue', issue.project.name, issue.id)
+        return redirect('show-issue', project.name, issue.id)
 
     c = {
-            'project': issue.project,
+            'project': project,
             'issue': issue,
             'form': form,
         }
@@ -458,7 +458,7 @@ def issue_close(request, project, issue):
     event = Event(issue=issue, author=author, code=Event.CLOSE)
     event.save()
 
-    return redirect('list-issue', project)
+    return redirect('list-issue', project.name)
 
 def issue_reopen(request, project, issue):
 
@@ -471,7 +471,7 @@ def issue_reopen(request, project, issue):
     event = Event(issue=issue, author=author, code=Event.REOPEN)
     event.save()
 
-    return redirect('show-issue', project, issue.id)
+    return redirect('show-issue', project.name, issue.id)
 
 def issue_delete(request, project, issue):
 
@@ -481,7 +481,7 @@ def issue_delete(request, project, issue):
 
     messages.success(request, 'Issue deleted successfully.')
 
-    return redirect('list-issue', project)
+    return redirect('list-issue', project.name)
 
 def issue_add_label(request, project, issue, label):
 
@@ -491,7 +491,7 @@ def issue_add_label(request, project, issue, label):
 
     issue.add_label(author, label)
 
-    return redirect('show-issue', project, issue.id)
+    return redirect('show-issue', project.name, issue.id)
 
 def issue_remove_label(request, project, issue, label):
 
@@ -501,7 +501,7 @@ def issue_remove_label(request, project, issue, label):
 
     issue.remove_label(author, label)
 
-    return redirect('show-issue', project, issue.id)
+    return redirect('show-issue', project.name, issue.id)
 
 def issue_add_milestone(request, project, issue, milestone):
 
@@ -511,7 +511,7 @@ def issue_add_milestone(request, project, issue, milestone):
 
     issue.add_milestone(author, milestone)
 
-    return redirect('show-issue', project, issue.id)
+    return redirect('show-issue', project.name, issue.id)
 
 def issue_remove_milestone(request, project, issue, milestone):
 
@@ -521,7 +521,7 @@ def issue_remove_milestone(request, project, issue, milestone):
 
     issue.remove_milestone(author, milestone)
 
-    return redirect('show-issue', project, issue.id)
+    return redirect('show-issue', project.name, issue.id)
 
 def label_list(request, project):
 
@@ -591,7 +591,7 @@ def label_delete(request, project, id):
 
     messages.success(request, "Label deleted successfully.")
 
-    return redirect('list-label', project)
+    return redirect('list-label', project.name)
 
 def milestone_list(request, project):
 
@@ -673,7 +673,7 @@ def milestone_close(request, project, name):
     milestone.closed = True
     milestone.save()
 
-    return redirect('list-milestone', project)
+    return redirect('list-milestone', project.name)
 
 def milestone_reopen(request, project, name):
 
@@ -682,7 +682,7 @@ def milestone_reopen(request, project, name):
     milestone.closed = False
     milestone.save()
 
-    return redirect('list-milestone', project)
+    return redirect('list-milestone', project.name)
 
 def milestone_delete(request, project, name):
 
@@ -695,4 +695,4 @@ def milestone_delete(request, project, name):
 
     messages.success(request, "Label deleted successfully.")
 
-    return redirect('list-milestone', project)
+    return redirect('list-milestone', project.name)
