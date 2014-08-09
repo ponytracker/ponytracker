@@ -13,7 +13,8 @@ install:
   - if [[ $DJANGO == '1.7' ]]; then pip install -e git+git://github.com/django/django.git@1.7c2#egg=django1.7rc2; fi
   - pip install django-markdown
   - pip install django-colorful
-  - pip install django-crispy-forms
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.2' ]]; then pip install git+git://github.com/bouttier/django-crispy-forms@master; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2' ]]; then pip install django-crispy-forms; fi
   - pip install django-bootstrap3-datetimepicker
   - pip install coveralls
 
