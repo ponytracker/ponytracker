@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from issue.models import Project, Label
 
 
-@receiver(post_save, sender=Project, dispatch_uid="Create default project labels.")
+@receiver(post_save, sender=Project, dispatch_uid="Default project labels.")
 def create_default_project_labels(sender, **kwargs):
     if kwargs['created']:
         project = kwargs['instance']

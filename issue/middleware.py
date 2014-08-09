@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
 from issue.models import *
+from issue.models import PermissionModel as PermModel
 
 
 class ProjectMiddleware:
@@ -35,13 +36,15 @@ class ProjectMiddleware:
             query = Q(public=True)
             if user:
                 # access granted through a team
-                query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_TEAM,
-                        permissions__grantee_name__in=user.teams.values_list('name'))
+                teams = user.teams.values_list('name')
+                query |= Q(permissions__grantee_type=PermModel.GRANTEE_TEAM,
+                        permissions__grantee_name__in=teams)
                 # access granted through a group
-                query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_GROUP,
-                        permissions__grantee_name__in=user.groups.values_list('name'))
+                groups = user.groups.values_list('name')
+                query |= Q(permissions__grantee_type=PermModel.GRANTEE_GROUP,
+                        permissions__grantee_name__in=groups)
                 # access granted by specific permission
-                query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_USER,
+                query |= Q(permissions__grantee_type=PermModel.GRANTEE_USER,
                         permissions__grantee_name=user.username)
             projects = Project.objects.filter(query).distinct()
         request.projects = projects

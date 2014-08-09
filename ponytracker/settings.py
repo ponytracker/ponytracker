@@ -55,7 +55,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 if VERSION >= (1, 7):
-    MIDDLEWARE_CLASSES += ('django.contrib.auth.middleware.SessionAuthenticationMiddleware',)
+    MIDDLEWARE_CLASSES += (
+        'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    )
 MIDDLEWARE_CLASSES += (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -98,7 +100,7 @@ STATIC_URL = '/static/'
 
 LOGIN_URL = '/login'
 
-LOGIN_REDIRECT_URL='/'
+LOGIN_REDIRECT_URL = '/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 

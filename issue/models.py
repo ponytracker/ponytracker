@@ -25,7 +25,9 @@ class User(auth.models.User):
 
     @property
     def teams(self):
-        return Team.objects.filter(Q(groups__in=self.groups.all()) | Q(users=self))
+        query = Q(groups__in=self.groups.all()) | Q(users=self)
+        return Team.objects.filter(query)
+
 
 class Project(models.Model):
 
@@ -44,11 +46,13 @@ class Project(models.Model):
             verbose_name="Description")
 
     public = models.BooleanField(default=True,
-            verbose_name="Do unregistered users have read access to this project?")
+            verbose_name="Do unregistered users have read access "
+                         "to this project?")
 
     def __str__(self):
 
         return self.display_name
+
 
 class Label(models.Model):
 
@@ -58,9 +62,11 @@ class Label(models.Model):
 
     deleted = models.BooleanField(default=False)
 
-    color = RGBColorField(default='#000000', verbose_name="Background color")
+    color = RGBColorField(default='#000000',
+            verbose_name="Background color")
 
-    inverted = models.BooleanField(default=True, verbose_name="Inverse text color")
+    inverted = models.BooleanField(default=True,
+            verbose_name="Inverse text color")
 
     @property
     def quotted_name(self):
@@ -73,6 +79,7 @@ class Label(models.Model):
     def __str__(self):
         return self.name
 
+
 class Milestone(models.Model):
 
     name_validator = RegexValidator(regex='^[a-z0-9_.-]+$',
@@ -84,9 +91,9 @@ class Milestone(models.Model):
     name = models.CharField(max_length=32, validators=[name_validator])
 
     class Meta:
-        unique_together = [ 'project', 'name' ]
+        unique_together = ['project', 'name']
 
-    due_date = models.DateTimeField(blank=True,null=True)
+    due_date = models.DateTimeField(blank=True, null=True)
 
     closed = models.BooleanField(default=False)
 
@@ -104,22 +111,23 @@ class Milestone(models.Model):
         total = self.total_issues()
 
         if total:
-            return int(100 * closed / total);
+            return int(100 * closed / total)
         else:
             return 0
 
     def __str__(self):
         return self.name
 
+
 class Issue(models.Model):
 
     global_id = models.AutoField(primary_key=True)
-    
+
     project = models.ForeignKey(Project, related_name='issues')
     id = models.IntegerField(editable=False)
 
     class Meta:
-        unique_together = [ 'project', 'id' ]
+        unique_together = ['project', 'id']
 
     title = models.CharField(max_length=128)
 
@@ -129,9 +137,11 @@ class Issue(models.Model):
 
     closed = models.BooleanField(default=False)
 
-    labels = models.ManyToManyField(Label, blank=True, null=True, related_name='issues')
+    labels = models.ManyToManyField(Label, blank=True, null=True,
+            related_name='issues')
 
-    milestone = models.ForeignKey(Milestone, blank=True, null=True, related_name='issues')
+    milestone = models.ForeignKey(Milestone, blank=True, null=True,
+            related_name='issues')
 
     assignee = models.ForeignKey(User, blank=True, null=True, related_name='+')
 
@@ -146,18 +156,19 @@ class Issue(models.Model):
 
     def comments(self):
 
-        comments = self.events.filter(issue=self,code=Event.COMMENT)
+        comments = self.events.filter(issue=self, code=Event.COMMENT)
 
         return comments
 
     def getdesc(self):
-        desc = self.events.filter(issue=self,code=Event.DESCRIBE)
+        desc = self.events.filter(issue=self, code=Event.DESCRIBE)
         if desc.exists():
             return desc.first().additionnal_section
         else:
             return None
+
     def setdesc(self, value):
-        desc = self.events.filter(issue=self,code=Event.DESCRIBE)
+        desc = self.events.filter(issue=self, code=Event.DESCRIBE)
         if desc.exists():
             desc = desc.first()
             desc.additionnal_section = value
@@ -166,8 +177,9 @@ class Issue(models.Model):
             desc = Event(issue=self, author=self.author, code=Event.DESCRIBE,
                     additionnal_section=value)
             desc.save()
+
     def deldesc(self):
-        desc = self.events.filter(issue=self,code=Event.DESCRIBE)
+        desc = self.events.filter(issue=self, code=Event.DESCRIBE)
         if desc.exists():
             desc.first().delete()
     description = property(getdesc, setdesc, deldesc)
@@ -194,12 +206,14 @@ class Issue(models.Model):
         if self.milestone == milestone:
             return
         if self.milestone:
-            event = Event(issue=self, author=author, code=Event.CHANGE_MILESTONE,
+            event = Event(issue=self, author=author,
+                    code=Event.CHANGE_MILESTONE,
                     args={'old_milestone': self.milestone.name,
                           'new_milestone': milestone.name})
             event.save()
         else:
-            event = Event(issue=self, author=author, code=Event.SET_MILESTONE,
+            event = Event(issue=self, author=author,
+                    code=Event.SET_MILESTONE,
                     args={'milestone': milestone.name})
             event.save()
         self.milestone = milestone
@@ -210,12 +224,14 @@ class Issue(models.Model):
         self.milestone = None
         if commit:
             self.save()
-        event = Event(issue=self, author=author, code=Event.UNSET_MILESTONE,
+        event = Event(issue=self, author=author,
+                code=Event.UNSET_MILESTONE,
                 args={'milestone': milestone.name})
         event.save()
 
     def __str__(self):
         return self.title
+
 
 @python_2_unicode_compatible
 class Event(models.Model):
@@ -240,15 +256,17 @@ class Event(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     author = models.ForeignKey(User)
-    
+
     code = models.IntegerField(default=UNKNOW)
 
     _args = models.CharField(max_length=1024, blank=True, default="{}")
 
     def getargs(self):
         return json.loads(self._args)
+
     def setargs(self, args):
         self._args = json.dumps(args)
+
     def delargs(self):
         self._args = "{}"
     args = property(getargs, setargs, delargs)
@@ -297,18 +315,21 @@ class Event(models.Model):
         elif self.code == Event.REOPEN:
             description = "reopened this issue"
         elif self.code == Event.RENAME:
-            description = "changed the title from <mark>{old_title}</mark> to <mark>{new_title}</mark>"
+            description = "changed the title from <mark>{old_title}</mark> " \
+                          "to <mark>{new_title}</mark>"
         elif self.code == Event.ADD_LABEL or self.code == Event.DEL_LABEL:
             label = Label.objects.get(id=args['label'])
             if self.code == Event.ADD_LABEL:
                 action = 'added'
             else:
                 action = 'removed'
-            description = '%s the <a href="%s">%s</a> label' %(action, same_label(label), labeled(label))
+            description = '%s the <a href="%s">%s</a> label' \
+                          % (action, same_label(label), labeled(label))
         elif self.code == Event.SET_MILESTONE:
             description = "added this to the {milestone} milestone"
         elif self.code == Event.CHANGE_MILESTONE:
-            description = "moved this from the {old_milestone} milestone to the {new_milestone} milestone"
+            description = "moved this from the {old_milestone} milestone " \
+                          "to the {new_milestone} milestone"
         elif self.code == Event.UNSET_MILESTONE:
             description = "deleted this from the {milestone} milestone"
         elif self.code == Event.REFERENCE:
@@ -321,6 +342,7 @@ class Event(models.Model):
 
         return mark_safe(description.format(**safe_args))
 
+
 class Settings(models.Model):
 
     site = models.OneToOneField(Site)
@@ -328,15 +350,19 @@ class Settings(models.Model):
     class Meta:
         verbose_name_plural = 'Settings'
 
+
 class Team(models.Model):
 
     name = models.CharField(max_length=128, unique=True)
 
-    users = models.ManyToManyField(auth.models.User, blank=True, null=True, related_name='teams')
-    groups = models.ManyToManyField(auth.models.Group, blank=True, null=True, related_name='teams')
+    users = models.ManyToManyField(auth.models.User, blank=True, null=True,
+            related_name='teams')
+    groups = models.ManyToManyField(auth.models.Group, blank=True, null=True,
+            related_name='teams')
 
     def __str__(self):
         return self.name
+
 
 class PermissionModel(models.Model):
 
@@ -364,8 +390,8 @@ class PermissionModel(models.Model):
             return user.groups.filter(name=self.grantee_name).exists()
         elif self.grantee_type == self.GRANTEE_TEAM:
             return Team.objects.filter(name=self.grantee_name) \
-                    .filter(Q(groups__in=user.groups.all()) | Q(users=user)) \
-                    .exists()
+                .filter(Q(groups__in=user.groups.all()) | Q(users=user)) \
+                .exists()
         else:
             return False
 
@@ -377,6 +403,7 @@ class PermissionModel(models.Model):
 
     def __str__(self):
         return self.grantee_name
+
 
 class GlobalPermission(PermissionModel):
 
@@ -392,9 +419,11 @@ class GlobalPermission(PermissionModel):
     def __str__(self):
         return self.grantee_name + "'s global permissions"
 
+
 class ProjectPermission(PermissionModel):
 
-    project = models.ForeignKey(Project, related_name='permissions', editable=False)
+    project = models.ForeignKey(Project, editable=False,
+            related_name='permissions')
 
     create_issue = models.BooleanField(default=True)
     modify_issue = models.BooleanField(default=False)
@@ -413,4 +442,5 @@ class ProjectPermission(PermissionModel):
     delete_milestone = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.grantee_name + "'s permissions on " + self.project.name + " project"
+        return self.grantee_name + "'s permissions on " \
+            + self.project.name + " project"

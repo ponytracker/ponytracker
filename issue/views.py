@@ -14,21 +14,23 @@ def profile(request):
     user = User.objects.get(username=request.user)
 
     c = {
-            'groups': user.groups.all(),
-            'teams': user.teams.all(),
-        }
+        'groups': user.groups.all(),
+        'teams': user.teams.all(),
+    }
 
     return render(request, 'issue/profile.html', c)
+
 
 def global_permission_list(request):
 
     permissions = GlobalPermission.objects.all()
 
     c = {
-            'permissions': permissions,
+        'permissions': permissions,
     }
 
     return render(request, 'issue/global_permission_list.html', c)
+
 
 def global_permission_edit(request, id=None):
 
@@ -53,17 +55,18 @@ def global_permission_edit(request, id=None):
         return redirect('list-global-permission')
 
     c = {
-            'form': form,
-        }
+        'form': form,
+    }
 
     return render(request, 'issue/global_permission_edit.html', c)
+
 
 def global_permission_toggle(request, id, perm):
 
     permission = get_object_or_404(GlobalPermission, id=id)
 
     # to be sure to dont modify other attribut with the following trick
-    if not '-' in perm:
+    if '-' not in perm:
         raise Http404
     perm = perm.replace('-', '_')
 
@@ -76,6 +79,7 @@ def global_permission_toggle(request, id, perm):
 
     return redirect('list-global-permission')
 
+
 def global_permission_delete(request, id):
 
     permission = get_object_or_404(GlobalPermission, id=id)
@@ -86,21 +90,24 @@ def global_permission_delete(request, id):
 
     return redirect('list-global-permission')
 
+
 def project_permission_list(request, project):
 
     permissions = ProjectPermission.objects.filter(project=project)
 
     c = {
-            'project': project,
-            'permissions': permissions,
+        'project': project,
+        'permissions': permissions,
     }
 
     return render(request, 'issue/project_permission_list.html', c)
 
+
 def project_permission_edit(request, project, id=None):
 
     if id:
-        permission = get_object_or_404(ProjectPermission, project=project, id=id)
+        permission = get_object_or_404(ProjectPermission,
+                project=project, id=id)
     else:
         permission = None
 
@@ -119,18 +126,19 @@ def project_permission_edit(request, project, id=None):
         return redirect('list-project-permission', project.name)
 
     c = {
-            'project': project,
-            'form': form,
-        }
+        'project': project,
+        'form': form,
+    }
 
     return render(request, 'issue/project_permission_edit.html', c)
+
 
 def project_permission_toggle(request, project, id, perm):
 
     permission = get_object_or_404(ProjectPermission, project=project, id=id)
 
     # to be sure to dont modify other attribut with the following trick
-    if not '-' in perm:
+    if '-' not in perm:
         raise Http404
     perm = perm.replace('-', '_')
 
@@ -143,6 +151,7 @@ def project_permission_toggle(request, project, id, perm):
 
     return redirect('list-project-permission', project.name)
 
+
 def project_permission_delete(request, project, id):
 
     permission = get_object_or_404(ProjectPermission, project=project, id=id)
@@ -152,6 +161,7 @@ def project_permission_delete(request, project, id):
     messages.success(request, 'Permission deleted successfully.')
 
     return redirect('list-project-permission', project.name)
+
 
 def project_list(request):
 
@@ -163,31 +173,28 @@ def project_list(request):
 
     return render(request, 'issue/project_list.html')
 
+
 def project_add(request):
 
     form = AddProjectForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
 
-        if Project.objects \
-                .filter(display_name__iexact=form.cleaned_data['display_name']) \
-                .exists():
-
-            form._errors['display_name'] = ['There is already a project with a similar name.']
-
+        name = form.cleaned_data['display_name']
+        if Project.objects.filter(display_name__iexact=name).exists():
+            form._errors['display_name'] = ['There is already a project '
+                                            'with a similar name.']
         else:
-
             project = form.save()
-
             messages.success(request, 'Project added successfully.')
-
             return redirect('list-issue', project.name)
 
     c = {
-            'form': form,
-        }
+        'form': form,
+    }
 
     return render(request, 'issue/project_add.html', c)
+
 
 def project_edit(request, project):
 
@@ -195,26 +202,23 @@ def project_edit(request, project):
 
     if request.method == 'POST' and form.is_valid():
 
-        if Project.objects \
-                .filter(display_name__iexact=form.cleaned_data['display_name']) \
+        name = form.cleaned_data['display_name']
+        if Project.objects.filter(display_name__iexact=name) \
                 .exclude(pk=project.pk).exists():
-
-            form._errors['display_name'] = ['There is already a project with a similar name.']
-
+            form._errors['display_name'] = ['There is already a project '
+                                            'with a similar name.']
         else:
-
             project = form.save()
-
             messages.success(request, 'Project modified successfully.')
-
             return redirect('list-issue', project.name)
 
     c = {
-            'project': project,
-            'form': form,
-        }
+        'project': project,
+        'form': form,
+    }
 
     return render(request, 'issue/project_edit.html', c)
+
 
 def project_delete(request, project):
 
@@ -223,6 +227,7 @@ def project_delete(request, project):
     messages.success(request, 'Project deleted successfully.')
 
     return redirect('list-project')
+
 
 def issue_list(request, project):
 
@@ -261,19 +266,22 @@ def issue_list(request, project):
             if value == 'open':
                 issues = issues.filter(closed=False)
                 is_open = ' active'
-            elif value =='close':
+            elif value == 'close':
                 issues = issues.filter(closed=True)
                 is_close = ' active'
             else:
-                messages.error(request, "The keyword 'is' must be followed by 'open' or 'close'.")
+                messages.error(request, "The keyword 'is' must be followed "
+                                        "by 'open' or 'close'.")
                 issues = None
                 break
 
         elif key == 'label':
             try:
-                label = Label.objects.get(project=project,name=value,deleted=False)
+                label = Label.objects.get(project=project,
+                        name=value, deleted=False)
             except ObjectDoesNotExist:
-                messages.error(request, "The label '%s' does not exist or has been deleted." %value)
+                messages.error(request, "The label '%s' does not exist "
+                                        "or has been deleted." % value)
                 issues = None
                 break
             else:
@@ -281,9 +289,10 @@ def issue_list(request, project):
 
         elif key == 'milestone':
             try:
-                milestone = Milestone.objects.get(project=project,name=value)
+                milestone = Milestone.objects.get(project=project, name=value)
             except ObjectDoesNotExist:
-                messages.error(request, "The milestone '%s' does not exist." %value)
+                messages.error(request, "The milestone '%s' does not exist."
+                        % value)
                 issues = None
                 break
             else:
@@ -293,12 +302,13 @@ def issue_list(request, project):
             if User.objects.filter(username=value).exists():
                 issues = issues.filter(author__username=value)
             else:
-                messages.error(request, "The user '%s' does not exist." %value)
+                messages.error(request, "The user '%s' does not exist."
+                        % value)
                 issues = None
                 break
 
         else:
-            messages.error(request, "Unknow '%s' filtering criterion." %key)
+            messages.error(request, "Unknow '%s' filtering criterion." % key)
             issues = None
             break
 
@@ -312,16 +322,17 @@ def issue_list(request, project):
         is_all = ' active'
 
     c = {
-            'project': project,
-            'issues': issues,
-            'query': query,
-            'is_open': is_open,
-            'is_close': is_close,
-            'is_all': is_all,
-            'is_all_query': is_all_query[1:],
-        }
+        'project': project,
+        'issues': issues,
+        'query': query,
+        'is_open': is_open,
+        'is_close': is_close,
+        'is_all': is_all,
+        'is_all_query': is_all_query[1:],
+    }
 
     return render(request, 'issue/issue_list.html', c)
+
 
 def issue_edit(request, project, issue=None):
 
@@ -375,19 +386,20 @@ def issue_edit(request, project, issue=None):
         return redirect('show-issue', project.name, issue.id)
 
     c = {
-            'project': project,
-            'form': form,
-            'issue': issue,
-        }
+        'project': project,
+        'form': form,
+        'issue': issue,
+    }
 
     return render(request, 'issue/issue_edit.html', c)
+
 
 def issue(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
     labels = Label.objects.filter(project=project, deleted=False) \
-            .exclude(id__in=issue.labels.all().values_list('id'))
+        .exclude(id__in=issue.labels.all().values_list('id'))
     milestones = Milestone.objects.filter(project=project)
     if issue.milestone:
         milestones = milestones.exclude(name=issue.milestone.name)
@@ -395,22 +407,24 @@ def issue(request, project, issue):
     events = issue.events.all()
 
     c = {
-            'labels': labels,
-            'milestones': milestones,
-            'project': project,
-            'issue': issue,
-            'events': events,
-        }
+        'labels': labels,
+        'milestones': milestones,
+        'project': project,
+        'issue': issue,
+        'events': events,
+    }
 
     return render(request, 'issue/issue.html', c)
+
 
 def issue_comment(request, project, issue, comment=None):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
     if comment:
-        event = get_object_or_404(Event, code=Event.COMMENT, issue=issue, id=comment)
-        init_data = { 'comment': event.additionnal_section }
+        event = get_object_or_404(Event, code=Event.COMMENT,
+                issue=issue, id=comment)
+        init_data = {'comment': event.additionnal_section}
     else:
         event = None
         init_data = None
@@ -433,7 +447,7 @@ def issue_comment(request, project, issue, comment=None):
         else:
 
             author = User.objects.get(username=request.user.username)
-            event = Event(issue=issue, author=author, 
+            event = Event(issue=issue, author=author,
                     code=Event.COMMENT, additionnal_section=comment)
             event.save()
             messages.success(request, 'Comment added successfully.')
@@ -441,12 +455,13 @@ def issue_comment(request, project, issue, comment=None):
         return redirect('show-issue', project.name, issue.id)
 
     c = {
-            'project': project,
-            'issue': issue,
-            'form': form,
-        }
+        'project': project,
+        'issue': issue,
+        'form': form,
+    }
 
     return render(request, 'issue/issue_comment.html', c)
+
 
 def issue_close(request, project, issue):
 
@@ -461,6 +476,7 @@ def issue_close(request, project, issue):
 
     return redirect('list-issue', project.name)
 
+
 def issue_reopen(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue, closed=True)
@@ -474,6 +490,7 @@ def issue_reopen(request, project, issue):
 
     return redirect('show-issue', project.name, issue.id)
 
+
 def issue_delete(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -483,6 +500,7 @@ def issue_delete(request, project, issue):
     messages.success(request, 'Issue deleted successfully.')
 
     return redirect('list-issue', project.name)
+
 
 def issue_add_label(request, project, issue, label):
 
@@ -494,6 +512,7 @@ def issue_add_label(request, project, issue, label):
 
     return redirect('show-issue', project.name, issue.id)
 
+
 def issue_remove_label(request, project, issue, label):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -503,6 +522,7 @@ def issue_remove_label(request, project, issue, label):
     issue.remove_label(author, label)
 
     return redirect('show-issue', project.name, issue.id)
+
 
 def issue_add_milestone(request, project, issue, milestone):
 
@@ -514,6 +534,7 @@ def issue_add_milestone(request, project, issue, milestone):
 
     return redirect('show-issue', project.name, issue.id)
 
+
 def issue_remove_milestone(request, project, issue, milestone):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -524,16 +545,18 @@ def issue_remove_milestone(request, project, issue, milestone):
 
     return redirect('show-issue', project.name, issue.id)
 
+
 def label_list(request, project):
 
     labels = project.labels.filter(deleted=False)
 
     c = {
-            'project': project,
-            'labels': labels,
-        }
+        'project': project,
+        'labels': labels,
+    }
 
     return render(request, 'issue/label_list.html', c)
+
 
 def label_edit(request, project, id=None):
 
@@ -569,17 +592,19 @@ def label_edit(request, project, id=None):
 
             issue = request.GET.get('issue')
             if issue:
-                return redirect('add-label-to-issue', project.name, issue, label.id)
+                return redirect('add-label-to-issue', project.name,
+                        issue, label.id)
 
             return redirect('list-label', project.name)
 
     c = {
-            'project': project,
-            'form': form,
-            'label': label,
-        }
+        'project': project,
+        'form': form,
+        'label': label,
+    }
 
     return render(request, 'issue/label_edit.html', c)
+
 
 def label_delete(request, project, id):
 
@@ -594,6 +619,7 @@ def label_delete(request, project, id):
     messages.success(request, "Label deleted successfully.")
 
     return redirect('list-label', project.name)
+
 
 def milestone_list(request, project):
 
@@ -610,12 +636,13 @@ def milestone_list(request, project):
         milestones = None
 
     c = {
-            'project': project,
-            'milestones': milestones,
-            'show': show,
-        }
+        'project': project,
+        'milestones': milestones,
+        'show': show,
+    }
 
     return render(request, 'issue/milestone_list.html', c)
+
 
 def milestone_edit(request, project, name=None):
 
@@ -636,7 +663,8 @@ def milestone_edit(request, project, name=None):
 
         if similar.exists():
 
-            form._errors['name'] = ['There is already a milestone with this name.']
+            form._errors['name'] = ['There is already a milestone '
+                                    'with this name.']
 
         else:
 
@@ -644,8 +672,11 @@ def milestone_edit(request, project, name=None):
                 if name != form.cleaned_data['name']:
                     author = User.objects.get(username=request.user.username)
                     for issue in milestone.issues.all():
-                        event = Event(issue=issue, author=author, code=Event.CHANGE_MILESTONE,
-                                args={'old_milestone': name, 'new_milestone': form.cleaned_data['name']})
+                        event = Event(issue=issue, author=author,
+                                code=Event.CHANGE_MILESTONE, args={
+                                    'old_milestone': name,
+                                    'new_milestone': form.cleaned_data['name']
+                                })
                         event.save()
                 form.save()
                 messages.success(request, 'Milestone modified successfully.')
@@ -657,17 +688,19 @@ def milestone_edit(request, project, name=None):
 
             issue = request.GET.get('issue')
             if issue:
-                return redirect('add-milestone-to-issue', project.name, issue, milestone.name)
+                return redirect('add-milestone-to-issue', project.name, issue,
+                        milestone.name)
 
             return redirect('list-milestone', project.name)
 
     c = {
-            'project': project,
-            'form': form,
-            'milestone': milestone,
-        }
+        'project': project,
+        'form': form,
+        'milestone': milestone,
+    }
 
     return render(request, 'issue/milestone_edit.html', c)
+
 
 def milestone_close(request, project, name):
 
@@ -678,6 +711,7 @@ def milestone_close(request, project, name):
 
     return redirect('list-milestone', project.name)
 
+
 def milestone_reopen(request, project, name):
 
     milestone = get_object_or_404(Milestone, project=project, name=name)
@@ -686,6 +720,7 @@ def milestone_reopen(request, project, name):
     milestone.save()
 
     return redirect('list-milestone', project.name)
+
 
 def milestone_delete(request, project, name):
 

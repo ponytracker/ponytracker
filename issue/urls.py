@@ -1,4 +1,4 @@
-from django.conf.urls import url 
+from django.conf.urls import url
 
 urlpatterns = [
     url(r'^$', 'issue.views.project_list', name='list-project'),

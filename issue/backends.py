@@ -5,9 +5,10 @@ from issue.models import *
 
 def user_has_perm(user, perm, perms):
     for p in perms:
-        # this permission allow that action and the user is concerned by this permission
+        # this perm allow that action and the user is concerned by this perm
         if hasattr(p, perm) and getattr(p, perm) and p.granted_to(user):
             return True
+
 
 class ProjectBackend(ModelBackend):
 

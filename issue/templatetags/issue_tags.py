@@ -6,6 +6,7 @@ from django.utils.html import escape
 
 register = template.Library()
 
+
 @register.simple_tag
 def label_style(label):
 
@@ -18,12 +19,16 @@ def label_style(label):
 
     return style.format(bg=label.color, fg=fg)
 
+
 @register.simple_tag
 def labeled(label):
 
-    html = '<span class="label" style="{style} vertical-align: middle;">{name}</span>'
+    html = '<span class="label" style="{style} ' \
+           'vertical-align: middle;">{name}</span>'
 
-    return mark_safe(html.format(style=label_style(label),name=escape(label.name)))
+    return mark_safe(html.format(style=label_style(label),
+        name=escape(label.name)))
+
 
 @register.simple_tag
 def same_label(label):
@@ -33,6 +38,7 @@ def same_label(label):
 
     return mark_safe(url)
 
+
 @register.simple_tag
 def same_milestone(milestone):
 
@@ -41,6 +47,7 @@ def same_milestone(milestone):
 
     return mark_safe(url)
 
+
 @register.simple_tag(takes_context=True)
 def same_author(context, author):
 
@@ -48,6 +55,7 @@ def same_author(context, author):
     url += '?q=is:open%20author:' + author.username
 
     return mark_safe(url)
+
 
 @register.simple_tag
 def vertical(string):
