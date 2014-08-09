@@ -43,7 +43,7 @@ class ProjectMiddleware:
                 # access granted by specific permission
                 query |= Q(permissions__grantee_type=PermissionModel.GRANTEE_USER,
                         permissions__grantee_name=user.username)
-            projects = Project.objects.filter(query)
+            projects = Project.objects.filter(query).distinct()
         request.projects = projects
 
         project = view_kwargs.get('project')
