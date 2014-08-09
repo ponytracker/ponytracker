@@ -96,3 +96,48 @@ class TestPermissions(TestCase):
         self.assertEqual(len(projects), 2)
         self.assertTrue(project1 in projects)
         self.assertTrue(project2 in projects)
+
+
+class TestViews(TestCase):
+
+    fixtures = ['test_perms']
+
+    def setUp(self):
+        self.client.login(username='admin', password='admin')
+
+    def test_404(self):
+        response = self.client.get('/deliberately/broken')
+        self.assertEqual(response.status_code, 404)
+
+    def test_home(self):
+        url = reverse('list-project')
+        self.assertEqual(url, '/')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['projects']), 2)
+
+    def test_home_redirection(self):
+        Project.objects.all().delete()
+        expected_url = reverse('add-project')
+        url = reverse('list-project')
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+
+    def test_add_project(self):
+        expected_url = reverse('list-issue', args=['test'])
+        url = reverse('add-project')
+        response = self.client.post(url, {
+            'name': 'test',
+            'display_name': 'Test',
+            'description': 'Testing purpose only.',
+        })
+        self.assertRedirects(response, expected_url)
+        self.assertEqual(Project.objects.count(), 3)
+
+    def test_delete_project(self):
+        expected_url = reverse('list-project')
+        url = reverse('delete-project', args=['project-1'])
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+        self.assertEqual(Project.objects.count(), 1)
+        self.assertEqual(Project.objects.first().name, 'project-2')
