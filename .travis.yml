@@ -29,4 +29,6 @@ notifications:
     channels: "irc.freenode.org#ponytracker"
     template:
       - "%{repository}@%{branch}: %{message} (%{build_url})"
+    use_notice: true
+    skip_join: true
   email: false
