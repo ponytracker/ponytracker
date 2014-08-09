@@ -1,0 +1,32 @@
+language: python
+python:
+  - 2.7
+  - 3.2
+  - 3.4
+
+env:
+  - DJANGO='1.6'
+  - DJANGO='1.7'
+
+install:
+  - if [[ $DJANGO == '1.6' ]]; then pip install django==1.6; fi
+  - if [[ $DJANGO == '1.7' ]]; then pip install -e git+git://github.com/django/django.git@1.7c2#egg=django1.7rc2; fi
+  - pip install django-markdown
+  - pip install django-colorful
+  - pip install django-crispy-forms
+  - pip install django-bootstrap3-datetimepicker
+  - pip install coveralls
+
+script:
+  - if [[ $DJANGO == '1.6' ]]; then coverage run --branch --source=issue --omit=issue/migrations/*.py manage.py test; fi
+  - if [[ $DJANGO == '1.7' ]]; then python manage.py test; fi
+
+after_success:
+  if [[ $DJANGO == '1.6' ]]; then coveralls; fi
+
+notifications:
+  irc:
+    channels: "irc.freenode.org#ponytracker"
+    template:
+      - "%{repository}@%{branch}: %{message} (%{build_url})"
+  email: false
