@@ -7,3 +7,4 @@ env/
 *.bak
 *.patch
 .coverage
+ponytracker/local_settings.py

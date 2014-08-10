@@ -1,1 +1,0 @@
-from ponytracker.settings import *
