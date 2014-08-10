@@ -60,3 +60,4 @@ class ProjectMiddleware:
             else:
                 return login_required(view)(request, *view_args, **view_kwargs)
         view_kwargs['project'] = project
+        request.project = project

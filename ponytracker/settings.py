@@ -114,7 +114,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
     'issue.context_processors.projects',
-    'issue.context_processors.can_user',
+    'issue.context_processors.perm',
 )
 
 AUTHENTICATION_BACKENDS = (

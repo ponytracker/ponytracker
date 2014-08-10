@@ -18,11 +18,12 @@ class PermissionChecker:
 
 class PermWrapper:
 
-    def __init__(self, user):
+    def __init__(self, user, project):
         self.user = user
+        self.project = project
 
     def __getitem__(self, perm):
-        return self.user.has_perm(perm)
+        return self.user.has_perm(perm, self.project)
 
     def __iter__(self):
         raise TypeError("PermWrapper is not iterable.")
@@ -31,6 +32,10 @@ class PermWrapper:
         return self[perm]
 
 
-def can_user(request):
-    wrapper = PermWrapper(request.user)
-    return {'can_user': wrapper}
+def perm(request):
+    if hasattr(request, 'project'):
+        project = request.project
+    else:
+        project = None
+    wrapper = PermWrapper(request.user, project)
+    return {'perm': wrapper}
