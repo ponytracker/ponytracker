@@ -414,7 +414,7 @@ class GlobalPermission(PermissionModel):
     add_team = models.BooleanField(default=True)
     manage_team = models.BooleanField(default=False)
 
-    manage_permission = models.BooleanField(default=False)
+    manage_global_permission = models.BooleanField(default=False)
 
     def __str__(self):
         return self.grantee_name + "'s global permissions"
@@ -424,6 +424,8 @@ class ProjectPermission(PermissionModel):
 
     project = models.ForeignKey(Project, editable=False,
             related_name='permissions')
+
+    manage_project_permission = models.BooleanField(default=False)
 
     create_issue = models.BooleanField(default=True)
     modify_issue = models.BooleanField(default=False)

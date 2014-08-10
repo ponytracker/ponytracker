@@ -44,7 +44,7 @@
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'delete-project' %}">{{ perm.delete_project|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'add-team' %}">{{ perm.add_team|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'manage-team' %}">{{ perm.manage_team|boolean }}</a></td>
-      <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'manage-permission' %}">{{ perm.manage_permission|boolean }}</a></td>
+      <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'manage-global-permission' %}">{{ perm.manage_global_permission|boolean }}</a></td>
       <td class="text-center">
         <a href="{% url 'edit-global-permission' perm.id %}"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
         <a href="{% url 'delete-global-permission' perm.id %}"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
