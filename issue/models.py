@@ -50,6 +50,13 @@ class Project(models.Model):
             verbose_name="Do unregistered users have read access "
                          "to this project?")
 
+    def grant_user(self, user):
+        perm = ProjectPermission(project=self,
+                manage_project_permission=True,
+                grantee_type=PermissionModel.GRANTEE_USER,
+                grantee_name=user.username)
+        perm.save()
+
     def __str__(self):
 
         return self.display_name

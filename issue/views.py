@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.contrib.auth.decorators import login_required, permission_required
+from django.http import Http404, HttpResponseForbidden
 
 from issue.models import *
 from issue.forms import *
+from issue.shortcuts import permission_granted_or_login
 
 import shlex
 
 
+@login_required
 def profile(request):
 
     user = User.objects.get(username=request.user)
@@ -21,6 +24,7 @@ def profile(request):
     return render(request, 'issue/profile.html', c)
 
 
+@permission_required('manage_permission')
 def global_permission_list(request):
 
     permissions = GlobalPermission.objects.all()
@@ -32,6 +36,7 @@ def global_permission_list(request):
     return render(request, 'issue/global_permission_list.html', c)
 
 
+@permission_required('manage_permission')
 def global_permission_edit(request, id=None):
 
     if id:
@@ -61,6 +66,7 @@ def global_permission_edit(request, id=None):
     return render(request, 'issue/global_permission_edit.html', c)
 
 
+@permission_required('manage_permission')
 def global_permission_toggle(request, id, perm):
 
     permission = get_object_or_404(GlobalPermission, id=id)
@@ -71,7 +77,6 @@ def global_permission_toggle(request, id, perm):
     perm = perm.replace('-', '_')
 
     if hasattr(permission, perm):
-        print(type(getattr(permission, perm)))
         setattr(permission, perm, not getattr(permission, perm))
         permission.save()
     else:
@@ -80,6 +85,7 @@ def global_permission_toggle(request, id, perm):
     return redirect('list-global-permission')
 
 
+@permission_required('manage_permission')
 def global_permission_delete(request, id):
 
     permission = get_object_or_404(GlobalPermission, id=id)
@@ -93,6 +99,8 @@ def global_permission_delete(request, id):
 
 def project_permission_list(request, project):
 
+    permission_granted_or_login(request, 'manage_project_permission')
+
     permissions = ProjectPermission.objects.filter(project=project)
 
     c = {
@@ -104,6 +112,8 @@ def project_permission_list(request, project):
 
 
 def project_permission_edit(request, project, id=None):
+
+    permission_granted_or_login(request, 'manage_project_permission')
 
     if id:
         permission = get_object_or_404(ProjectPermission,
@@ -135,6 +145,8 @@ def project_permission_edit(request, project, id=None):
 
 def project_permission_toggle(request, project, id, perm):
 
+    permission_granted_or_login(request, 'manage_project_permission')
+
     permission = get_object_or_404(ProjectPermission, project=project, id=id)
 
     # to be sure to dont modify other attribut with the following trick
@@ -154,6 +166,8 @@ def project_permission_toggle(request, project, id, perm):
 
 def project_permission_delete(request, project, id):
 
+    permission_granted_or_login(request, 'manage_project_permission')
+
     permission = get_object_or_404(ProjectPermission, project=project, id=id)
 
     permission.delete()
@@ -167,13 +181,14 @@ def project_list(request):
 
     if not request.projects.exists():
 
-        messages.info(request, 'Start by creating a project.')
-
-        return redirect('add-project')
+        if request.user.has_perm('create_project'):
+            messages.info(request, 'Start by creating a project.')
+            return redirect('add-project')
 
     return render(request, 'issue/project_list.html')
 
 
+@permission_required('create_project')
 def project_add(request):
 
     form = AddProjectForm(request.POST or None)
@@ -187,7 +202,13 @@ def project_add(request):
         else:
             project = form.save()
             messages.success(request, 'Project added successfully.')
-            return redirect('list-issue', project.name)
+            project.grant_user(request.user)
+            perm = ProjectPermission(project=project,
+                    manage_project_permission=True,
+                    grantee_type=PermissionModel.GRANTEE_USER,
+                    grantee_name=request.user.username)
+            perm.save()
+            return redirect('list-project-permission', project.name)
 
     c = {
         'form': form,
@@ -196,6 +217,7 @@ def project_add(request):
     return render(request, 'issue/project_add.html', c)
 
 
+@permission_required('modify_project')
 def project_edit(request, project):
 
     form = EditProjectForm(request.POST or None, instance=project)
@@ -220,6 +242,7 @@ def project_edit(request, project):
     return render(request, 'issue/project_edit.html', c)
 
 
+@permission_required('delete_project')
 def project_delete(request, project):
 
     project.delete()

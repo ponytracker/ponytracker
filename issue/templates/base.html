@@ -51,14 +51,19 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Project <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
+                  {% if projects.exists %}
                   {% for p in projects %}
                   <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-issue' p.name %}">{{ p }}</a></li>
                   {% endfor %}
-                  {% if projects.count %}
-                  <li role="presentation" class="divider"></li>
+                  {% else %}
+                  <li role="presentation"><a role="munitem" tabindex="-1" href="#"><em>No project</em></a></li>
                   {% endif %}
-                  {% block projectmenu %}{% endblock %}
+                  {% block projectmenu %}
+                  {% if perm.create_project %}
+                  <li role="presentation" class="divider"></li>
                   <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'add-project' %}">New project…</a></li>
+                  {% endif %}
+                  {% endblock %}
                 </ul>
               </li>
               {% if request.user.is_authenticated %}

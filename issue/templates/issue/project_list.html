@@ -10,13 +10,16 @@
   <div class="panel-heading">
     <h1>
       Projects
+      {% if perm.create_project %}
       <div class="pull-right">
         <a href="{% url 'add-project' %}"><button class="btn btn-success">Add project</button></a>
       </div>
+      {% endif %}
     </h1>
   </div>
 
   <div class="panel-body">
+    {% if projects.exists %}
     <div class="row">
       <div class="col-md-3">
         <strong>Name</strong>
@@ -40,6 +43,11 @@
       </div>
     </div>
     {% endfor %}
+    {% elif user.is_authenticated %}
+    <em>Sorry, you have no access to any project.</em>
+    {% else %}
+    <em>There is not any public project. You should probably <a href="{% url 'login' %}">login</a>.</em>
+    {% endif %}
   </div>
 
 {% endblock %}

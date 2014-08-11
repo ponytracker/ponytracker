@@ -4,10 +4,21 @@
 {% block page_title %}{{ project }}{% endblock %}
 
 {% block projectmenu %}
-<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-project-permission' project.name %}">Manage permissions</a></li>
-<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'edit-project' project.name %}">Modify this project</a></li>
-<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'delete-project' project.name %}">Delete this project</a></li>
+{% if perm.manage_permission or perm.modify_project or perm.delete_project or perm.create_project %}
 <li role="presentation" class="divider"></li>
+{% if perm.manage_permission %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-project-permission' project.name %}">Manage permissions</a></li>
+{% endif %}
+{% if perm.modify_project %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'edit-project' project.name %}">Modify this project</a></li>
+{% endif %}
+{% if perm.delete_project %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'delete-project' project.name %}">Delete this project</a></li>
+{% endif %}
+{% if perm.create_project %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'add-project' %}">New project…</a></li>
+{% endif %}
+{% endif %}
 {% endblock %}
 
 {% block navbar %}

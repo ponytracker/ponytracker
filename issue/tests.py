@@ -124,7 +124,7 @@ class TestViews(TestCase):
         self.assertRedirects(response, expected_url)
 
     def test_add_project(self):
-        expected_url = reverse('list-issue', args=['test'])
+        expected_url = reverse('list-project-permission', args=['test'])
         url = reverse('add-project')
         response = self.client.post(url, {
             'name': 'test',
