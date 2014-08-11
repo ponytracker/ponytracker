@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import python_2_unicode_compatible
+from django import VERSION
 
 from colorful.fields import RGBColorField
 
@@ -446,3 +447,7 @@ class ProjectPermission(PermissionModel):
     def __str__(self):
         return self.grantee_name + "'s permissions on " \
             + self.project.name + " project"
+
+
+if VERSION < (1, 7):
+    import issue.signals
