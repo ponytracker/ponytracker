@@ -392,6 +392,8 @@ class PermissionModel(models.Model):
         abstract = True
 
     def granted_to(self, user):
+        if not user.is_authenticated():
+            return False
         if self.grantee_type == self.GRANTEE_USER:
             return user.username == self.grantee_name
         elif self.grantee_type == self.GRANTEE_GROUP:
