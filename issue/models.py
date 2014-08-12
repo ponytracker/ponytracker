@@ -439,6 +439,7 @@ class ProjectPermission(PermissionModel):
 
     create_issue = models.BooleanField(default=True)
     modify_issue = models.BooleanField(default=False)
+    manage_issue = models.BooleanField(default=False)
     delete_issue = models.BooleanField(default=False)
 
     create_comment = models.BooleanField(default=True)
