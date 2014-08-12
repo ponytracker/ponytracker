@@ -443,13 +443,8 @@ class ProjectPermission(PermissionModel):
     modify_comment = models.BooleanField(default=False)
     delete_comment = models.BooleanField(default=False)
 
-    create_label = models.BooleanField(default=True)
-    modify_label = models.BooleanField(default=False)
-    delete_label = models.BooleanField(default=False)
-
-    create_milestone = models.BooleanField(default=True)
-    modify_milestone = models.BooleanField(default=False)
-    delete_milestone = models.BooleanField(default=False)
+    manage_tags = models.BooleanField(default=False)
+    delete_tags = models.BooleanField(default=False)
 
     def __str__(self):
         return self.grantee_name + "'s permissions on " \
