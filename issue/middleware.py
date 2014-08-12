@@ -1,4 +1,4 @@
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
@@ -56,7 +56,7 @@ class ProjectMiddleware:
             project = projects.get(name=project)
         except ObjectDoesNotExist:
             if request.user.is_authenticated():
-                return HttpResponseForbidden()
+                raise PermissionDenied()
             else:
                 return login_required(view)(request, *view_args, **view_kwargs)
         view_kwargs['project'] = project
