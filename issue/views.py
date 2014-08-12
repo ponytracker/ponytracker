@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseForbidden
 
 from issue.models import *
 from issue.forms import *
-from issue.shortcuts import permission_granted_or_login
+from issue.decorators import project_perm_required
 
 import shlex
 
@@ -24,7 +24,7 @@ def profile(request):
     return render(request, 'issue/profile.html', c)
 
 
-@permission_required('manage_permission')
+@project_perm_required('manage_global_permission')
 def global_permission_list(request):
 
     permissions = GlobalPermission.objects.all()
@@ -36,7 +36,7 @@ def global_permission_list(request):
     return render(request, 'issue/global_permission_list.html', c)
 
 
-@permission_required('manage_permission')
+@project_perm_required('manage_global_permission')
 def global_permission_edit(request, id=None):
 
     if id:
@@ -66,7 +66,7 @@ def global_permission_edit(request, id=None):
     return render(request, 'issue/global_permission_edit.html', c)
 
 
-@permission_required('manage_permission')
+@project_perm_required('manage_global_permission')
 def global_permission_toggle(request, id, perm):
 
     permission = get_object_or_404(GlobalPermission, id=id)
@@ -85,7 +85,7 @@ def global_permission_toggle(request, id, perm):
     return redirect('list-global-permission')
 
 
-@permission_required('manage_permission')
+@project_perm_required('manage_global_permission')
 def global_permission_delete(request, id):
 
     permission = get_object_or_404(GlobalPermission, id=id)
@@ -97,9 +97,8 @@ def global_permission_delete(request, id):
     return redirect('list-global-permission')
 
 
+@project_perm_required('manage_project_permission')
 def project_permission_list(request, project):
-
-    permission_granted_or_login(request, 'manage_project_permission')
 
     permissions = ProjectPermission.objects.filter(project=project)
 
@@ -111,9 +110,8 @@ def project_permission_list(request, project):
     return render(request, 'issue/project_permission_list.html', c)
 
 
+@project_perm_required('manage_project_permission')
 def project_permission_edit(request, project, id=None):
-
-    permission_granted_or_login(request, 'manage_project_permission')
 
     if id:
         permission = get_object_or_404(ProjectPermission,
@@ -143,9 +141,8 @@ def project_permission_edit(request, project, id=None):
     return render(request, 'issue/project_permission_edit.html', c)
 
 
+@project_perm_required('manage_project_permission')
 def project_permission_toggle(request, project, id, perm):
-
-    permission_granted_or_login(request, 'manage_project_permission')
 
     permission = get_object_or_404(ProjectPermission, project=project, id=id)
 
@@ -155,7 +152,6 @@ def project_permission_toggle(request, project, id, perm):
     perm = perm.replace('-', '_')
 
     if hasattr(permission, perm):
-        print(type(getattr(permission, perm)))
         setattr(permission, perm, not getattr(permission, perm))
         permission.save()
     else:
@@ -164,9 +160,8 @@ def project_permission_toggle(request, project, id, perm):
     return redirect('list-project-permission', project.name)
 
 
+@project_perm_required('manage_project_permission')
 def project_permission_delete(request, project, id):
-
-    permission_granted_or_login(request, 'manage_project_permission')
 
     permission = get_object_or_404(ProjectPermission, project=project, id=id)
 
@@ -188,7 +183,7 @@ def project_list(request):
     return render(request, 'issue/project_list.html')
 
 
-@permission_required('create_project')
+@project_perm_required('create_project')
 def project_add(request):
 
     form = AddProjectForm(request.POST or None)
@@ -203,11 +198,6 @@ def project_add(request):
             project = form.save()
             messages.success(request, 'Project added successfully.')
             project.grant_user(request.user)
-            perm = ProjectPermission(project=project,
-                    manage_project_permission=True,
-                    grantee_type=PermissionModel.GRANTEE_USER,
-                    grantee_name=request.user.username)
-            perm.save()
             return redirect('list-project-permission', project.name)
 
     c = {
@@ -217,7 +207,7 @@ def project_add(request):
     return render(request, 'issue/project_add.html', c)
 
 
-@permission_required('modify_project')
+@project_perm_required('modify_project')
 def project_edit(request, project):
 
     form = EditProjectForm(request.POST or None, instance=project)
@@ -242,7 +232,7 @@ def project_edit(request, project):
     return render(request, 'issue/project_edit.html', c)
 
 
-@permission_required('delete_project')
+@project_perm_required('delete_project')
 def project_delete(request, project):
 
     project.delete()
@@ -357,13 +347,18 @@ def issue_list(request, project):
     return render(request, 'issue/issue_list.html', c)
 
 
+@login_required
 def issue_edit(request, project, issue=None):
 
     if issue:
+        if not user.has_perm('modify_issue'):
+            raise PermissionDenied
         issue = get_object_or_404(Issue, project=project.name, id=issue)
         init_data = {'title': issue.title,
                      'description': issue.description}
     else:
+        if not user.has_perm('create_issue'):
+            raise PermissionDenied
         issue = None
         init_data = None
 
@@ -440,6 +435,7 @@ def issue(request, project, issue):
     return render(request, 'issue/issue.html', c)
 
 
+@project_perm_required('create_comment')
 def issue_comment(request, project, issue, comment=None):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -486,6 +482,7 @@ def issue_comment(request, project, issue, comment=None):
     return render(request, 'issue/issue_comment.html', c)
 
 
+@project_perm_required('manage_issue')
 def issue_close(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue, closed=False)
@@ -500,6 +497,7 @@ def issue_close(request, project, issue):
     return redirect('list-issue', project.name)
 
 
+@project_perm_required('manage_issue')
 def issue_reopen(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue, closed=True)
@@ -514,6 +512,7 @@ def issue_reopen(request, project, issue):
     return redirect('show-issue', project.name, issue.id)
 
 
+@project_perm_required('delete_issue')
 def issue_delete(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -525,6 +524,7 @@ def issue_delete(request, project, issue):
     return redirect('list-issue', project.name)
 
 
+@project_perm_required('manage_tags')
 def issue_add_label(request, project, issue, label):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -536,6 +536,7 @@ def issue_add_label(request, project, issue, label):
     return redirect('show-issue', project.name, issue.id)
 
 
+@project_perm_required('manage_tags')
 def issue_remove_label(request, project, issue, label):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -547,6 +548,7 @@ def issue_remove_label(request, project, issue, label):
     return redirect('show-issue', project.name, issue.id)
 
 
+@project_perm_required('manage_tags')
 def issue_add_milestone(request, project, issue, milestone):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -558,6 +560,7 @@ def issue_add_milestone(request, project, issue, milestone):
     return redirect('show-issue', project.name, issue.id)
 
 
+@project_perm_required('manage_tags')
 def issue_remove_milestone(request, project, issue, milestone):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -581,6 +584,7 @@ def label_list(request, project):
     return render(request, 'issue/label_list.html', c)
 
 
+@project_perm_required('manage_tags')
 def label_edit(request, project, id=None):
 
     if id:
@@ -629,6 +633,7 @@ def label_edit(request, project, id=None):
     return render(request, 'issue/label_edit.html', c)
 
 
+@project_perm_required('delete_tags')
 def label_delete(request, project, id):
 
     label = get_object_or_404(Label, project=project, id=id)
@@ -667,6 +672,7 @@ def milestone_list(request, project):
     return render(request, 'issue/milestone_list.html', c)
 
 
+@project_perm_required('manage_tags')
 def milestone_edit(request, project, name=None):
 
     if name:
@@ -725,6 +731,7 @@ def milestone_edit(request, project, name=None):
     return render(request, 'issue/milestone_edit.html', c)
 
 
+@project_perm_required('manage_tags')
 def milestone_close(request, project, name):
 
     milestone = get_object_or_404(Milestone, project=project, name=name)
@@ -735,6 +742,7 @@ def milestone_close(request, project, name):
     return redirect('list-milestone', project.name)
 
 
+@project_perm_required('manage_tags')
 def milestone_reopen(request, project, name):
 
     milestone = get_object_or_404(Milestone, project=project, name=name)
@@ -745,6 +753,7 @@ def milestone_reopen(request, project, name):
     return redirect('list-milestone', project.name)
 
 
+@project_perm_required('delete_tags')
 def milestone_delete(request, project, name):
 
     milestone = get_object_or_404(Milestone, project=project, name=name)
