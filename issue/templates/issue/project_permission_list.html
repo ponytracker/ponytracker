@@ -24,25 +24,21 @@
     <tr>
       <th rowspan="2">Type</th>
       <th rowspan="2">Name</th>
-      <th colspan="3" class="text-center">Issue</th>
+      <th colspan="4" class="text-center">Issue</th>
       <th colspan="3" class="text-center">Comment</th>
-      <th colspan="3" class="text-center">Label</th>
-      <th colspan="3" class="text-center">Milestone</th>
+      <th colspan="2" class="text-center">Labels &<br />Milestones</th>
       <th class="text-center">Permission</th>
       <th rowspan="2" class="col-md-2"></th>
     </tr>
     <tr>
       <th class="text-center">{% vertical 'Create?' %}</th>
+      <th class="text-center">{% vertical 'Manage?' %}</th>
       <th class="text-center">{% vertical 'Modify?' %}</th>
       <th class="text-center">{% vertical 'Delete?' %}</th>
       <th class="text-center">{% vertical 'Create?' %}</th>
       <th class="text-center">{% vertical 'Modify?' %}</th>
       <th class="text-center">{% vertical 'Delete?' %}</th>
-      <th class="text-center">{% vertical 'Create?' %}</th>
-      <th class="text-center">{% vertical 'Modify?' %}</th>
-      <th class="text-center">{% vertical 'Delete?' %}</th>
-      <th class="text-center">{% vertical 'Create?' %}</th>
-      <th class="text-center">{% vertical 'Modify?' %}</th>
+      <th class="text-center">{% vertical 'Manage?' %}</th>
       <th class="text-center">{% vertical 'Delete?' %}</th>
       <th class="text-center">{% vertical 'Manage?' %}</th>
     </tr>
@@ -51,17 +47,14 @@
       <td>{{ perm.type }}</td>
       <td>{{ perm.name }}</td>
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'create-issue' %}">{{ perm.create_issue|boolean }}</a></td>
+      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'manage-issue' %}">{{ perm.manage_issue|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'modify-issue' %}">{{ perm.modify_issue|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'delete-issue' %}">{{ perm.delete_issue|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'create-comment' %}">{{ perm.create_comment|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'modify-comment' %}">{{ perm.modify_comment|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'delete-comment' %}">{{ perm.delete_comment|boolean }}</a></td>
-      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'create-label' %}">{{ perm.create_label|boolean }}</a></td>
-      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'modify-label' %}">{{ perm.modify_label|boolean }}</a></td>
-      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'delete-label' %}">{{ perm.delete_label|boolean }}</a></td>
-      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'create-milestone' %}">{{ perm.create_milestone|boolean }}</a></td>
-      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'modify-milestone' %}">{{ perm.modify_milestone|boolean }}</a></td>
-      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'delete-milestone' %}">{{ perm.delete_milestone|boolean }}</a></td>
+      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'manage-tags' %}">{{ perm.manage_tags|boolean }}</a></td>
+      <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'delete-tags' %}">{{ perm.delete_tags|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'manage-project-permission' %}">{{ perm.manage_project_permission|boolean }}</a></td>
       <td class="text-center">
         <a href="{% url 'edit-project-permission' project.name perm.id %}"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
