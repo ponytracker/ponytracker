@@ -98,13 +98,42 @@ class TestPermissions(TestCase):
         self.assertTrue(project2 in projects)
 
 
-class TestViews(TestCase):
+class TestGlobalViews(TestCase):
 
     fixtures = ['test_perms']
 
     def test_404(self):
         response = self.client.get('/deliberately/broken')
         self.assertEqual(response.status_code, 404)
+
+    def test_profile_ano(self):
+        url = reverse('profile')
+        expected_url = reverse('login') + '?next=' + url
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+
+    def test_profile_user1(self):
+        self.client.login(username='user1', password='user1')
+        url = reverse('profile')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'group1')
+        self.assertContains(response, 'team1')
+        self.assertNotContains(response, 'team2')
+
+    def test_profile_user2(self):
+        self.client.login(username='user2', password='user2')
+        url = reverse('profile')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'group1')
+        self.assertNotContains(response, 'team1')
+        self.assertContains(response, 'team2')
+
+
+class TestProjectsViews(TestCase):
+
+    fixtures = ['test_perms']
 
     def test_home_as_anonymous(self):
         expected = Project.objects.filter(name='project-1')
@@ -222,6 +251,11 @@ class TestViews(TestCase):
         self.assertRedirects(response, expected_url)
         self.assertQuerysetEqual(Project.objects.all(),
             ['project-1', 'project-2'], lambda x: x.name, ordered=False)
+
+
+class TestIssuesViews(TestCase):
+
+    fixtures = ['test_perms']
 
     def test_list_issue_granted(self):
         self.client.login(username='user2', password='user2')
