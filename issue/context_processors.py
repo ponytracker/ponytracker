@@ -9,13 +9,6 @@ def projects(request):
         return {}
 
 
-class PermissionChecker:
-
-    def getattr(self, request, perm, obj=None):
-        if request.user.is_authenticated():
-            return request.user.has_perm(perm, obj)
-
-
 class PermWrapper:
 
     def __init__(self, user, project):
