@@ -304,3 +304,29 @@ class TestViews(TestCase):
         self.assertRedirects(response, expected_url)
         self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
                 ['Issue 1', 'Issue 2'], lambda x: x.title, ordered=False)
+
+    def test_delete_issue_granted(self):
+        self.client.login(username='user8', password='user8')
+        expected_url = reverse('list-issue', args=['project-2'])
+        url = reverse('delete-issue', args=['project-2', 2])
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
+            ['Issue 1'], lambda x: x.title, ordered=False)
+
+    def test_delete_issue_forbidden(self):
+        self.client.login(username='user5', password='user5')
+        url = reverse('delete-issue', args=['project-2', 2])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
+                ['Issue 1', 'Issue 2'], lambda x: x.title, ordered=False)
+
+    def test_delete_issue_forbidden_ano(self):
+        expected_url = reverse('login') + '?next=' \
+                + reverse('delete-issue', args=['project-2', 2])
+        url = reverse('delete-issue', args=['project-2', 2])
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
+                ['Issue 1', 'Issue 2'], lambda x: x.title, ordered=False)
