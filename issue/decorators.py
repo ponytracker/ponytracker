@@ -11,9 +11,7 @@ def project_perm_required(perm):
     def decorator(view):
         @wraps(view)
         def wrapper(request, *args, **kwargs):
-            if len(args) > 0 and isinstance(args[0], Project):
-                project = args[0]
-            elif 'project' in kwargs.keys():
+            if 'project' in kwargs.keys():
                 project = kwargs['project']
             else:
                 project = None
