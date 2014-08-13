@@ -15,7 +15,7 @@ class ProjectMiddleware:
 
     def process_view(self, request, view, view_args, view_kwargs):
 
-        if view.__module__.split('.')[0] != 'issue':
+        if view.__module__ != 'issue.views':
             return
 
         if not hasattr(request, 'user'):

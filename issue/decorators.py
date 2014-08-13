@@ -1,3 +1,5 @@
+from functools import wraps
+
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
@@ -7,6 +9,7 @@ from issue.models import Project
 def project_perm_required(perm):
 
     def decorator(view):
+        @wraps(view)
         def wrapper(request, *args, **kwargs):
             if len(args) > 0 and isinstance(args[0], Project):
                 project = args[0]
