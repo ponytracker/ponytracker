@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from django import VERSION
 
 from issue.models import *
 
@@ -122,11 +123,14 @@ class TestNoProject(TestCase):
         url = reverse('list-project')
         expected_url = reverse('add-project')
         response = self.client.get(url)
-        self.assertRedirects(response, expected_url,
-                # don't fetch redirect to don't loose message
-                fetch_redirect_response=False)
-        response = self.client.get(expected_url)
-        self.assertContains(response, 'Start by creating a project')
+        if VERSION >= (1, 7):
+            self.assertRedirects(response, expected_url,
+                    # don't fetch redirect to don't loose message
+                    fetch_redirect_response=False)
+            response = self.client.get(expected_url)
+            self.assertContains(response, 'Start by creating a project')
+        else:
+            self.assertRedirects(response, expected_url)
 
 
 class TestGlobalViews(TestCase):
