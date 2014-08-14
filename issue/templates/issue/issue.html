@@ -109,7 +109,11 @@
     {% if issue.labels.count %}
     {% for label in issue.labels.all %}
     <div class="row">
+      {% if perm.manage_tags %}
       <a href="{% url 'remove-label-from-issue' project.name issue.id label.id %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
+      {% else %}
+      <span style="display: inline-block; margin-left: 14px;"></span>
+      {% endif %}
       <a href="{% same_label label %}">{% labeled label %}</a>
     </div>
     {% endfor %}
@@ -140,8 +144,14 @@
     {% endif %}
     <br /><br />
     {% if issue.milestone %}
-    <a href="{% url 'remove-milestone-from-issue' project.name issue.id issue.milestone.name %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
-    <a href="{% same_milestone issue.milestone  %}"><b>{{ issue.milestone }}</b></a>
+    <div class="row">
+      {% if perm.manage_tags %}
+      <a href="{% url 'remove-milestone-from-issue' project.name issue.id issue.milestone.name %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
+      {% else %}
+      <span style="display: inline-block; margin-left: 14px;"></span>
+      {% endif %}
+      <a href="{% same_milestone issue.milestone  %}"><b>{{ issue.milestone }}</b></a>
+    </div>
     {% else %}
     No milestone
     {% endif %}
