@@ -19,7 +19,6 @@ import json
 from issue.templatetags.issue_tags import same_label, labeled
 
 
-@python_2_unicode_compatible
 class User(auth.models.User):
 
     class Meta:
