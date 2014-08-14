@@ -77,7 +77,7 @@
                 </ul>
               </li>
               {% else %}
-              <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span>&nbsp;Login</a></li>
+              <li><a href="{% url 'login' %}?prev={{ request.get_full_path }}"><span class="glyphicon glyphicon-log-in"></span>&nbsp;Login</a></li>
               {% endif %}
             </ul>
           </div><!--/.nav-collapse -->
