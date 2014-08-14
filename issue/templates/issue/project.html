@@ -4,9 +4,9 @@
 {% block page_title %}{{ project }}{% endblock %}
 
 {% block projectmenu %}
-{% if perm.manage_permission or perm.modify_project or perm.delete_project or perm.create_project %}
+{% if perm.manage_global_permission or perm.modify_project or perm.delete_project or perm.create_project %}
 <li role="presentation" class="divider"></li>
-{% if perm.manage_permission %}
+{% if perm.manage_global_permission %}
 <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-project-permission' project.name %}">Manage permissions</a></li>
 {% endif %}
 {% if perm.modify_project %}
@@ -25,7 +25,7 @@
 <li{% block issuetab %}{% endblock %}><a href="{% url 'list-issue' project.name %}">Issues</a></li>
 <li{% block labeltab %}{% endblock %}><a href="{% url 'list-label' project.name %}">Labels</a></li>
 <li{% block milestonetab %}{% endblock %}><a href="{% url 'list-milestone' project.name %}">Milestones</a></li>
-{% if perm.modify_project %}
+{% if perm.manage_project_permission %}
 <li{% block permissiontab %}{% endblock %}><a href="{% url 'list-project-permission' project.name %}">Permissions</a></li>
 {% endif %}
 {% endblock %}
