@@ -98,6 +98,36 @@ class TestPermissions(TestCase):
         self.assertTrue(project2 in projects)
 
 
+class TestNoProject(TestCase):
+
+    fixtures = ['test_no_project']
+
+    def test_ano(self):
+        url = reverse('list-project')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'There is not any public project')
+
+    def test_without_add_permission(self):
+        self.client.login(username='user1', password='user1')
+        url = reverse('list-project')
+        expected_url = reverse('add-project')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Sorry, you have no access to any project')
+
+    def test_with_add_permission(self):
+        self.client.login(username='user2', password='user2')
+        url = reverse('list-project')
+        expected_url = reverse('add-project')
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url,
+                # don't fetch redirect to don't loose message
+                fetch_redirect_response=False)
+        response = self.client.get(expected_url)
+        self.assertContains(response, 'Start by creating a project')
+
+
 class TestGlobalViews(TestCase):
 
     fixtures = ['test_perms']
@@ -278,13 +308,6 @@ class TestIssuesViews(TestCase):
         response = self.client.get(url)
         self.assertRedirects(response, expected_url)
 
-    def test_list_issue_forbidden_ano(self):
-        expected_url = reverse('login') + '?next=' \
-            + reverse('show-issue', args=['project-2', 1])
-        url = reverse('show-issue', args=['project-2', 1])
-        response = self.client.get(url)
-        self.assertRedirects(response, expected_url)
-
     def test_show_issue_granted(self):
         self.client.login(username='user2', password='user2')
         url = reverse('show-issue', args=['project-2', 1])
@@ -313,8 +336,9 @@ class TestIssuesViews(TestCase):
             'description': 'This is the third issue.',
         })
         self.assertRedirects(response, expected_url)
-        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
-            ['Issue 1', 'Issue 2', 'Issue 3'], lambda x: x.title, ordered=False)
+        issues = Issue.objects.filter(project__name='project-2')
+        self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2', 'Issue 3'],
+                lambda x: x.title, ordered=False)
 
     def test_add_issue_forbidden(self):
         self.client.login(username='user6', password='user6')
@@ -324,8 +348,9 @@ class TestIssuesViews(TestCase):
             'description': 'This is the third issue.',
         })
         self.assertEqual(response.status_code, 403)
-        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
-                ['Issue 1', 'Issue 2'], lambda x: x.title, ordered=False)
+        issues = Issue.objects.filter(project__name='project-2')
+        self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
+                lambda x: x.title, ordered=False)
 
     def test_add_issue_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' \
@@ -336,8 +361,9 @@ class TestIssuesViews(TestCase):
             'description': 'This is the third issue.',
         })
         self.assertRedirects(response, expected_url)
-        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
-                ['Issue 1', 'Issue 2'], lambda x: x.title, ordered=False)
+        issues = Issue.objects.filter(project__name='project-2')
+        self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
+                lambda x: x.title, ordered=False)
 
     def test_delete_issue_granted(self):
         self.client.login(username='user8', password='user8')
@@ -345,16 +371,18 @@ class TestIssuesViews(TestCase):
         url = reverse('delete-issue', args=['project-2', 2])
         response = self.client.get(url)
         self.assertRedirects(response, expected_url)
-        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
-            ['Issue 1'], lambda x: x.title, ordered=False)
+        issues = Issue.objects.filter(project__name='project-2')
+        self.assertQuerysetEqual(issues, ['Issue 1'],
+                lambda x: x.title, ordered=False)
 
     def test_delete_issue_forbidden(self):
         self.client.login(username='user5', password='user5')
         url = reverse('delete-issue', args=['project-2', 2])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
-        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
-                ['Issue 1', 'Issue 2'], lambda x: x.title, ordered=False)
+        issues = Issue.objects.filter(project__name='project-2')
+        self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
+                lambda x: x.title, ordered=False)
 
     def test_delete_issue_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' \
@@ -362,5 +390,96 @@ class TestIssuesViews(TestCase):
         url = reverse('delete-issue', args=['project-2', 2])
         response = self.client.get(url)
         self.assertRedirects(response, expected_url)
-        self.assertQuerysetEqual(Issue.objects.filter(project__name='project-2'),
-                ['Issue 1', 'Issue 2'], lambda x: x.title, ordered=False)
+        issues = Issue.objects.filter(project__name='project-2')
+        self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
+                lambda x: x.title, ordered=False)
+
+    def test_close_issue_granted(self):
+        self.client.login(username='user6', password='user6')
+        expected_url = reverse('list-issue', args=['project-2'])
+        url = reverse('close-issue', args=['project-2', 1])
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        self.assertEqual(issue.closed, True)
+
+    def test_close_issue_forbidden(self):
+        self.client.login(username='user5', password='user5')
+        url = reverse('close-issue', args=['project-2', 1])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        self.assertEqual(issue.closed, False)
+
+    def test_close_issue_forbidden_ano(self):
+        expected_url = reverse('login') + '?next=' \
+                + reverse('close-issue', args=['project-2', 1])
+        url = reverse('close-issue', args=['project-2', 1])
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        self.assertEqual(issue.closed, False)
+
+    def test_reopen_issue_granted(self):
+        self.client.login(username='user6', password='user6')
+        expected_url = reverse('show-issue', args=['project-2', 2])
+        url = reverse('reopen-issue', args=['project-2', 2])
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=2)
+        self.assertEqual(issue.closed, False)
+
+    def test_reopen_issue_forbidden(self):
+        self.client.login(username='user5', password='user5')
+        url = reverse('reopen-issue', args=['project-2', 2])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        issue = Issue.objects.get(project__name='project-2', id=2)
+        self.assertEqual(issue.closed, True)
+
+    def test_reopen_issue_forbidden_ano(self):
+        expected_url = reverse('login') + '?next=' \
+                + reverse('reopen-issue', args=['project-2', 2])
+        url = reverse('reopen-issue', args=['project-2', 2])
+        response = self.client.get(url)
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=2)
+        self.assertEqual(issue.closed, True)
+
+    def test_modify_issue_granted(self):
+        self.client.login(username='user7', password='user7')
+        expected_url = reverse('show-issue', args=['project-2', 1])
+        url = reverse('edit-issue', args=['project-2', 1])
+        response = self.client.post(url, {
+            'title': '*THE* Issue 1',
+            'description': 'This is *THE* first issue.',
+        })
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        self.assertEqual(issue.title, "*THE* Issue 1")
+        self.assertEqual(issue.description, "This is *THE* first issue.")
+
+    def test_modify_issue_forbidden(self):
+        self.client.login(username='user5', password='user5')
+        url = reverse('edit-issue', args=['project-2', 1])
+        response = self.client.post(url, {
+            'title': '*THE* Issue 1',
+            'description': 'This is *THE* first issue.',
+        })
+        self.assertEqual(response.status_code, 403)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        self.assertEqual(issue.title, "Issue 1")
+        self.assertEqual(issue.description, "This is the first issue.")
+
+    def test_modify_issue_forbidden_ano(self):
+        expected_url = reverse('login') + '?next=' \
+                + reverse('edit-issue', args=['project-2', 1])
+        url = reverse('edit-issue', args=['project-2', 1])
+        response = self.client.post(url, {
+            'title': '*THE* Issue 1',
+            'description': 'This is *THE* first issue.',
+        })
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        self.assertEqual(issue.title, "Issue 1")
+        self.assertEqual(issue.description, "This is the first issue.")
