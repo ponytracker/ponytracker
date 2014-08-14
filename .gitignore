@@ -1,10 +1,11 @@
 *.pyc
 *.swp
 *.sqlite3
-env/
+/env/
 *.rej
 *.orig
 *.bak
 *.patch
 .coverage
-ponytracker/local_settings.py
+/ponytracker/local_settings.py
+/htmlcov/
