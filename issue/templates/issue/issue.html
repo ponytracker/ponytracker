@@ -85,6 +85,7 @@
 
   <div class="col-md-2">
     <b>Labels</b>
+    {% if perm.manage_tags %}
     <div class="pull-right">
       <div class="dropdown">
         <button class="btn btn-default btn-xs" type="button" id="labels-menu" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></button>
@@ -103,6 +104,7 @@
         </ul>
       </div>
     </div>
+    {% endif %}
     <br /><br />
     {% if issue.labels.count %}
     {% for label in issue.labels.all %}
@@ -116,6 +118,7 @@
     {% endif %}
     <hr>
     <b>Milestone</b>
+    {% if perm.manage_tags %}
     <div class="pull-right">
       <div class="dropdown">
         <button class="btn btn-default btn-xs" type="button" id="labels-menu" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></button>
@@ -134,6 +137,7 @@
         </ul>
       </div>
     </div>
+    {% endif %}
     <br /><br />
     {% if issue.milestone %}
     <a href="{% url 'remove-milestone-from-issue' project.name issue.id issue.milestone.name %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
