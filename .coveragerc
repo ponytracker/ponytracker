@@ -1,0 +1,8 @@
+[run]
+branch = True
+source = issue
+omit = issue/migrations/*.py
+
+[report]
+exclude_lines =
+  raise ImproperlyConfigured

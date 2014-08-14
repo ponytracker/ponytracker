@@ -5,5 +5,5 @@
 
 . env/bin/activate
 
-coverage run --source=issue --omit=issue/migrations/*.py manage.py test
+coverage run manage.py test
 coverage report
