@@ -34,11 +34,13 @@
               </div>
             </div>
           </div>
+          {% if perm.create_issue %}
           <div class="form-group">
             <div class="input-group">
               <a href="{% url 'add-issue' project.name %}"><button class="btn btn-success" type="button">New issue</button></a>
             </div>
           </div>
+          {% endif %}
         </form>
       </div>
     </h1>
