@@ -114,7 +114,8 @@ class TestNoProject(TestCase):
         expected_url = reverse('add-project')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Sorry, you have no access to any project')
+        self.assertContains(response,
+                'Sorry, you have no access to any project')
 
     def test_with_add_permission(self):
         self.client.login(username='user2', password='user2')
@@ -354,7 +355,7 @@ class TestIssuesViews(TestCase):
 
     def test_add_issue_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' \
-                + reverse('add-issue', args=['project-2'])
+            + reverse('add-issue', args=['project-2'])
         url = reverse('add-issue', args=['project-2'])
         response = self.client.post(url, {
             'title': 'Issue 3',
@@ -386,7 +387,7 @@ class TestIssuesViews(TestCase):
 
     def test_delete_issue_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' \
-                + reverse('delete-issue', args=['project-2', 2])
+            + reverse('delete-issue', args=['project-2', 2])
         url = reverse('delete-issue', args=['project-2', 2])
         response = self.client.get(url)
         self.assertRedirects(response, expected_url)
@@ -413,7 +414,7 @@ class TestIssuesViews(TestCase):
 
     def test_close_issue_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' \
-                + reverse('close-issue', args=['project-2', 1])
+            + reverse('close-issue', args=['project-2', 1])
         url = reverse('close-issue', args=['project-2', 1])
         response = self.client.get(url)
         self.assertRedirects(response, expected_url)
@@ -439,7 +440,7 @@ class TestIssuesViews(TestCase):
 
     def test_reopen_issue_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' \
-                + reverse('reopen-issue', args=['project-2', 2])
+            + reverse('reopen-issue', args=['project-2', 2])
         url = reverse('reopen-issue', args=['project-2', 2])
         response = self.client.get(url)
         self.assertRedirects(response, expected_url)
@@ -473,7 +474,7 @@ class TestIssuesViews(TestCase):
 
     def test_modify_issue_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' \
-                + reverse('edit-issue', args=['project-2', 1])
+            + reverse('edit-issue', args=['project-2', 1])
         url = reverse('edit-issue', args=['project-2', 1])
         response = self.client.post(url, {
             'title': '*THE* Issue 1',
