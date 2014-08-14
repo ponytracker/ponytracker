@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseForbidden
 
@@ -352,13 +352,13 @@ def issue_edit(request, project, issue=None):
 
     if issue:
         if not request.user.has_perm('modify_issue', project):
-            raise PermissionDenied
+            return HttpResponseForbidden()
         issue = get_object_or_404(Issue, project=project.name, id=issue)
         init_data = {'title': issue.title,
                      'description': issue.description}
     else:
         if not request.user.has_perm('create_issue', project):
-            raise PermissionDenied
+            return HttpResponseForbidden()
         issue = None
         init_data = None
 
