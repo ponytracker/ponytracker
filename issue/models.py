@@ -19,6 +19,7 @@ import json
 from issue.templatetags.issue_tags import same_label, labeled
 
 
+@python_2_unicode_compatible
 class User(auth.models.User):
 
     class Meta:
@@ -30,6 +31,7 @@ class User(auth.models.User):
         return Team.objects.filter(query)
 
 
+@python_2_unicode_compatible
 class Project(models.Model):
 
     url_name_validator = RegexValidator(regex='^[a-z0-9_-]+$',
@@ -62,6 +64,7 @@ class Project(models.Model):
         return self.display_name
 
 
+@python_2_unicode_compatible
 class Label(models.Model):
 
     project = models.ForeignKey(Project, related_name='labels')
@@ -88,6 +91,7 @@ class Label(models.Model):
         return self.name
 
 
+@python_2_unicode_compatible
 class Milestone(models.Model):
 
     name_validator = RegexValidator(regex='^[a-z0-9_.-]+$',
@@ -127,6 +131,7 @@ class Milestone(models.Model):
         return self.name
 
 
+@python_2_unicode_compatible
 class Issue(models.Model):
 
     global_id = models.AutoField(primary_key=True)
@@ -359,6 +364,7 @@ class Settings(models.Model):
         verbose_name_plural = 'Settings'
 
 
+@python_2_unicode_compatible
 class Team(models.Model):
 
     name = models.CharField(max_length=128, unique=True)
@@ -372,6 +378,7 @@ class Team(models.Model):
         return self.name
 
 
+@python_2_unicode_compatible
 class PermissionModel(models.Model):
 
     GRANTEE_USER = 0
@@ -412,9 +419,10 @@ class PermissionModel(models.Model):
         return self.grantee_name
 
     def __str__(self):
-        return self.grantee_name
+        return self.grantee_name + "'s permissions"
 
 
+@python_2_unicode_compatible
 class GlobalPermission(PermissionModel):
 
     create_project = models.BooleanField(default=True)
@@ -430,6 +438,7 @@ class GlobalPermission(PermissionModel):
         return self.grantee_name + "'s global permissions"
 
 
+@python_2_unicode_compatible
 class ProjectPermission(PermissionModel):
 
     project = models.ForeignKey(Project, editable=False,
