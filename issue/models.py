@@ -16,7 +16,7 @@ from colorful.fields import RGBColorField
 
 import json
 
-from issue.templatetags.issue_tags import same_label, labeled
+from issue.templatetags.issue_tags import same_milestone, same_label, labeled
 
 
 class User(auth.models.User):
@@ -337,13 +337,29 @@ class Event(models.Model):
                 action = 'removed'
             description = '%s the <a href="%s">%s</a> label' \
                           % (action, same_label(label), labeled(label))
-        elif self.code == Event.SET_MILESTONE:
-            description = "added this to the {milestone} milestone"
+        elif self.code == Event.SET_MILESTONE or self.code == Event.UNSET_MILESTONE:
+            milestone = Milestone(name=args['milestone'],
+                    project=self.issue.project)
+            if self.code == Event.SET_MILESTONE:
+                action = 'added'
+            else:
+                action = 'removed'
+            description = '%s this to the <span class="glyphicon ' \
+                          'glyphicon-road"></span> <a href="%s">' \
+                          '<b>{milestone}</b></a> milestone' \
+                          % (action, same_milestone(milestone))
         elif self.code == Event.CHANGE_MILESTONE:
-            description = "moved this from the {old_milestone} milestone " \
-                          "to the {new_milestone} milestone"
-        elif self.code == Event.UNSET_MILESTONE:
-            description = "deleted this from the {milestone} milestone"
+            old_ms = Milestone(name=args['old_milestone'],
+                    project=self.issue.project)
+            new_ms = Milestone(name=args['new_milestone'],
+                    project=self.issue.project)
+            description = 'moved this from the <span class="glyphicon ' \
+                          'glyphicon-road"></span> <a href="%s">' \
+                          '<b>{old_milestone}</b></a> milestone ' \
+                          'to the <span class="glyphicon ' \
+                          'glyphicon-road"></span> <a href="%s">' \
+                          '<b>{new_milestone}</b></a> milestone' \
+                          % (same_milestone(old_ms), same_milestone(new_ms))
         elif self.code == Event.REFERENCE:
             description = "referenced this issue"
         else:
