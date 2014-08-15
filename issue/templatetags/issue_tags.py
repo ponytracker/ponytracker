@@ -15,7 +15,7 @@ def label_style(label):
     else:
         fg = '#000'
 
-    style = "background-color: {bg}; color: {fg};"
+    style = "background-color: {bg}; color: {fg}; vertical-align: middle;"
 
     return style.format(bg=label.color, fg=fg)
 
@@ -23,8 +23,7 @@ def label_style(label):
 @register.simple_tag
 def labeled(label):
 
-    html = '<span class="label" style="{style} ' \
-           'vertical-align: middle;">{name}</span>'
+    html = '<span class="label" style="{style}">{name}</span>'
 
     return mark_safe(html.format(style=label_style(label),
         name=escape(label.name)))

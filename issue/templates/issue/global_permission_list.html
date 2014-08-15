@@ -12,7 +12,7 @@
     <h1>
       Global permissions
       <div class="pull-right">
-        <a href="{% url 'add-global-permission' %}"><button class="btn btn-success">Add new permission</button></a>
+        <a href="{% url 'add-global-permission' %}" class="btn btn-success">Add new permission</a>
       </div>
     </h1>
   </div>
@@ -46,8 +46,8 @@
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'manage-team' %}">{{ perm.manage_team|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'manage-global-permission' %}">{{ perm.manage_global_permission|boolean }}</a></td>
       <td class="text-center">
-        <a href="{% url 'edit-global-permission' perm.id %}"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
-        <a href="{% url 'delete-global-permission' perm.id %}"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
+        <a href="{% url 'edit-global-permission' perm.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+        <a href="{% url 'delete-global-permission' perm.id %}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</a>
       </td>
     </tr>
     {% endfor %}

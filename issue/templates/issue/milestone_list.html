@@ -10,11 +10,11 @@
     <h1>
       Milestone
       <div class="pull-right">
-        <a href="{% url 'list-milestone' project.name %}?show=open"><button class="btn btn-default btn-sm{% if show == 'open' %} active{% endif %}">Open</button></a>
-        <a href="{% url 'list-milestone' project.name %}?show=close"><button class="btn btn-default btn-sm{% if show == 'close' %} active{% endif %}">Close</button></a>
-        <a href="{% url 'list-milestone' project.name %}?show=all"><button class="btn btn-default btn-sm{% if show == 'all' %} active{% endif %}">All</button></a>
+        <a href="{% url 'list-milestone' project.name %}?show=open" class="btn btn-default btn-sm{% if show == 'open' %} active{% endif %}">Open</a>
+        <a href="{% url 'list-milestone' project.name %}?show=close" class="btn btn-default btn-sm{% if show == 'close' %} active{% endif %}">Close</a>
+        <a href="{% url 'list-milestone' project.name %}?show=all" class="btn btn-default btn-sm{% if show == 'all' %} active{% endif %}">All</a>
         {% if perm.manage_tags %}
-        <a href="{% url 'add-milestone' project.name %}"><button class="btn btn-success">New milestone</button></a>
+        <a href="{% url 'add-milestone' project.name %}" class="btn btn-success">New milestone</a>
         {% endif %}
       </div>
     </h1>
@@ -40,7 +40,7 @@
           {% endif %}
         </div>
         <b style="font-size: 200%;">
-          <a href="{% url 'list-issue' project.name %}?q=is:open%20milestone:{{ milestone.name }}">{{ milestone }}</a>
+          <span class="glyphicon glyphicon-road"></span> <a href="{% url 'list-issue' project.name %}?q=is:open%20milestone:{{ milestone.name }}">{{ milestone }}</a>
         </b>
         &#160;
         <small>

@@ -14,7 +14,7 @@
     <h1>
       Permissions of '{{ project }}' project
       <div class="pull-right">
-        <a href="{% url 'add-project-permission' project.name %}"><button class="btn btn-success">Add new permission</button></a>
+        <a href="{% url 'add-project-permission' project.name %}" class="btn btn-success">Add new permission</a>
       </div>
     </h1>
   </div>
@@ -57,8 +57,8 @@
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'delete-tags' %}">{{ perm.delete_tags|boolean }}</a></td>
       <td class="text-center"><a href="{% url 'toggle-project-permission' project.name perm.id 'manage-project-permission' %}">{{ perm.manage_project_permission|boolean }}</a></td>
       <td class="text-center">
-        <a href="{% url 'edit-project-permission' project.name perm.id %}"><button class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
-        <a href="{% url 'delete-project-permission' project.name perm.id %}"><button class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
+        <a href="{% url 'edit-project-permission' project.name perm.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+        <a href="{% url 'delete-project-permission' project.name perm.id %}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</a>
       </td>
     </tr>
     {% endfor %}

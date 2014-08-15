@@ -35,11 +35,11 @@
         <a href="{% same_author event.author %}"><b>{{ event.author}}</b></a> {{ event }} {{ event.date|naturaltime }}
         {% if event.code == event.DESCRIBE %}
         <div class="pull-right">
-          <a href="{% url 'edit-issue' project.name issue.id %}"><button class="btn btn-primary btn-xs">Edit</button></a>
+          <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-primary btn-xs">Edit</a>
         </div>
         {% elif event.code == event.COMMENT %}
         <div class="pull-right">
-          <a href="{% url 'edit-comment' project.name issue.id event.id %}"><button class="btn btn-primary btn-xs">Edit</button></a>
+          <a href="{% url 'edit-comment' project.name issue.id event.id %}" class="btn btn-primary btn-xs">Edit</a>
         </div>
         {% endif %}
       </div>
@@ -60,23 +60,23 @@
     <div class="row">
 
       <div class="col-md-3">
-      <a href="{% url 'comment-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Add a comment</button></a>
+      <a href="{% url 'comment-issue' project.name issue.id %}" class="btn btn-default btn-block">Add a comment</a>
       </div>
 
       <div class="col-md-3">
-      <a href="{% url 'edit-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Edit this issue</button></a>
+      <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-default btn-block">Edit this issue</a>
       </div>
 
       <div class="col-md-3">
       {% if issue.closed %}
-      <a href="{% url 'reopen-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Reopen this issue</button></a>
+      <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default btn-block">Reopen this issue</a>
       {% else %}
-      <a href="{% url 'close-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Close this issue</button></a>
+      <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default btn-block">Close this issue</a>
       {% endif %}
       </div>
 
       <div class="col-md-3">
-      <a href="{% url 'delete-issue' project.name issue.id %}"><button class="btn btn-default btn-block">Delete this issue</button></a>
+      <a href="{% url 'delete-issue' project.name issue.id %}" class="btn btn-default btn-block">Delete this issue</a>
       </div>
 
     </div>

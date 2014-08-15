@@ -21,9 +21,9 @@
       {% endif %}
       <div class="pull-right">
         {% if issue %}
-        <a href="{% url 'show-issue' project.name issue.id %}"><button class="btn btn-warning">Go back to issue</button></a>
+        <a href="{% url 'show-issue' project.name issue.id %}" class="btn btn-warning">Go back to issue</a>
         {% else %}
-        <a href="{% url 'list-issue' project.name %}"><button class="btn btn-warning">Go back to issues</button></a>
+        <a href="{% url 'list-issue' project.name %}" class="btn btn-warning">Go back to issues</a>
         {% endif %}
       </div>
     </h1>

@@ -18,11 +18,11 @@
             <div class="input-group">
               <div class="dropdown">
                 {% if is_all_query %}
-                <a href="{% url 'list-issue' project.name %}"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-remove"> Reset filter</span></button></a>
+                <a href="{% url 'list-issue' project.name %}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-remove"> Reset filter</span></a>
                 {% endif %}
-                <a href="{% url 'list-issue' project.name %}?q=is:open{% if is_all_query %} {{ is_all_query }}{% endif %}"><button type="button" class="btn btn-default btn-sm{{ is_open }}">Open</button></a>
-                <a href="{% url 'list-issue' project.name %}?q=is:close{% if is_all_query %} {{ is_all_query }}{% endif %}"><button type="button" class="btn btn-default btn-sm{{ is_close }}">Close</button></a>
-                <a href="{% url 'list-issue' project.name %}?q={% if is_all_query %}{{ is_all_query }}{% else %}*{% endif %}"><button type="button" class="btn btn-default btn-sm{{ is_all }}">Both</button></a>
+                <a href="{% url 'list-issue' project.name %}?q=is:open{% if is_all_query %} {{ is_all_query }}{% endif %}" class="btn btn-default btn-sm{{ is_open }}">Open</a>
+                <a href="{% url 'list-issue' project.name %}?q=is:close{% if is_all_query %} {{ is_all_query }}{% endif %}" class="btn btn-default btn-sm{{ is_close }}">Close</a>
+                <a href="{% url 'list-issue' project.name %}?q={% if is_all_query %}{{ is_all_query }}{% else %}*{% endif %}" class="btn btn-default btn-sm{{ is_all }}">Both</a>
               </div>
             </div>
           </div>
@@ -37,7 +37,7 @@
           {% if perm.create_issue %}
           <div class="form-group">
             <div class="input-group">
-              <a href="{% url 'add-issue' project.name %}"><button class="btn btn-success" type="button">New issue</button></a>
+              <a href="{% url 'add-issue' project.name %}" class="btn btn-success">New issue</a>
             </div>
           </div>
           {% endif %}
@@ -59,7 +59,7 @@
         {% endif %}
         <a href="{% url 'show-issue' project.name issue.id %}"><b>{{ issue }}</b></a>
         {% for label in issue.labels.all %}
-        <a href="{% same_label label %}">{% labeled label %}</a>
+        <a href="{% same_label label %}" class="label" style="{% label_style label %}">{{ label }}</a>
         {% endfor %}
         <br />
         <small>#{{ issue.id }} opened by <a href="{% same_author issue.author %}"><b>{{ issue.author.username }}</b></a> {{ issue.opened_at|naturaltime }}</small>
