@@ -767,3 +767,127 @@ def milestone_delete(request, project, name):
     messages.success(request, "Label deleted successfully.")
 
     return redirect('list-milestone', project.name)
+
+
+def team_list(request):
+
+    teams = Team.objects.all()
+
+    c = {
+        'teams': teams,
+    }
+
+    return render(request, 'issue/team_list.html', c)
+
+
+def team(request, team):
+
+    team = get_object_or_404(Team, pk=team)
+
+    c = {
+        'team': team,
+    }
+
+    return render(request, 'issue/team.html', c)
+
+
+@project_perm_required('manage_team')
+def team_edit(request, team=None):
+
+    if team:
+        team = get_object_or_404(Team, pk=team)
+
+    form = TeamForm(request.POST or None, instance=team)
+
+    if request.method == 'POST' and form.is_valid():
+
+        formteam = form.save()
+        if team:
+            messages.success(request, 'Team modified successfully.')
+        else:
+            messages.success(request, 'Team added successfully.')
+
+        return redirect('show-team', formteam.pk)
+
+    c = {
+        'team': team,
+        'form': form,
+    }
+
+    return render(request, 'issue/team_edit.html', c)
+
+
+@project_perm_required('manage_team')
+def team_add_user(request, team, user):
+
+    team = get_object_or_404(Team, pk=team)
+    user = get_object_or_404(User, pk=user)
+
+    if user in team.users.all():
+        messages.warning(request, 'This user already belong to this team.')
+    else:
+        team.users.add(user)
+        team.save()
+        messages.success(request, 'User added to team successfully.')
+
+    return redirect('show-team', team.pk)
+
+
+@project_perm_required('manage_team')
+def team_remove_user(request, team, user):
+
+    team = get_object_or_404(Team, pk=team)
+    user = get_object_or_404(User, pk=user)
+
+    if user in team.users.all():
+        team.users.remove(user)
+        team.save()
+        messages.success(request, 'User removed from team successfully.')
+    else:
+        messages.error(request, 'This user does not belong to this team.')
+
+    return redirect('show-team', team.pk)
+
+
+@project_perm_required('manage_team')
+def team_add_group(request, team, group):
+
+    team = get_object_or_404(Team, pk=team)
+    group = get_object_or_404(Group, pk=group)
+
+    if group in team.groups.all():
+        messages.warning(request, 'This group already belong to this team.')
+    else:
+        team.groups.add(group)
+        team.save()
+        messages.success(request, 'Group added to team successfully.')
+
+    return redirect('show-team', team.pk)
+
+
+@project_perm_required('manage_team')
+def team_remove_group(request, team, group):
+
+    team = get_object_or_404(Team, pk=team)
+    group = get_object_or_404(Group, pk=group)
+
+    if group in team.groups.all():
+        team.groups.remove(group)
+        team.save()
+        messages.success(request, 'Group removed from team successfully.')
+    else:
+        messages.error(request, 'This group does not belong to this team.')
+
+    return redirect('show-team', team.pk)
+
+
+@project_perm_required('manage_team')
+@confirmation_required('Are you sure to delete this team?', prev='list-team')
+def team_delete(request, team):
+
+    team = get_object_or_404(Team, pk=team)
+
+    team.delete()
+    messages.success(request, 'Team deleted successfully.')
+
+    return redirect('list-team')

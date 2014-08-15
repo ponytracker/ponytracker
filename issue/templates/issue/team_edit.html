@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load bootstrap_tags %}
+
+{% block content %}
+
+<div class="panel panel-default">
+
+  <div class="panel-heading">
+    <h1>
+      {% if team %}
+      Edit team
+      {% else %}
+      Add team
+      {% endif %}
+      <div class="pull-right">
+        {% if team %}
+        <a href="{% url 'show-team' team.pk %}" class="btn btn-warning">Go back to team</a>
+        {% else %}
+        <a href="{% url 'list-team' %}" class="btn btn-warning">Go back to teams</a>
+        {% endif %}
+      </div>
+    </h1>
+  </div>
+
+  <div class="panel-body">
+    <div class="col-md-offset-3 col-md-6">
+      <form action="" method="post" role="form">
+        {{ form|as_bootstrap }}
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

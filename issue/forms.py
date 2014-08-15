@@ -13,6 +13,8 @@ EditProjectForm = modelform_factory(Project,
         fields=['display_name', 'description', 'public'])
 LabelForm = modelform_factory(Label,
         fields=['name', 'color', 'inverted'])
+TeamForm = modelform_factory(Team,
+        fields=['name', 'users', 'groups'])
 
 
 class MilestoneForm(forms.ModelForm):
