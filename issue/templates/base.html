@@ -32,7 +32,7 @@
     <div class="container">
 
       <!-- Static navbar -->
-      <div class="navbar navbar-default" role="navigation">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container-fluid">
           <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -88,20 +88,16 @@
 
       <div class="row">
 
-        <div class="col-md-offset-1 col-md-10">
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissable">
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+          {{ message }}
+          </div>
+          {% endfor %}
+        {% endif %}
 
-          {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissable">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            {{ message }}
-            </div>
-            {% endfor %}
-          {% endif %}
-
-          {% block content %}{% endblock %}
-
-        </div>
+        {% block content %}{% endblock %}
 
       </div>
 
