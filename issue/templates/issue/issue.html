@@ -35,11 +35,21 @@
         <a href="{% same_author event.author %}"><b>{{ event.author}}</b></a> {{ event }} {{ event.date|naturaltime }}
         {% if event.code == event.DESCRIBE %}
         <div class="pull-right">
-          <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-primary btn-xs">Edit</a>
+          {% if perm.delete_issue %}
+          <a href="{% url 'delete-issue' project.name issue.id %}?prev={{ request.path }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
+          {% endif %}
+          {% if perm.modify_issue %}
+          <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+          {% endif %}
         </div>
         {% elif event.code == event.COMMENT %}
         <div class="pull-right">
-          <a href="{% url 'edit-comment' project.name issue.id event.id %}" class="btn btn-primary btn-xs">Edit</a>
+          {% if perm.delete_comment %}
+          <a href="{% url 'delete-comment' project.name issue.id event.id %}?prev={{ request.path }}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
+          {% endif %}
+          {% if perm.modify_comment %}
+          <a href="{% url 'edit-comment' project.name issue.id event.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+          {% endif %}
         </div>
         {% endif %}
       </div>
@@ -64,19 +74,19 @@
       </div>
 
       <div class="col-md-3">
-      <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-default btn-block">Edit this issue</a>
+        <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-edit"></span> Edit this issue</a>
       </div>
 
       <div class="col-md-3">
       {% if issue.closed %}
-      <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default btn-block">Reopen this issue</a>
+      <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-info btn-block"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
       {% else %}
-      <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default btn-block">Close this issue</a>
+      <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-success btn-block"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
       {% endif %}
       </div>
 
       <div class="col-md-3">
-      <a href="{% url 'delete-issue' project.name issue.id %}" class="btn btn-default btn-block">Delete this issue</a>
+        <a href="{% url 'delete-issue' project.name issue.id %}" class="btn btn-danger btn-block"><span class="glyphicon glyphicon-trash"></span> Delete this issue</a>
       </div>
 
     </div>

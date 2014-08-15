@@ -436,16 +436,20 @@ def issue(request, project, issue):
     return render(request, 'issue/issue.html', c)
 
 
-@project_perm_required('create_comment')
-def issue_comment(request, project, issue, comment=None):
+@login_required
+def issue_edit_comment(request, project, issue, comment=None):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
     if comment:
+        if not request.user.has_perm('modify_comment', project):
+            return HttpResponseForbidden()
         event = get_object_or_404(Event, code=Event.COMMENT,
                 issue=issue, id=comment)
         init_data = {'comment': event.additionnal_section}
     else:
+        if not request.user.has_perm('create_comment', project):
+            return HttpResponseForbidden()
         event = None
         init_data = None
 
@@ -483,6 +487,19 @@ def issue_comment(request, project, issue, comment=None):
     return render(request, 'issue/issue_comment.html', c)
 
 
+@project_perm_required('delete_comment')
+@confirmation_required('Are you sure to delete this comment?')
+def issue_delete_comment(request, project, issue, comment):
+
+    comment = get_object_or_404(Event,
+            issue__project=project, issue__pk=issue, id=comment)
+
+    comment.delete()
+    message.success(request, 'Issue deleted successfully.')
+
+    return redirect('show-issue', project.name, issue)
+
+
 @project_perm_required('manage_issue')
 def issue_close(request, project, issue):
 
@@ -514,6 +531,7 @@ def issue_reopen(request, project, issue):
 
 
 @project_perm_required('delete_issue')
+@confirmation_required('Are you sure to delete this issue?')
 def issue_delete(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
