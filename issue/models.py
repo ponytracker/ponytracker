@@ -441,6 +441,8 @@ class PermissionModel(models.Model):
 @python_2_unicode_compatible
 class GlobalPermission(PermissionModel):
 
+    # Global permissions
+
     create_project = models.BooleanField(default=True)
     modify_project = models.BooleanField(default=False)
     delete_project = models.BooleanField(default=False)
@@ -449,6 +451,22 @@ class GlobalPermission(PermissionModel):
     manage_team = models.BooleanField(default=False)
 
     manage_global_permission = models.BooleanField(default=False)
+
+    # Project permissions, given on ALL projects
+
+    manage_project_permission = models.BooleanField(default=False)
+
+    create_issue = models.BooleanField(default=True)
+    modify_issue = models.BooleanField(default=False)
+    manage_issue = models.BooleanField(default=False)
+    delete_issue = models.BooleanField(default=False)
+
+    create_comment = models.BooleanField(default=True)
+    modify_comment = models.BooleanField(default=False)
+    delete_comment = models.BooleanField(default=False)
+
+    manage_tags = models.BooleanField(default=False)
+    delete_tags = models.BooleanField(default=False)
 
     def __str__(self):
         return self.grantee_name + "'s global permissions"
