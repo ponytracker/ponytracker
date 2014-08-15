@@ -6,7 +6,7 @@ from django.http import Http404, HttpResponseForbidden
 
 from issue.models import *
 from issue.forms import *
-from issue.decorators import project_perm_required
+from issue.decorators import *
 
 import shlex
 
@@ -233,6 +233,7 @@ def project_edit(request, project):
 
 
 @project_perm_required('delete_project')
+@confirmation_required('Are you sure to delete this project?')
 def project_delete(request, project):
 
     project.delete()
