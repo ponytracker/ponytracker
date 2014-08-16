@@ -495,7 +495,7 @@ def issue_delete_comment(request, project, issue, comment):
             issue__project=project, issue__pk=issue, id=comment)
 
     comment.delete()
-    message.success(request, 'Issue deleted successfully.')
+    messages.success(request, 'Comment deleted successfully.')
 
     return redirect('show-issue', project.name, issue)
 
