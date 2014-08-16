@@ -652,7 +652,6 @@ def label_edit(request, project, id=None):
 
 
 @project_perm_required('delete_tags')
-@confirmation_required('Are you sure to delete this label?')
 def label_delete(request, project, id):
 
     label = get_object_or_404(Label, project=project, id=id)
@@ -773,7 +772,6 @@ def milestone_reopen(request, project, name):
 
 
 @project_perm_required('delete_tags')
-@confirmation_required('Are you sure to delete this milestone?')
 def milestone_delete(request, project, name):
 
     milestone = get_object_or_404(Milestone, project=project, name=name)

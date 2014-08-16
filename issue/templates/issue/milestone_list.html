@@ -36,7 +36,7 @@
           <a href="{% url 'edit-milestone' project.name milestone.name %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
           {% endif %}
           {% if perm.delete_tags %}
-          <a href="{% url 'delete-milestone' project.name milestone.name %}?prev={{ request.path }}"><button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
+          <a href="{% url 'delete-milestone' project.name milestone.name %}"><button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</button></a>
           {% endif %}
         </div>
         <b style="font-size: 200%;">
