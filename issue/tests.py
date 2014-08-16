@@ -375,13 +375,6 @@ class TestIssuesViews(TestCase):
         expected_url = reverse('list-issue', args=['project-2'])
         url = reverse('delete-issue', args=['project-2', 2])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Are you sure')
-        issues = Issue.objects.filter(project__name='project-2')
-        self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
-                lambda x: x.title, ordered=False)
-        url = reverse('delete-issue', args=['project-2', 2]) + '?force=1'
-        response = self.client.get(url)
         self.assertRedirects(response, expected_url)
         issues = Issue.objects.filter(project__name='project-2')
         self.assertQuerysetEqual(issues, ['Issue 1'],
