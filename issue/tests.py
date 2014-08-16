@@ -261,11 +261,20 @@ class TestProjectsViews(TestCase):
         self.assertQuerysetEqual(Project.objects.all(),
             ['project-1', 'project-2'], lambda x: x.name, ordered=False)
 
-    def test_delete_project_granted(self):
+    def test_delete_project_get(self):
         self.client.login(username='user1', password='user1')
         expected_url = reverse('list-project')
         url = reverse('delete-project', args=['project-1'])
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+        self.assertQuerysetEqual(Project.objects.all(),
+            ['project-1', 'project-2'], lambda x: x.name, ordered=False)
+
+    def test_delete_project_granted(self):
+        self.client.login(username='user1', password='user1')
+        expected_url = reverse('list-project')
+        url = reverse('delete-project', args=['project-1'])
+        response = self.client.post(url)
         self.assertRedirects(response, expected_url)
         self.assertQuerysetEqual(Project.objects.all(),
             ['project-2'], lambda x: x.name, ordered=False)
@@ -273,7 +282,7 @@ class TestProjectsViews(TestCase):
     def test_delete_project_forbidden(self):
         self.client.login(username='user2', password='user2')
         url = reverse('delete-project', args=['project-1'])
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
         self.assertQuerysetEqual(Project.objects.all(),
             ['project-1', 'project-2'], lambda x: x.name, ordered=False)
@@ -282,7 +291,7 @@ class TestProjectsViews(TestCase):
         expected_url = reverse('login') + '?next=' \
             + reverse('delete-project', args=['project-1'])
         url = reverse('delete-project', args=['project-1'])
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertRedirects(response, expected_url)
         self.assertQuerysetEqual(Project.objects.all(),
             ['project-1', 'project-2'], lambda x: x.name, ordered=False)
@@ -370,11 +379,21 @@ class TestIssuesViews(TestCase):
         self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
                 lambda x: x.title, ordered=False)
 
-    def test_delete_issue_granted(self):
+    def test_delete_issue_get(self):
         self.client.login(username='user8', password='user8')
         expected_url = reverse('list-issue', args=['project-2'])
         url = reverse('delete-issue', args=['project-2', 2])
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+        issues = Issue.objects.filter(project__name='project-2')
+        self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
+                lambda x: x.title, ordered=False)
+
+    def test_delete_issue_granted(self):
+        self.client.login(username='user8', password='user8')
+        expected_url = reverse('list-issue', args=['project-2'])
+        url = reverse('delete-issue', args=['project-2', 2])
+        response = self.client.post(url)
         self.assertRedirects(response, expected_url)
         issues = Issue.objects.filter(project__name='project-2')
         self.assertQuerysetEqual(issues, ['Issue 1'],
@@ -383,7 +402,7 @@ class TestIssuesViews(TestCase):
     def test_delete_issue_forbidden(self):
         self.client.login(username='user5', password='user5')
         url = reverse('delete-issue', args=['project-2', 2])
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
         issues = Issue.objects.filter(project__name='project-2')
         self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
@@ -393,7 +412,7 @@ class TestIssuesViews(TestCase):
         expected_url = reverse('login') + '?next=' \
             + reverse('delete-issue', args=['project-2', 2])
         url = reverse('delete-issue', args=['project-2', 2])
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertRedirects(response, expected_url)
         issues = Issue.objects.filter(project__name='project-2')
         self.assertQuerysetEqual(issues, ['Issue 1', 'Issue 2'],
