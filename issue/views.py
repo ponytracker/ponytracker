@@ -495,7 +495,7 @@ def issue_edit_comment(request, project, issue, comment=None):
 def issue_delete_comment(request, project, issue, comment):
 
     comment = get_object_or_404(Event,
-            issue__project=project, issue__pk=issue, id=comment)
+            issue__project=project, issue__id=issue, id=comment)
 
     comment.delete()
     messages.success(request, 'Comment deleted successfully.')
