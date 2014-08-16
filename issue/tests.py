@@ -266,12 +266,6 @@ class TestProjectsViews(TestCase):
         expected_url = reverse('list-project')
         url = reverse('delete-project', args=['project-1'])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Are you sure')
-        self.assertQuerysetEqual(Project.objects.all(),
-            ['project-1', 'project-2'], lambda x: x.name, ordered=False)
-        url = reverse('delete-project', args=['project-1']) + '?force=1'
-        response = self.client.get(url)
         self.assertRedirects(response, expected_url)
         self.assertQuerysetEqual(Project.objects.all(),
             ['project-2'], lambda x: x.name, ordered=False)
