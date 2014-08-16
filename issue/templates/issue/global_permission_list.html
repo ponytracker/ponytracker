@@ -75,7 +75,7 @@
       <td class="text-center"><a href="{% url 'toggle-global-permission' perm.id 'delete-tags' %}">{{ perm.delete_tags|boolean }}</a></td>
       <td class="text-center">
         <a href="{% url 'edit-global-permission' perm.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
-        <a href="{% url 'delete-global-permission' perm.id %}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+        <a href=#" data-item="permission" data-action="{% url 'delete-global-permission' perm.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Delete</a>
       </td>
     </tr>
     {% endfor %}

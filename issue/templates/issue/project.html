@@ -13,7 +13,7 @@
 <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'edit-project' project.name %}">Modify this project</a></li>
 {% endif %}
 {% if perm.delete_project %}
-<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'delete-project' project.name %}">Delete this project</a></li>
+<li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-item="project" data-action="{% url 'delete-project' project.name %}" data-toggle="modal" data-target="#confirm-delete">Delete this project</a></li>
 {% endif %}
 {% if perm.create_project %}
 <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'add-project' %}">New project…</a></li>

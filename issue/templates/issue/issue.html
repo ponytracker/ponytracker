@@ -36,7 +36,7 @@
         {% if event.code == event.DESCRIBE %}
         <div class="pull-right">
           {% if perm.delete_issue %}
-          <a href="{% url 'delete-issue' project.name issue.id %}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
+          <a href="#" data-item="issue" data-action="{% url 'delete-issue' project.name issue.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
           {% endif %}
           {% if perm.modify_issue %}
           <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
@@ -45,7 +45,7 @@
         {% elif event.code == event.COMMENT %}
         <div class="pull-right">
           {% if perm.delete_comment %}
-          <a href="{% url 'delete-comment' project.name issue.id event.id %}" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
+          <a href="#" data-item="comment" data-action="{% url 'delete-comment' project.name issue.id event.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
           {% endif %}
           {% if perm.modify_comment %}
           <a href="{% url 'edit-comment' project.name issue.id event.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
@@ -86,7 +86,7 @@
       </div>
 
       <div class="col-md-3">
-        <a href="{% url 'delete-issue' project.name issue.id %}" class="btn btn-danger btn-block"><span class="glyphicon glyphicon-trash"></span> Delete this issue</a>
+        <a href="#" data-item="issue" data-action="{% url 'delete-issue' project.name issue.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-block"><span class="glyphicon glyphicon-trash"></span> Delete this issue</a>
       </div>
 
     </div>

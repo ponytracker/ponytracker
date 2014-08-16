@@ -31,7 +31,7 @@
           <a href="{% url 'edit-label' project.name label.id %}" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</a>
           {% endif %}
           {% if perm.delete_tags %}
-          <a href="{% url 'delete-label' project.name label.id %}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+          <a href="#" data-item="label" data-action="{% url 'delete-label' project.name label.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</a>
           {% endif %}
         </div>
         {% endif %}

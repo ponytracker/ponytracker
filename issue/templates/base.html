@@ -100,11 +100,30 @@
 
         {% block content %}{% endblock %}
 
+        <div class="modal" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm">
+            <div class="panel panel-danger">
+              <div class="panel-heading" id="confirm-delete-title">
+                Delete
+              </div>
+              <div class="panel-body">
+                <form action="#" method="post" role="form" id="confirm-delete-form" class="text-center">
+                  {% csrf_token %}
+                  <p id="confirm-delete-message">Are you sure?</p>
+                  <button type="submit" class="btn btn-danger">{% block confirm-ok %}Confirm{% endblock %}</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div> <!-- /container -->
 
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/confirm.js' %}"></script>
     {% block js_end %}{% endblock %}
   </body>
 </html>

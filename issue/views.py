@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseForbidden
+from django.views.decorators.http import require_http_methods
 
 from issue.models import *
 from issue.forms import *
@@ -85,6 +86,7 @@ def global_permission_toggle(request, id, perm):
     return redirect('list-global-permission')
 
 
+@require_http_methods(["POST"])
 @project_perm_required('manage_global_permission')
 def global_permission_delete(request, id):
 
@@ -160,6 +162,7 @@ def project_permission_toggle(request, project, id, perm):
     return redirect('list-project-permission', project.name)
 
 
+@require_http_methods(["POST"])
 @project_perm_required('manage_project_permission')
 def project_permission_delete(request, project, id):
 
@@ -232,6 +235,7 @@ def project_edit(request, project):
     return render(request, 'issue/project_edit.html', c)
 
 
+@require_http_methods(["POST"])
 @project_perm_required('delete_project')
 def project_delete(request, project):
 
@@ -486,6 +490,7 @@ def issue_edit_comment(request, project, issue, comment=None):
     return render(request, 'issue/issue_comment.html', c)
 
 
+@require_http_methods(["POST"])
 @project_perm_required('delete_comment')
 def issue_delete_comment(request, project, issue, comment):
 
@@ -528,6 +533,7 @@ def issue_reopen(request, project, issue):
     return redirect('show-issue', project.name, issue.id)
 
 
+@require_http_methods(["POST"])
 @project_perm_required('delete_issue')
 def issue_delete(request, project, issue):
 
@@ -649,6 +655,7 @@ def label_edit(request, project, id=None):
     return render(request, 'issue/label_edit.html', c)
 
 
+@require_http_methods(["POST"])
 @project_perm_required('delete_tags')
 def label_delete(request, project, id):
 
@@ -769,6 +776,7 @@ def milestone_reopen(request, project, name):
     return redirect('list-milestone', project.name)
 
 
+@require_http_methods(["POST"])
 @project_perm_required('delete_tags')
 def milestone_delete(request, project, name):
 
@@ -896,6 +904,7 @@ def team_remove_group(request, team, group):
     return redirect('show-team', team.pk)
 
 
+@require_http_methods(["POST"])
 @project_perm_required('manage_team')
 def team_delete(request, team):
 
