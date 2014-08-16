@@ -487,7 +487,6 @@ def issue_edit_comment(request, project, issue, comment=None):
 
 
 @project_perm_required('delete_comment')
-@confirmation_required('Are you sure to delete this comment?')
 def issue_delete_comment(request, project, issue, comment):
 
     comment = get_object_or_404(Event,
@@ -530,7 +529,6 @@ def issue_reopen(request, project, issue):
 
 
 @project_perm_required('delete_issue')
-@confirmation_required('Are you sure to delete this issue?')
 def issue_delete(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
@@ -899,7 +897,6 @@ def team_remove_group(request, team, group):
 
 
 @project_perm_required('manage_team')
-@confirmation_required('Are you sure to delete this team?', prev='list-team')
 def team_delete(request, team):
 
     team = get_object_or_404(Team, pk=team)

@@ -40,7 +40,7 @@
     <div class="row text-center">
       <a href="{% url 'list-team' %}" class="btn btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Go back to list</a>
       <a href="{% url 'edit-team' team.pk %}" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Modify team</a>
-      <a href="{% url 'delete-team' team.pk %}?prev={{ request.path }}" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete team</a>
+      <a href="{% url 'delete-team' team.pk %}" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete team</a>
     </div>
   </div>
 
