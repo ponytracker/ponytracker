@@ -15,14 +15,16 @@ def boolean(value):
             + glyph + '" style="vertical-align: middle;"></span>')
 
 @register.filter
-def first_few(items, arg='item'):
+def first_few(items, arg='item', max_items=5):
     if items.exists():
-        if items.count() < 4:
+        if items.count() <= max_items:
             return ', '.join(map(lambda x: x.__str__(), items.all()))
         else:
-            r = ', '.join(map(lambda x: x.__str__(), items.all()[0:3]))
-            plural = 's' if items.count() > 4 else ''
-            r += ', ... (%s other%s)' % (items.count() - 3, plural)
+            r = ', '.join(map(lambda x: x.__str__(),
+                items.all()[0:max_items-1]))
+            plural = 's' if items.count() > max_items else ''
+            r += ', ... (%s other%s)' \
+                % (items.count() - max_items + 1, plural)
             return r
     else:
         return 'no ' + arg + 's'

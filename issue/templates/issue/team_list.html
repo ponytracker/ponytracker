@@ -22,19 +22,15 @@
   {% if teams.exists %}
   <table class="table table-hover">
     <tr>
-      <th>Name</th>
-      <th>Users</th>
-      <th>Groups</th>
+      <th class="col-md-2">Name</th>
+      <th class="col-md-5">Users</th>
+      <th class="col-md-5">Groups</th>
     </tr>
     {% for team in teams %}
     <tr>
       <td><a href="{% url 'show-team' team.pk %}"><b>{{ team }}</b></a></td>
       <td>{{ team.users|first_few:'user' }}</td>
       <td>{{ team.groups|first_few:'group' }}</td>
-      <td class="text-center">
-        <a href="{% url 'edit-team' team.pk %}" class="btn btn-primary btn-xs">Edit</a>
-        <a href="#" data-item="team" data-action="{% url 'delete-team' team.pk %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-xs">Delete</a>
-      </td>
     </tr>
     {% endfor %}
   </table>
