@@ -61,7 +61,7 @@
                   {% block projectmenu %}
                   {% if perm.create_project %}
                   <li role="presentation" class="divider"></li>
-                  <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'add-project' %}">New project…</a></li>
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'add-project' %}"><span class="glyphicon glyphicon-plus"></span> New project…</a></li>
                   {% endif %}
                   {% endblock %}
                 </ul>
