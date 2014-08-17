@@ -172,11 +172,10 @@ class Issue(models.Model):
         else:
             return 1
 
+    @property
     def comments(self):
 
-        comments = self.events.filter(issue=self, code=Event.COMMENT)
-
-        return comments
+        return self.events.filter(issue=self, code=Event.COMMENT)
 
     def getdesc(self):
         desc = self.events.filter(issue=self, code=Event.DESCRIBE)
