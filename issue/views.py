@@ -927,7 +927,7 @@ def project_subscribe(request, project):
 
     user = User.objects.get(username=request.user.username)
 
-    if user in project.subscribers.all():
+    if project.subscribers.filter(username=user.username).exists():
         messages.warning(request, 'You are already subscribed to this project.')
     else:
         project.subscribers.add(user)
@@ -946,7 +946,7 @@ def project_unsubscribe(request, project):
 
     user = User.objects.get(username=request.user.username)
 
-    if user in project.subscribers.all():
+    if project.subscribers.filter(username=user.username).exists():
         project.subscribers.remove(user)
         project.save()
         messages.success(request, 'You will not receive any notifications for this project anymore.')
@@ -966,7 +966,7 @@ def issue_subscribe(request, project, issue):
     issue = get_object_or_404(Issue, project=project.name, id=issue)
     user = User.objects.get(username=request.user.username)
 
-    if user in issue.subscribers.all():
+    if issue.subscribers.filter(username=user.username).exists():
         messages.warning(request, 'You are already subscribed to this issue.')
     else:
         issue.subscribers.add(user)
@@ -982,7 +982,7 @@ def issue_unsubscribe(request, project, issue):
     issue = get_object_or_404(Issue, project=project.name, id=issue)
     user = User.objects.get(username=request.user.username)
 
-    if user in issue.subscribers.all():
+    if issue.subscribers.filter(username=user.username).exists():
         issue.subscribers.remove(user)
         issue.save()
         messages.success(request, 'You will not receive any notifications for this issue anymore.')
