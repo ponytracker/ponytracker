@@ -17,7 +17,7 @@ def notify_new_issue(issue):
     else:
         return
 
-    subject = "[PonyTracker] New issue: %s (%s)" %(issue.title, project.name)
+    subject = "[PonyTracker] New issue: %s (%s)" %(issue.title, project)
 
     data = []
 
@@ -60,7 +60,7 @@ def notify_new_comment(event):
     else:
         return
 
-    subject = "[PonyTracker] New comment - %s (%s)" %(issue.title, project.name)
+    subject = "[PonyTracker] New comment - %s (%s)" %(issue.title, project)
 
     data = []
 
