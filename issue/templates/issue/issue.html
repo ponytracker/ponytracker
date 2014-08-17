@@ -19,7 +19,7 @@
   {% endif %}
   &#160;
   <a href="{% same_author issue.author %}"><b>{{ issue.author}}</b></a> opened this issue {{ issue.opened_at|naturaltime }}
-  - {{ issue.comments.count }} comments
+  - {{ issue.comments.count }} comment{{ issue.comments.count|pluralize }}
 </div>
 
 <div class="row">
