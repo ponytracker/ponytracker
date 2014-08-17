@@ -9,7 +9,6 @@ from issue.models import *
 def notify_new_issue(issue):
 
     project = issue.project
-
     dests = project.subscribers.all().distinct()
 
     if hasattr(settings, 'FROM_ADDR'):
@@ -17,10 +16,9 @@ def notify_new_issue(issue):
     else:
         return
 
-    subject = "[PonyTracker] New issue: %s (%s)" %(issue.title, project)
+    subject = "[%s] %s" %(project, issue.title)
 
     data = []
-
     for dest in dests:
 
         if dest == issue.author:
@@ -31,22 +29,32 @@ def notify_new_issue(issue):
             continue
 
         c = {
-            'dest': dest.username,
-            'author': issue.author.username,
-            'title': issue.title,
-            'description:': issue.description,
+            'description': issue.description,
             'uri': settings.BASE_URL \
                 + reverse('show-issue', args=[project.name, issue.id]),
         }
 
         message = render_to_string('emails/new_issue.html', c)
 
-        data += [(subject, message, from_addr, [dest_addr])]
+        data += [(subject, message,
+            "%s <%s>" %(issue.author.username, from_addr), [dest_addr])]
 
     send_mass_mail(tuple(data))
 
 
 def notify_new_comment(event):
+    notify_event(event, 'new_comment')
+
+
+def notify_close_issue(event):
+    notify_event(event, 'close_issue')
+
+
+def notify_reopen_issue(event):
+    notify_event(event, 'reopen_issue')
+
+
+def notify_event(event, template):
 
     issue = event.issue
     project = issue.project
@@ -60,7 +68,7 @@ def notify_new_comment(event):
     else:
         return
 
-    subject = "[PonyTracker] New comment - %s (%s)" %(issue.title, project)
+    subject = "Re: [%s] %s" %(project, issue.title)
 
     data = []
 
@@ -74,16 +82,14 @@ def notify_new_comment(event):
             continue
 
         c = {
-            'dest': dest.username,
-            'author': event.author.username,
-            'title': issue.title,
             'comment': event.additionnal_section,
             'uri': settings.BASE_URL \
                 + reverse('show-issue', args=[project.name, issue.id]),
         }
 
-        message = render_to_string('emails/new_comment.html', c)
+        message = render_to_string('emails/%s.html' % template, c)
 
-        data += [(subject, message, from_addr, [dest_addr])]
+        data += [(subject, message,
+            '%s <%s>' %(event.author.username, from_addr), [dest_addr])]
 
     send_mass_mail(tuple(data))

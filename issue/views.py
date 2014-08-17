@@ -521,6 +521,8 @@ def issue_close(request, project, issue):
     event = Event(issue=issue, author=author, code=Event.CLOSE)
     event.save()
 
+    notify_close_issue(event)
+
     return redirect('list-issue', project.name)
 
 
@@ -535,6 +537,8 @@ def issue_reopen(request, project, issue):
     author = User.objects.get(username=request.user.username)
     event = Event(issue=issue, author=author, code=Event.REOPEN)
     event.save()
+
+    notify_reopen_issue(event)
 
     return redirect('show-issue', project.name, issue.id)
 
