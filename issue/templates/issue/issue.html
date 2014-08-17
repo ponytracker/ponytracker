@@ -179,6 +179,20 @@
     No one assigned
     {% endif %}
     {% endcomment %}
+    {% if request.user.is_authenticated %}
+    <hr>
+    <h5>
+      <b>Notifications</b>
+    </h5>
+    <div class="row">
+      <span style="display: inline-block; margin-left: 14px;"></span>
+      {% if request.user in issue.subscribers.all %}
+      <a href="{% url 'unsubscribe-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-eye-close"></span>&#160;Unsubscribe</a>
+      {% else %}
+      <a href="{% url 'subscribe-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-eye-open"></span>&#160;Subscribe</a>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
 
 </div>

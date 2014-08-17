@@ -914,3 +914,73 @@ def team_delete(request, team):
     messages.success(request, 'Team deleted successfully.')
 
     return redirect('list-team')
+
+
+@login_required
+def project_subscribe(request, project):
+
+    user = User.objects.get(username=request.user.username)
+
+    if user in project.subscribers.all():
+        messages.warning(request, 'You are already subscribed to this project.')
+    else:
+        project.subscribers.add(user)
+        project.save()
+        messages.success(request, 'You have been subscribed to this project successfully.')
+
+    next = request.GET.get('next')
+    if next:
+        return redirect(next)
+    else:
+        return redirect('list-issue', project.name)
+
+
+@login_required
+def project_unsubscribe(request, project):
+
+    user = User.objects.get(username=request.user.username)
+
+    if user in project.subscribers.all():
+        project.subscribers.remove(user)
+        project.save()
+        messages.success(request, 'You will not receive any notifications for this project anymore.')
+    else:
+        messages.warning(request, 'You are not subscribed to this project.')
+
+    next = request.GET.get('next')
+    if next:
+        return redirect(next)
+    else:
+        return redirect('list-issue', project.name)
+
+
+@login_required
+def issue_subscribe(request, project, issue):
+
+    issue = get_object_or_404(Issue, project=project.name, id=issue)
+    user = User.objects.get(username=request.user.username)
+
+    if user in issue.subscribers.all():
+        messages.warning(request, 'You are already subscribed to this issue.')
+    else:
+        issue.subscribers.add(user)
+        issue.save()
+        messages.success(request, 'You have been subscribed to this issue successfully.')
+
+    return redirect('show-issue', project.name, issue.id)
+
+
+@login_required
+def issue_unsubscribe(request, project, issue):
+
+    issue = get_object_or_404(Issue, project=project.name, id=issue)
+    user = User.objects.get(username=request.user.username)
+
+    if user in issue.subscribers.all():
+        issue.subscribers.remove(user)
+        issue.save()
+        messages.success(request, 'You will not receive any notifications for this issue anymore.')
+    else:
+        messages.warning(request, 'You are not subscribed to this issue.')
+
+    return redirect('show-issue', project.name, issue.id)

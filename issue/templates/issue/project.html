@@ -4,8 +4,13 @@
 {% block page_title %}{{ project }}{% endblock %}
 
 {% block projectmenu %}
-{% if perm.manage_project_permission or perm.modify_project or perm.delete_project or perm.create_project %}
+{% if request.user.is_authenticated or perm.manage_project_permission or perm.modify_project or perm.delete_project or perm.create_project %}
 <li role="presentation" class="divider"></li>
+{% if request.user in project.subscribers.all %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'unsubscribe-project' project.name %}?next={{ request.get_full_path }}">Unsubscribe</a></li>
+{% else %}
+<li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'subscribe-project' project.name %}?next={{ request.get_full_path }}">Subscribe</a></li>
+{% endif %}
 {% if perm.manage_project_permission %}
 <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-project-permission' project.name %}">Manage permissions</a></li>
 {% endif %}

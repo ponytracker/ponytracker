@@ -51,6 +51,9 @@ class Project(models.Model):
             verbose_name="Do unregistered users have read access "
                          "to this project?")
 
+    subscribers = models.ManyToManyField(User, blank=True, null=True,
+            related_name='subscribed_projects')
+
     def grant_user(self, user):
         perm = ProjectPermission(project=self,
                 manage_project_permission=True,
@@ -156,6 +159,9 @@ class Issue(models.Model):
             related_name='issues')
 
     assignee = models.ForeignKey(User, blank=True, null=True, related_name='+')
+
+    subscribers = models.ManyToManyField(User, blank=True, null=True,
+            related_name='subscribed_issues')
 
     @staticmethod
     def next_id(project):
