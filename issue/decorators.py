@@ -1,7 +1,7 @@
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 
 from issue.models import Project
 
@@ -18,7 +18,7 @@ def project_perm_required(perm):
             if request.user.has_perm(perm, project):
                 return view(request, *args, **kwargs)
             elif request.user.is_authenticated():
-                return HttpResponseForbidden()
+                raise PermissionDenied()
             else:
                 return login_required(view)(request, *args, **kwargs)
         return wrapper

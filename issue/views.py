@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.contrib.auth.decorators import login_required
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404
 from django.views.decorators.http import require_http_methods
 
 from issue.models import *
@@ -358,13 +358,13 @@ def issue_edit(request, project, issue=None):
 
     if issue:
         if not request.user.has_perm('modify_issue', project):
-            return HttpResponseForbidden()
+            raise PermissionDenied()
         issue = get_object_or_404(Issue, project=project.name, id=issue)
         init_data = {'title': issue.title,
                      'description': issue.description}
     else:
         if not request.user.has_perm('create_issue', project):
-            return HttpResponseForbidden()
+            raise PermissionDenied()
         issue = None
         init_data = None
 
@@ -450,13 +450,13 @@ def issue_edit_comment(request, project, issue, comment=None):
 
     if comment:
         if not request.user.has_perm('modify_comment', project):
-            return HttpResponseForbidden()
+            raise PermissionDenied()
         event = get_object_or_404(Event, code=Event.COMMENT,
                 issue=issue, id=comment)
         init_data = {'comment': event.additionnal_section}
     else:
         if not request.user.has_perm('create_comment', project):
-            return HttpResponseForbidden()
+            raise PermisisonDenied()
         event = None
         init_data = None
 
