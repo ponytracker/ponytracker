@@ -175,17 +175,17 @@ class Issue(models.Model):
     @property
     def comments(self):
 
-        return self.events.filter(issue=self, code=Event.COMMENT)
+        return self.events.filter(code=Event.COMMENT)
 
     def getdesc(self):
-        desc = self.events.filter(issue=self, code=Event.DESCRIBE)
+        desc = self.events.filter(code=Event.DESCRIBE)
         if desc.exists():
             return desc.first().additionnal_section
         else:
             return None
 
     def setdesc(self, value):
-        desc = self.events.filter(issue=self, code=Event.DESCRIBE)
+        desc = self.events.filter(code=Event.DESCRIBE)
         if desc.exists():
             desc = desc.first()
             desc.additionnal_section = value
@@ -196,7 +196,7 @@ class Issue(models.Model):
             desc.save()
 
     def deldesc(self):
-        desc = self.events.filter(issue=self, code=Event.DESCRIBE)
+        desc = self.events.filter(code=Event.DESCRIBE)
         if desc.exists():
             desc.first().delete()
     description = property(getdesc, setdesc, deldesc)
