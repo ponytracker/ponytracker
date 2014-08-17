@@ -1,0 +1,12 @@
+Dear {{ dest }},
+
+{{ author }} added a new issue: '{{ title }}'
+{% if description %}
+  {{ description }}
+{% endif %}
+You can coment it by following this link:
+
+  {{ uri }}
+
+Sincerly,
+PonyTracker

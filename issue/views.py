@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 
 from issue.models import *
 from issue.forms import *
+from issue.notifications import *
 from issue.decorators import project_perm_required
 
 import shlex
@@ -405,6 +406,7 @@ def issue_edit(request, project, issue=None):
             issue.save()
             issue.subscribers.add(author)
             issue.description = description
+            notify_new_issue(issue)
             messages.success(request, 'Issue created successfully.')
 
         return redirect('show-issue', project.name, issue.id)
@@ -480,6 +482,7 @@ def issue_edit_comment(request, project, issue, comment=None):
                     code=Event.COMMENT, additionnal_section=comment)
             event.save()
             issue.subscribers.add(author)
+            notify_new_comment(event)
             messages.success(request, 'Comment added successfully.')
 
         return redirect('show-issue', project.name, issue.id)
