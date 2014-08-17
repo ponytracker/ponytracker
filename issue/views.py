@@ -200,6 +200,7 @@ def project_add(request):
         else:
             project = form.save()
             messages.success(request, 'Project added successfully.')
+            project.subscribers.add(User.objects.get(username=request.user))
             project.grant_user(request.user)
             return redirect('list-project-permission', project.name)
 
@@ -402,6 +403,7 @@ def issue_edit(request, project, issue=None):
             issue = Issue(title=title, author=author,
                     project=project, id=Issue.next_id(project))
             issue.save()
+            issue.subscribers.add(author)
             issue.description = description
             messages.success(request, 'Issue created successfully.')
 
@@ -477,6 +479,7 @@ def issue_edit_comment(request, project, issue, comment=None):
             event = Event(issue=issue, author=author,
                     code=Event.COMMENT, additionnal_section=comment)
             event.save()
+            issue.subscribers.add(author)
             messages.success(request, 'Comment added successfully.')
 
         return redirect('show-issue', project.name, issue.id)
