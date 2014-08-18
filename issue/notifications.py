@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.core.mail import send_mass_mail
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
