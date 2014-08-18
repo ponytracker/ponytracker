@@ -94,6 +94,8 @@
             <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Add a comment</button>
           </div>
         </form>
+        {% elif request.user.is_authenticated %}
+        Sorry, you are not allowed to comment this issue.
         {% else %}
         To post a comment, please <a href="{% url 'login' %}?prev={{ request.path }}&next={{ request.path }}">login</a>.
         {% endif %}
