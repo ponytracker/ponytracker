@@ -2,9 +2,14 @@
 
 {% load humanize %}
 {% load django_markdown %}
+{% load bootstrap_tags %}
 {% load issue_tags %}
 
 {% block issuetab %} class="active"{% endblock %}
+
+{% block media %}
+{{ form.media }}
+{% endblock %}
 
 {% block content %}
 
@@ -67,28 +72,32 @@
     </div>
     {% endfor %}
 
-    <div class="row">
-
-      <div class="col-md-3">
-      <a href="{% url 'comment-issue' project.name issue.id %}" class="btn btn-default btn-block">Add a comment</a>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <b>Comment</b>
       </div>
-
-      <div class="col-md-3">
-        <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-edit"></span> Edit this issue</a>
+      <div class="panel-body">
+        {% if perm.add_comment %}
+        <form action="{% url 'comment-issue' project.name issue.id %}" method="post" role="form">
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.comment }}
+          </div>
+          <div class="text-center">
+            {% if perm.manage_issue %}
+            {% if issue.closed %}
+            <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
+            {% else %}
+            <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
+            {% endif %}
+            {% endif %}
+            <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Add a comment</button>
+          </div>
+        </form>
+        {% else %}
+        To post a comment, please <a href="{% url 'login' %}?prev={{ request.path }}&next={{ request.path }}">login</a>.
+        {% endif %}
       </div>
-
-      <div class="col-md-3">
-      {% if issue.closed %}
-      <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-info btn-block"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
-      {% else %}
-      <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-success btn-block"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
-      {% endif %}
-      </div>
-
-      <div class="col-md-3">
-        <a href="#" data-item="issue" data-action="{% url 'delete-issue' project.name issue.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-block"><span class="glyphicon glyphicon-trash"></span> Delete this issue</a>
-      </div>
-
     </div>
 
   </div>

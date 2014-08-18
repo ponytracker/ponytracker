@@ -432,12 +432,18 @@ def issue(request, project, issue):
 
     events = issue.events.all()
 
+    if request.user.has_perm('create_comment', project):
+        form = CommentForm(request.POST or None)
+    else:
+        form = None
+
     c = {
         'labels': labels,
         'milestones': milestones,
         'project': project,
         'issue': issue,
         'events': events,
+        'form': form,
     }
 
     return render(request, 'issue/issue.html', c)
