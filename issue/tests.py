@@ -509,7 +509,7 @@ class TestIssuesViews(TestCase):
         self.assertEqual(issue.description, "This is the first issue.")
 
 
-class TestComments(TestCase):
+class TestCommentsViews(TestCase):
 
     fixtures = ['test_perms']
 
@@ -600,3 +600,46 @@ class TestComments(TestCase):
         issue = Issue.objects.get(project__name='project-2', id=1)
         event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
         self.assertEqual(event.additionnal_section, 'Missing things')
+
+
+class TestLabelsViews(TestCase):
+
+    fixtures = ['test_perms']
+
+    def test_list(self):
+        self.client.login(username='user2', password='user2')
+        url = reverse('list-label', args=['project-2'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'documentation')
+
+
+class TestMilestonesViews(TestCase):
+
+    fixtures = ['test_perms']
+
+    def test_list(self):
+        self.client.login(username='user2', password='user2')
+        url = reverse('list-milestone', args=['project-2'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'v1.0')
+
+
+class TestPermissionsViews(TestCase):
+
+    fixtures = ['test_perms']
+
+    def test_global_list(self):
+        self.client.login(username='user15', password='user15')
+        url = reverse('list-global-permission')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Global permissions')
+
+    def test_project_list(self):
+        self.client.login(username='user14', password='user14')
+        url = reverse('list-project-permission', args=['project-2'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Permissions of 'Project 2' project")
