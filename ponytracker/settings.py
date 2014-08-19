@@ -42,7 +42,7 @@ INSTALLED_APPS = (
 
     'django_markdown',
     'bootstrap3_datetime',
-    'django_forms_bootstrap',
+    'bootstrap3',
     'colorful',
     'issue',
 )
@@ -129,3 +129,23 @@ EMAIL_HOST = 'smtp'
 #FROM_ADDR = 'ponytracker@example.com'
 
 BASE_URL = 'http://localhost:8000'
+
+BOOTSTRAP3 = {
+
+    # The URL to the jQuery JavaScript file
+    #'jquery_url': '//code.jquery.com/jquery.min.js',
+    'jquery_url': STATIC_URL + 'js/jquery.min.js',
+
+    # The Bootstrap base URL
+    #'base_url': '//netdna.bootstrapcdn.com/bootstrap/3.2.0/',
+    'base_url': STATIC_URL,
+
+    # The complete URL to the Bootstrap CSS file (None means derive it from base_url)
+    'css_url': None,
+
+    # The complete URL to the Bootstrap CSS file (None means no theme)
+    'theme_url': None,
+
+    # The complete URL to the Bootstrap JavaScript file (None means derive it from base_url)
+    'javascript_url': None,
+}

@@ -1,5 +1,5 @@
 django
 django-markdown
 django-colorful
-git+git://github.com/bouttier/django-forms-bootstrap.git@master
+django-bootstrap3
 django-bootstrap3-datetimepicker
