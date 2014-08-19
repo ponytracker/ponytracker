@@ -462,7 +462,7 @@ def issue_edit_comment(request, project, issue, comment=None):
         init_data = {'comment': event.additionnal_section}
     else:
         if not request.user.has_perm('create_comment', project):
-            raise PermisisonDenied()
+            raise PermissionDenied()
         event = None
         init_data = None
 
