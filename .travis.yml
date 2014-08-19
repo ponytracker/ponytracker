@@ -11,10 +11,7 @@ env:
 install:
   - if [[ $DJANGO == '1.6' ]]; then pip install django==1.6; fi
   - if [[ $DJANGO != '1.6' ]]; then pip install -e git+git://github.com/django/django.git@1.7c2#egg=django1.7rc2; fi
-  - pip install django-markdown
-  - pip install django-colorful
-  - pip install git+git://github.com/bouttier/django-forms-bootstrap.git@master
-  - pip install django-bootstrap3-datetimepicker
+  - pip install -r requirements.txt
   - if [[ $DJANGO == '1.6' ]]; then pip install coveralls; fi
 
 script:
