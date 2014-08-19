@@ -507,3 +507,96 @@ class TestIssuesViews(TestCase):
         issue = Issue.objects.get(project__name='project-2', id=1)
         self.assertEqual(issue.title, "Issue 1")
         self.assertEqual(issue.description, "This is the first issue.")
+
+
+class TestComments(TestCase):
+
+    fixtures = ['test_perms']
+
+    def test_comment_issue_granted(self):
+        self.client.login(username='user9', password='user9')
+        msg = 'I have a lot to say.'
+        expected_url = reverse('show-issue', args=['project-2', 1])
+        url = reverse('comment-issue', args=['project-2', 1])
+        response = self.client.post(url, {
+            'comment': msg,
+        })
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        self.assertEqual(event.additionnal_section, msg)
+
+    def test_comment_issue_forbidden(self):
+        self.client.login(username='user10', password='user10')
+        msg = 'I have a lot to say.'
+        url = reverse('comment-issue', args=['project-2', 1])
+        response = self.client.post(url, {
+            'comment': msg,
+        })
+        self.assertEqual(response.status_code, 403)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        self.assertEqual(event.additionnal_section, 'Missing things')
+
+    def test_edit_comment_granted(self):
+        self.client.login(username='user10', password='user10')
+        msg = 'Missing a lot of things'
+        expected_url = reverse('show-issue', args=['project-2', 1])
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        url = reverse('edit-comment', args=['project-2', issue.id, event.id])
+        response = self.client.post(url, {
+            'comment': msg,
+        })
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        self.assertEqual(event.additionnal_section, msg)
+
+    def test_edit_comment_forbidden(self):
+        self.client.login(username='user9', password='user9')
+        msg = 'Missing a lot of things'
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        url = reverse('edit-comment', args=['project-2', issue.id, event.id])
+        response = self.client.post(url, {
+            'comment': msg,
+        })
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_comment_granted_get(self):
+        self.client.login(username='user11', password='user11')
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        url = reverse('delete-comment', args=['project-2', issue.id, event.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        self.assertEqual(event.additionnal_section, 'Missing things')
+
+    def test_delete_comment_granted(self):
+        self.client.login(username='user11', password='user11')
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        url = reverse('delete-comment', args=['project-2', issue.id, event.id])
+        expected_url = reverse('show-issue', args=['project-2', 1])
+        response = self.client.post(url)
+        self.assertRedirects(response, expected_url)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        self.assertEqual(event.additionnal_section, 'Done')
+
+    def test_delete_comment_forbidden(self):
+        self.client.login(username='user9', password='user9')
+        msg = 'Missing a lot of things'
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        url = reverse('delete-comment', args=['project-2', issue.id, event.id])
+        response = self.client.post(url, {
+            'comment': msg,
+        })
+        self.assertEqual(response.status_code, 403)
+        issue = Issue.objects.get(project__name='project-2', id=1)
+        event = Event.objects.filter(issue=issue, code=Event.COMMENT).last()
+        self.assertEqual(event.additionnal_section, 'Missing things')
