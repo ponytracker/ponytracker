@@ -102,13 +102,6 @@ LOGIN_URL = '/login'
 
 LOGIN_REDIRECT_URL = '/'
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
-from django.contrib.messages import constants as messages
-MESSAGE_TAGS = {
-    messages.ERROR: 'danger',
-}
-
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.contrib.auth.context_processors.auth',
