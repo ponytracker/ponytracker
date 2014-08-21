@@ -14,6 +14,7 @@ def boolean(value):
     return mark_safe('<span class="glyphicon glyphicon-'
             + glyph + '" style="vertical-align: middle;"></span>')
 
+
 @register.filter
 def first_few(items, arg='item', max_items=5):
     if items.exists():
@@ -21,7 +22,7 @@ def first_few(items, arg='item', max_items=5):
             return ', '.join(map(lambda x: x.__str__(), items.all()))
         else:
             r = ', '.join(map(lambda x: x.__str__(),
-                items.all()[0:max_items-1]))
+                items.all()[0:max_items - 1]))
             plural = 's' if items.count() > max_items else ''
             r += ', ... (%s other%s)' \
                 % (items.count() - max_items + 1, plural)

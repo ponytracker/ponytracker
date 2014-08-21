@@ -16,7 +16,7 @@ from colorful.fields import RGBColorField
 
 import json
 
-from issue.templatetags.issue_tags import same_milestone, same_label, label_style, labeled
+from issue.templatetags.issue_tags import *
 
 
 class User(auth.models.User):
@@ -342,8 +342,10 @@ class Event(models.Model):
                 action = 'removed'
             description = '%s the <a href="%s" class="label" ' \
                           'style="%s">%s</a> label' \
-                          % (action, same_label(label), label_style(label), label)
-        elif self.code == Event.SET_MILESTONE or self.code == Event.UNSET_MILESTONE:
+                          % (action, same_label(label),
+                             label_style(label), label)
+        elif self.code == Event.SET_MILESTONE \
+                or self.code == Event.UNSET_MILESTONE:
             milestone = Milestone(name=args['milestone'],
                     project=self.issue.project)
             if self.code == Event.SET_MILESTONE:

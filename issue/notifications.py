@@ -18,7 +18,7 @@ def notify_new_issue(issue):
     else:
         return
 
-    subject = "[%s] %s" %(project, issue.title)
+    subject = "[%s] %s" % (project, issue.title)
 
     data = []
     for dest in dests:
@@ -32,14 +32,14 @@ def notify_new_issue(issue):
 
         c = {
             'description': issue.description,
-            'uri': settings.BASE_URL \
-                + reverse('show-issue', args=[project.name, issue.id]),
+            'uri': settings.BASE_URL + reverse('show-issue',
+                args=[project.name, issue.id]),
         }
 
         message = render_to_string('emails/new_issue.html', c)
 
         data += [(subject, message,
-            "%s <%s>" %(issue.author.username, from_addr), [dest_addr])]
+            "%s <%s>" % (issue.author.username, from_addr), [dest_addr])]
 
     send_mass_mail(tuple(data))
 
@@ -70,7 +70,7 @@ def notify_event(event, template):
     else:
         return
 
-    subject = "Re: [%s] %s" %(project, issue.title)
+    subject = "Re: [%s] %s" % (project, issue.title)
 
     data = []
 
@@ -85,13 +85,13 @@ def notify_event(event, template):
 
         c = {
             'comment': event.additionnal_section,
-            'uri': settings.BASE_URL \
-                + reverse('show-issue', args=[project.name, issue.id]),
+            'uri': settings.BASE_URL + reverse('show-issue',
+                args=[project.name, issue.id]),
         }
 
         message = render_to_string('emails/%s.html' % template, c)
 
         data += [(subject, message,
-            '%s <%s>' %(event.author.username, from_addr), [dest_addr])]
+            '%s <%s>' % (event.author.username, from_addr), [dest_addr])]
 
     send_mass_mail(tuple(data))

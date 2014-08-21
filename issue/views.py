@@ -938,11 +938,13 @@ def project_subscribe(request, project):
     user = User.objects.get(username=request.user.username)
 
     if project.subscribers.filter(username=user.username).exists():
-        messages.warning(request, 'You are already subscribed to this project.')
+        messages.warning(request,
+                'You are already subscribed to this project.')
     else:
         project.subscribers.add(user)
         project.save()
-        messages.success(request, 'You have been subscribed to this project successfully.')
+        messages.success(request,
+                'You have been subscribed to this project successfully.')
 
     next = request.GET.get('next')
     if next:
@@ -959,7 +961,8 @@ def project_unsubscribe(request, project):
     if project.subscribers.filter(username=user.username).exists():
         project.subscribers.remove(user)
         project.save()
-        messages.success(request, 'You will not receive any notifications for this project anymore.')
+        messages.success(request, 'You will not receive any notifications '
+                                  'for this project anymore.')
     else:
         messages.warning(request, 'You are not subscribed to this project.')
 
@@ -981,7 +984,8 @@ def issue_subscribe(request, project, issue):
     else:
         issue.subscribers.add(user)
         issue.save()
-        messages.success(request, 'You have been subscribed to this issue successfully.')
+        messages.success(request,
+                'You have been subscribed to this issue successfully.')
 
     return redirect('show-issue', project.name, issue.id)
 
@@ -995,7 +999,8 @@ def issue_unsubscribe(request, project, issue):
     if issue.subscribers.filter(username=user.username).exists():
         issue.subscribers.remove(user)
         issue.save()
-        messages.success(request, 'You will not receive any notifications for this issue anymore.')
+        messages.success(request, 'You will not receive any notifications '
+                                  'for this issue anymore.')
     else:
         messages.warning(request, 'You are not subscribed to this issue.')
 
