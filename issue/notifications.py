@@ -1,9 +1,13 @@
 from __future__ import unicode_literals
 
-from django.core.mail import send_mass_mail
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
 from django.conf import settings
+
+if 'djcelery' in settings.INSTALLED_APPS:
+    from issue.tasks import send_mass_mail
+else:
+    from django.core.mail import send_mass_mail
 
 from issue.models import *
 
@@ -41,7 +45,10 @@ def notify_new_issue(issue):
         data += [(subject, message,
             "%s <%s>" % (issue.author.username, from_addr), [dest_addr])]
 
-    send_mass_mail(tuple(data))
+    if 'djcelery' in settings.INSTALLED_APPS:
+        send_mass_mail.delay(tuple(data))
+    else:
+        send_mass_mail(tuple(data))
 
 
 def notify_new_comment(event):
@@ -94,4 +101,7 @@ def notify_event(event, template):
         data += [(subject, message,
             '%s <%s>' % (event.author.username, from_addr), [dest_addr])]
 
-    send_mass_mail(tuple(data))
+    if 'djcelery' in settings.INSTALLED_APPS:
+        send_mass_mail.delay(tuple(data))
+    else:
+        send_mass_mail(tuple(data))

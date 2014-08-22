@@ -1,6 +1,13 @@
 from ponytracker.settings import *
 
 
+### Uncomment to use celery worker
+### Don't forget to install a broker:
+###  # http://docs.celeryproject.org/en/latest/getting-started/brokers/index.html#broker-overview
+#INSTALLED_APPS += ('djcelery',)
+#from djcelery import celery
+#celery.setup_loader()
+
 SECRET_KEY='CHANGE ME'
 
 DEBUG = False
