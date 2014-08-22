@@ -5,11 +5,10 @@ from issue.models import Project, Label
 
 
 @receiver(post_save, sender=Project, dispatch_uid="Default project labels.")
-def create_default_project_labels(sender, **kwargs):
-    if not kwargs['created']:
+def create_default_project_labels(sender, instance, created, **kwargs):
+    if not created:
         return
-    project = kwargs['instance']
-    if not project.labels.exists():
-        Label(project=project, name='bug', color='#FF0000').save()
-        Label(project=project, name='feature', color='#00A000').save()
-        Label(project=project, name='documentation', color='#1D3DBE').save()
+    if not instance.labels.exists():
+        Label(project=instance, name='bug', color='#FF0000').save()
+        Label(project=instance, name='feature', color='#00A000').save()
+        Label(project=instance, name='documentation', color='#1D3DBE').save()
