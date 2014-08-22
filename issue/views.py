@@ -16,11 +16,9 @@ import shlex
 @login_required
 def profile(request):
 
-    user = User.objects.get(username=request.user)
-
     c = {
-        'groups': user.groups.all(),
-        'teams': user.teams.all(),
+        'groups': request.user.groups.all(),
+        'teams': request.user.teams.all(),
     }
 
     return render(request, 'issue/profile.html', c)
@@ -201,7 +199,7 @@ def project_add(request):
         else:
             project = form.save()
             messages.success(request, 'Project added successfully.')
-            project.subscribers.add(User.objects.get(username=request.user))
+            project.subscribers.add(request.user)
             project.grant_user(request.user)
             return redirect('list-project-permission', project.name)
 
@@ -383,8 +381,8 @@ def issue_edit(request, project, issue=None):
                 old_title = issue.title
                 issue.title = title
                 issue.save()
-                author = User.objects.get(username=request.user.username)
-                event = Event(issue=issue, author=author, code=Event.RENAME,
+                event = Event(issue=issue, author=request.user,
+                        code=Event.RENAME,
                         args={'old_title': old_title, 'new_title': title})
                 event.save()
                 modified = True
@@ -400,11 +398,10 @@ def issue_edit(request, project, issue=None):
 
         else:
 
-            author = User.objects.get(username=request.user.username)
-            issue = Issue(title=title, author=author,
+            issue = Issue(title=title, author=request.user,
                     project=project, id=Issue.next_id(project))
             issue.save()
-            issue.subscribers.add(author)
+            issue.subscribers.add(request.user)
             issue.description = description
             notify_new_issue(issue)
             messages.success(request, 'Issue created successfully.')
@@ -483,11 +480,10 @@ def issue_edit_comment(request, project, issue, comment=None):
 
         else:
 
-            author = User.objects.get(username=request.user.username)
-            event = Event(issue=issue, author=author,
+            event = Event(issue=issue, author=request.user,
                     code=Event.COMMENT, additionnal_section=comment)
             event.save()
-            issue.subscribers.add(author)
+            issue.subscribers.add(request.user)
             notify_new_comment(event)
             messages.success(request, 'Comment added successfully.')
 
@@ -523,8 +519,7 @@ def issue_close(request, project, issue):
     issue.closed = True
     issue.save()
 
-    author = User.objects.get(username=request.user.username)
-    event = Event(issue=issue, author=author, code=Event.CLOSE)
+    event = Event(issue=issue, author=request.user, code=Event.CLOSE)
     event.save()
 
     notify_close_issue(event)
@@ -540,8 +535,7 @@ def issue_reopen(request, project, issue):
     issue.closed = False
     issue.save()
 
-    author = User.objects.get(username=request.user.username)
-    event = Event(issue=issue, author=author, code=Event.REOPEN)
+    event = Event(issue=issue, author=request.user, code=Event.REOPEN)
     event.save()
 
     notify_reopen_issue(event)
@@ -567,9 +561,8 @@ def issue_add_label(request, project, issue, label):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
     label = get_object_or_404(Label, project=project, id=label)
-    author = User.objects.get(username=request.user.username)
 
-    issue.add_label(author, label)
+    issue.add_label(request.user, label)
 
     return redirect('show-issue', project.name, issue.id)
 
@@ -579,9 +572,8 @@ def issue_remove_label(request, project, issue, label):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
     label = get_object_or_404(Label, project=project, id=label)
-    author = User.objects.get(username=request.user.username)
 
-    issue.remove_label(author, label)
+    issue.remove_label(request.user, label)
 
     return redirect('show-issue', project.name, issue.id)
 
@@ -591,9 +583,8 @@ def issue_add_milestone(request, project, issue, milestone):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
     milestone = get_object_or_404(Milestone, project=project, name=milestone)
-    author = User.objects.get(username=request.user.username)
 
-    issue.add_milestone(author, milestone)
+    issue.add_milestone(request.user, milestone)
 
     return redirect('show-issue', project.name, issue.id)
 
@@ -603,9 +594,8 @@ def issue_remove_milestone(request, project, issue, milestone):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
     milestone = get_object_or_404(Milestone, project=project, name=milestone)
-    author = User.objects.get(username=request.user.username)
 
-    issue.remove_milestone(author, milestone)
+    issue.remove_milestone(request.user, milestone)
 
     return redirect('show-issue', project.name, issue.id)
 
@@ -676,10 +666,9 @@ def label_edit(request, project, id=None):
 def label_delete(request, project, id):
 
     label = get_object_or_404(Label, project=project, id=id)
-    author = User.objects.get(username=request.user.username)
 
     for issue in label.issues.all():
-        issue.remove_label(author, label)
+        issue.remove_label(request.user, label)
     label.deleted = True
     label.save()
 
@@ -738,9 +727,8 @@ def milestone_edit(request, project, name=None):
 
             if milestone:
                 if name != form.cleaned_data['name']:
-                    author = User.objects.get(username=request.user.username)
                     for issue in milestone.issues.all():
-                        event = Event(issue=issue, author=author,
+                        event = Event(issue=issue, author=request.user,
                                 code=Event.CHANGE_MILESTONE, args={
                                     'old_milestone': name,
                                     'new_milestone': form.cleaned_data['name']
@@ -797,10 +785,9 @@ def milestone_reopen(request, project, name):
 def milestone_delete(request, project, name):
 
     milestone = get_object_or_404(Milestone, project=project, name=name)
-    author = User.objects.get(username=request.user.username)
 
     for issue in milestone.issues.all():
-        issue.remove_milestone(author, milestone)
+        issue.remove_milestone(request.user, milestone)
     milestone.delete()
 
     messages.success(request, "Label deleted successfully.")

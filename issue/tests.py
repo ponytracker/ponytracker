@@ -11,14 +11,14 @@ class TestPermissions(TestCase):
     def test_team_user_membership(self):
         user = User.objects.get(username='user1')
         team = Team.objects.get(name='team1')
-        self.assertEqual(len(user.teams), 1)
-        self.assertEqual(user.teams[0], team)
+        self.assertEqual(user.teams.count(), 1)
+        self.assertEqual(user.teams.first(), team)
 
     def test_team_group_membership(self):
         user = User.objects.get(username='user2')
         team = Team.objects.get(name='team2')
-        self.assertEqual(len(user.teams), 1)
-        self.assertEqual(user.teams[0], team)
+        self.assertEqual(user.teams.count(), 1)
+        self.assertEqual(user.teams.first(), team)
 
     def test_global_no_perms(self):
         user = User.objects.get(username='user4')

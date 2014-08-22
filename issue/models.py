@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import Q
-from django.contrib import auth
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import AbstractUser, Group
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
@@ -19,10 +18,7 @@ import json
 from issue.templatetags.issue_tags import *
 
 
-class User(auth.models.User):
-
-    class Meta:
-        proxy = True
+class User(AbstractUser):
 
     @property
     def teams(self):
@@ -392,9 +388,11 @@ class Team(models.Model):
 
     name = models.CharField(max_length=128, unique=True)
 
-    users = models.ManyToManyField(auth.models.User, blank=True, null=True,
-            related_name='teams')
-    groups = models.ManyToManyField(auth.models.Group, blank=True, null=True,
+    # We dont want related field on User object because we use
+    # a special function that retrieve also team through group
+    users = models.ManyToManyField(User, blank=True, null=True,
+            related_name='+')
+    groups = models.ManyToManyField(Group, blank=True, null=True,
             related_name='teams')
 
     def __str__(self):
