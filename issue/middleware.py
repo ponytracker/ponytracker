@@ -29,8 +29,9 @@ class ProjectMiddleware:
         if request.user.is_authenticated() and request.user.is_staff:
             projects = Project.objects.all()
         else:
-            query = Q(public=True)
+            query = Q(access=Project.ACCESS_PUBLIC)
             if request.user.is_authenticated():
+                query |= Q(access=Project.ACCESS_REGISTERED)
                 # access granted through a team
                 teams = request.user.teams.values_list('name')
                 query |= Q(permissions__grantee_type=PermModel.GRANTEE_TEAM,

@@ -8,9 +8,9 @@ from issue.models import *
 
 
 AddProjectForm = modelform_factory(Project,
-        fields=['display_name', 'name', 'description', 'public'])
+        fields=['display_name', 'name', 'description', 'access'])
 EditProjectForm = modelform_factory(Project,
-        fields=['display_name', 'description', 'public'])
+        fields=['display_name', 'description', 'access'])
 LabelForm = modelform_factory(Label,
         fields=['name', 'color', 'inverted'])
 TeamForm = modelform_factory(Team,

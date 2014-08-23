@@ -29,6 +29,15 @@ class User(AbstractUser):
 @python_2_unicode_compatible
 class Project(models.Model):
 
+    ACCESS_PUBLIC = 1
+    ACCESS_REGISTERED = 2
+    ACCESS_PRIVATE = 3
+    ACCESS_TYPE = (
+        (ACCESS_PUBLIC, 'Public'),
+        (ACCESS_REGISTERED, 'Registration required'),
+        (ACCESS_PRIVATE, 'Private'),
+    )
+
     url_name_validator = RegexValidator(regex='^[a-z0-9_-]+$',
             message="Please enter only lowercase characters, number, "
                     "underscores or hyphens.")
@@ -43,9 +52,7 @@ class Project(models.Model):
     description = models.TextField(blank=True, default="",
             verbose_name="Description")
 
-    public = models.BooleanField(default=True,
-            verbose_name="Do unregistered users have read access "
-                         "to this project?")
+    access = models.IntegerField(choices=ACCESS_TYPE, default=ACCESS_PUBLIC)
 
     subscribers = models.ManyToManyField(User, blank=True, null=True,
             related_name='subscribed_projects')

@@ -72,32 +72,6 @@ class TestPermissions(TestCase):
         self.assertFalse(user.has_perm('modify_issue', project))
         self.assertTrue(user.has_perm('delete_issue', project))
 
-    def test_unregistered_project_list(self):
-        response = self.client.get('/')
-        projects = response.context['projects']
-        project = Project.objects.get(name='project-1')
-        self.assertEqual(len(projects), 1)
-        self.assertEqual(projects[0], project)
-
-    def test_ungranted_project_list(self):
-        self.client.login(username='user1', password='user1')
-        response = self.client.get('/')
-        projects = response.context['projects']
-        project = Project.objects.get(name='project-1')
-        self.assertEqual(len(projects), 1)
-        self.assertEqual(projects[0], project)
-        self.client.logout()
-
-    def test_granted_project_list(self):
-        self.client.login(username='user2', password='user2')
-        response = self.client.get('/')
-        projects = response.context['projects']
-        project1 = Project.objects.get(name='project-1')
-        project2 = Project.objects.get(name='project-2')
-        self.assertEqual(len(projects), 2)
-        self.assertTrue(project1 in projects)
-        self.assertTrue(project2 in projects)
-
 
 class TestNoProject(TestCase):
 
@@ -180,7 +154,8 @@ class TestProjectsViews(TestCase):
                 lambda x: x)
 
     def test_home_as_user1(self):
-        expected = Project.objects.filter(name='project-1')
+        expected = Project.objects \
+            .filter(Q(name='project-1') | Q(name='project-3'))
         self.client.login(username='user1', password='user1')
         url = reverse('list-project')
         self.assertEqual(url, '/')
@@ -202,7 +177,8 @@ class TestProjectsViews(TestCase):
         self.assertNotContains(response, 'New project')
 
     def test_home_as_user3(self):
-        expected = Project.objects.filter(name='project-1')
+        expected = Project.objects \
+            .filter(Q(name='project-1') | Q(name='project-3'))
         self.client.login(username='user3', password='user3')
         url = reverse('list-project')
         self.assertEqual(url, '/')
@@ -225,41 +201,41 @@ class TestProjectsViews(TestCase):
 
     def test_add_project_granted(self):
         self.client.login(username='user3', password='user3')
-        expected_url = reverse('list-project-permission', args=['project-3'])
+        expected_url = reverse('list-project-permission', args=['project-4'])
         url = reverse('add-project')
         response = self.client.post(url, {
-            'name': 'project-3',
-            'display_name': 'Project 3',
-            'description': 'This is the third project.',
+            'name': 'project-4',
+            'display_name': 'Project 4',
+            'description': 'This is the fourth project.',
+            'access': Project.ACCESS_PUBLIC,
         })
         self.assertRedirects(response, expected_url)
-        self.assertQuerysetEqual(Project.objects.all(),
-            ['project-1', 'project-2', 'project-3'],
-            lambda x: x.name, ordered=False)
+        self.assertQuerysetEqual(Project.objects.all(), ['project-%s' % x
+            for x in (1, 2, 3, 4)], lambda x: x.name, ordered=False)
 
     def test_add_project_forbidden(self):
         self.client.login(username='user1', password='user1')
         url = reverse('add-project')
         response = self.client.post(url, {
-            'name': 'project-3',
-            'display_name': 'Project 3',
-            'description': 'This is the third project.',
+            'name': 'project-4',
+            'display_name': 'Project 4',
+            'description': 'This is the foorth project.',
         })
         self.assertEqual(response.status_code, 403)
-        self.assertQuerysetEqual(Project.objects.all(),
-                ['project-1', 'project-2'], lambda x: x.name, ordered=False)
+        self.assertQuerysetEqual(Project.objects.all(), ['project-%s' % x
+            for x in (1, 2, 3)], lambda x: x.name, ordered=False)
 
     def test_add_project_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' + reverse('add-project')
         url = reverse('add-project')
         response = self.client.post(url, {
-            'name': 'project-3',
-            'display_name': 'Project 3',
-            'description': 'This is the third project.',
+            'name': 'project-4',
+            'display_name': 'Project 4',
+            'description': 'This is the foorth project.',
         })
         self.assertRedirects(response, expected_url)
-        self.assertQuerysetEqual(Project.objects.all(),
-            ['project-1', 'project-2'], lambda x: x.name, ordered=False)
+        self.assertQuerysetEqual(Project.objects.all(), ['project-%s' % x
+            for x in (1, 2, 3)], lambda x: x.name, ordered=False)
 
     def test_delete_project_get(self):
         self.client.login(username='user1', password='user1')
@@ -267,8 +243,8 @@ class TestProjectsViews(TestCase):
         url = reverse('delete-project', args=['project-1'])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 405)
-        self.assertQuerysetEqual(Project.objects.all(),
-            ['project-1', 'project-2'], lambda x: x.name, ordered=False)
+        self.assertQuerysetEqual(Project.objects.all(), ['project-%s' % x
+            for x in (1, 2, 3)], lambda x: x.name, ordered=False)
 
     def test_delete_project_granted(self):
         self.client.login(username='user1', password='user1')
@@ -276,16 +252,16 @@ class TestProjectsViews(TestCase):
         url = reverse('delete-project', args=['project-1'])
         response = self.client.post(url)
         self.assertRedirects(response, expected_url)
-        self.assertQuerysetEqual(Project.objects.all(),
-            ['project-2'], lambda x: x.name, ordered=False)
+        self.assertQuerysetEqual(Project.objects.all(), ['project-%s' % x
+            for x in (2, 3)], lambda x: x.name, ordered=False)
 
     def test_delete_project_forbidden(self):
         self.client.login(username='user2', password='user2')
         url = reverse('delete-project', args=['project-1'])
         response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
-        self.assertQuerysetEqual(Project.objects.all(),
-            ['project-1', 'project-2'], lambda x: x.name, ordered=False)
+        self.assertQuerysetEqual(Project.objects.all(), ['project-%s' % x
+            for x in (1, 2, 3)], lambda x: x.name, ordered=False)
 
     def test_delete_project_forbidden_ano(self):
         expected_url = reverse('login') + '?next=' \
@@ -293,8 +269,8 @@ class TestProjectsViews(TestCase):
         url = reverse('delete-project', args=['project-1'])
         response = self.client.post(url)
         self.assertRedirects(response, expected_url)
-        self.assertQuerysetEqual(Project.objects.all(),
-            ['project-1', 'project-2'], lambda x: x.name, ordered=False)
+        self.assertQuerysetEqual(Project.objects.all(), ['project-%s' % x
+            for x in (1, 2, 3)], lambda x: x.name, ordered=False)
 
 
 class TestIssuesViews(TestCase):
