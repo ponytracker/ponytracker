@@ -1,0 +1,176 @@
+Installation guide
+##################
+
+Typography
+**********
+
+Commands starting by ``#`` must be run as ``root`` user.
+
+Commands starting by ``$`` must be run as ``ponytracker`` user.
+
+
+Requirements
+************
+
+You need python. Version 2.7, 3.2 or 3.4 (and probably others) are fine.
+
+This installation guide install PonyTracker in a virtualenv.
+The corresponding packages names are ``python-virtualenv`` for python 2
+and ``python3-virtualenv`` for python 3 (at least under Debian).
+
+You need also ``supervisord`` to lunch PonyTracker.
+You can install it with the package with the same name.
+
+
+Installation
+************
+
+Be sure ``/srv/www`` exists::
+
+  # mkdir -p /srv/www
+
+Create a dedicated user::
+
+  # useradd -r -m -d /srv/www/ponytracker ponytracker
+
+The following commands are executed as ``ponytracker`` user::
+
+  # su ponytracker
+  $ cd /srv/www/ponytracker
+
+Create ``log`` and ``www`` directories::
+
+  $ mkdir log www
+
+Clone the git repository and switch to the release branch::
+
+  $ git clone http://github.com/bouttier/ponytracker
+  $ cd ponytracker # we are now in /srv/www/ponytracker/ponytracker
+  $ git checkout release
+
+Copy the example configuration file::
+
+  $ cp ponytracker/local_settings.py.example ponytracker/local_settings.py
+
+Set the ``SECRET_KEY`` value.
+You can generate a secret key with ``openssl``::
+
+  $ openssl rand -base64 32
+
+If you want email notifications, set ``BASE_URL``, ``EMAIL_HOST`` (smtp relay)
+and ``FROM_ADDR``.
+
+If you want to use an over database than the default sqlite, set ``DATABASES``.
+You can found the syntaxe in the `django documentation`_.
+
+.. _django documentation: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASES
+
+Set the static directory::
+
+  STATIC_ROOT = '/srv/www/ponytracker/www/static'
+
+Create a virtualenv and enter in it::
+
+  $ virtualenv env
+  $ source env/bin/activate
+
+Install requirements::
+
+  $ pip install -r requirements.txt
+  $ pip install gunicorn
+
+Initialize database tables::
+
+  $ python manage.py migrate
+
+Create a account for the administrator::
+
+  $ python manage.py createsuperuser
+
+Collect static files in the ``STATIC_DIR``::
+
+  $ python manage.py collecstatic --settings=ponytracker.local_settings
+
+Create the new file ``/etc/supervisor/conf.d/ponytracker.conf`` contening::
+
+  [program:ponytracker]
+  command=/srv/www/ponytracker/ponytracker/env/bin/gunicorn ponytracker.wsgi
+  directory=/srv/www/ponytracker/ponytracker
+  environment=PATH="/srv/www/ponytracker/ponytracker/env/bin"
+  user=ponytracker
+  autostart=true
+  autorestart=true
+  redirect_stderr=true
+
+Modify the file ``ponytracker/wsgi.py`` to use local settings instead of
+default settings::
+
+  os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ponytracker.local_settings")
+
+In order to do not have conflict during an update, you can tell `git` to ignore
+this modification::
+
+  $ git update-index --assume-unchanged ponytracker/wsgi.py
+
+Start ``supervisord`` to run the server::
+
+  $ service supervisor start
+
+You can verify that the server is listening on ``localhost`` on port ``8000``::
+
+  $ lsof | grep LISTEN | grep ponytracker
+
+You now need to install a real web server as a front-end.
+This documentation show sample configuration files for both `apache` and
+`nginx`.
+
+
+Using Apache as front-end
+-------------------------
+
+::
+
+  <VirtualHost *:443>
+      ServerName ponytracker.example.com
+      ServerAdmin webmaster@example.com
+      DocumentRoot /var/empty
+
+      RewriteEngine on
+      RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+  </VirtualHost>
+
+  <VirtualHost *:443>
+      ServerName ponytracker.example.com
+      ServerAdmin webmaster@example.com
+      DocumentRoot /srv/www/ponytracker/www
+
+      SSLEngine on
+      SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
+      SSLCertificateFile /etc/apache2/ssl/ponytracker.example.com.pem
+      SSLCertificateKeyFile /etc/apache2/ssl/ponytracker.example.com-Key.pem
+      SSLCACertificateFile /etc/apache2/ssl/ponytracker.example.com-CA.pem
+
+      <Location /static>
+          ProxyPass !
+      </Location>
+
+      <Location />
+          ProxyPass http://127.0.0.1:8000/
+          ProxyPassReverse http://127.0.0.1:8000/
+      </Location>
+
+      ErrorLog /srv/www/ponytracker/log/error.log
+      CustomLog /srv/www/ponytracker/log/access.log combined
+  </VirtualHost>
+
+
+Using nginx as front-end
+-------------------------
+
+Forthcoming...
+
+
+Send email asynchronously with the celery worker
+************************************************
+
+Forthcoming...
