@@ -11,8 +11,8 @@ It is an open source software released under license CeCILL-C.
 Main features
 -------------
 
-* Issues clasified in project
-* Issue filterable by labels/milestones/author
+* Issues classified in project
+* Issues filterable by labels/milestones/author
 * Markdown comments
 * Global and project-based permissions
 * Per user/group/team permissions
