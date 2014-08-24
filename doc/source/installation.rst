@@ -4,9 +4,9 @@ Installation guide
 Typography
 **********
 
-Commands starting by ``#`` must be run as ``root`` user.
+Commands starting with ``#`` must be run as ``root`` user.
 
-Commands starting by ``$`` must be run as ``ponytracker`` user.
+Commands starting with ``$`` must be run as ``ponytracker`` user.
 
 
 Requirements
@@ -18,7 +18,7 @@ This installation guide install PonyTracker in a virtualenv.
 The corresponding packages names are ``python-virtualenv`` for python 2
 and ``python3-virtualenv`` for python 3 (at least under Debian).
 
-You need also ``supervisord`` to lunch PonyTracker.
+You need also ``supervisord`` to launch PonyTracker.
 You can install it with the package with the same name.
 
 
@@ -60,8 +60,8 @@ You can generate a secret key with ``openssl``::
 If you want email notifications, set ``BASE_URL``, ``EMAIL_HOST`` (smtp relay)
 and ``FROM_ADDR``.
 
-If you want to use an over database than the default sqlite, set ``DATABASES``.
-You can found the syntaxe in the `django documentation`_.
+If you want to use another database than the default one (SQLite), set ``DATABASES``.
+You can found the syntax in the `django documentation`_.
 
 .. _django documentation: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASES
 
@@ -69,21 +69,21 @@ Set the static directory::
 
   STATIC_ROOT = '/srv/www/ponytracker/www/static'
 
-Create a virtualenv and enter in it::
+Create a virtualenv and activate it::
 
   $ virtualenv env
   $ source env/bin/activate
 
-Install requirements::
+Install the requirements::
 
   $ pip install -r requirements.txt
   $ pip install gunicorn
 
-Initialize database tables::
+Initialize the database tables::
 
   $ python manage.py migrate
 
-Create a account for the administrator::
+Create an account for the administrator::
 
   $ python manage.py createsuperuser
 
@@ -91,7 +91,7 @@ Collect static files in the ``STATIC_DIR``::
 
   $ python manage.py collecstatic --settings=ponytracker.local_settings
 
-Create the new file ``/etc/supervisor/conf.d/ponytracker.conf`` contening::
+Create the new file ``/etc/supervisor/conf.d/ponytracker.conf`` containing::
 
   [program:ponytracker]
   command=/srv/www/ponytracker/ponytracker/env/bin/gunicorn ponytracker.wsgi
@@ -102,7 +102,7 @@ Create the new file ``/etc/supervisor/conf.d/ponytracker.conf`` contening::
   autorestart=true
   redirect_stderr=true
 
-Modify the file ``ponytracker/wsgi.py`` to use local settings instead of
+Update the file ``ponytracker/wsgi.py`` to use local settings instead of
 default settings::
 
   os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ponytracker.local_settings")
@@ -116,12 +116,12 @@ Start ``supervisord`` to run the server::
 
   $ service supervisor start
 
-You can verify that the server is listening on ``localhost`` on port ``8000``::
+You can check that the server is listening on ``localhost`` on port ``8000``::
 
   $ lsof | grep LISTEN | grep ponytracker
 
 You now need to install a real web server as a front-end.
-This documentation show sample configuration files for both `apache` and
+This documentation shows sample configuration files for both `apache` and
 `nginx`.
 
 
