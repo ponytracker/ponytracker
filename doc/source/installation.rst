@@ -174,3 +174,46 @@ Send email asynchronously with the celery worker
 ************************************************
 
 Forthcoming...
+
+
+Use LDAP authentication
+***********************
+
+The python package providing LDAP support need to be compiled.
+Don't worry, ``pip`` do it him self, but you need to install
+some requirements::
+
+  # apt-get install python-dev libldap2-dev libsasl2-dev libssl-dev
+
+``libssl-dev`` is required only if want to use a SSL connection to your LDAP server.
+``libsasl2-dev`` is only required if you want to use SASL authentication.
+
+Enter in the virtualenv and install needed packages::
+
+  # su ponytracker
+  $ cd /srv/www/ponytracker/ponytracker
+  $ source env/bin/activate
+  $ pip install python-ldap django-auth-ldap
+
+Add ``django_auth_ldap.backend.LDAPBackend`` to your authentication backends
+in ``ponytracker/local_settings.py``::
+
+  AUTHENTICATION_BACKENDS = (
+      'django.contrib.auth.backends.ModelBackend',
+      'django_auth_ldap.backend.LDAPBackend',
+      'issue.backends.ProjectBackend',
+  )
+
+Configure the backend by adding required variables in your local settings.
+You can find the documentation on the `official website`_.
+An `sample file`_ is provided.
+
+.. _official website: http://pythonhosted.org/django-auth-ldap/
+.. _sample file: http://pythonhosted.org/django-auth-ldap/example.html
+
+If you use ``posixGroup``, import ``PosixGroupType`` instead of
+``GroupOfNamesType`` and update the ``AUTH_LDAP_GROUP_TYPE`` variable.
+
+Add the following line to synchronize yours LDAP groups with django ones::
+
+  AUTH_LDAP_MIRROR_GROUPS = True
