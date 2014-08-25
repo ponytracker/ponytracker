@@ -173,8 +173,50 @@ Forthcoming...
 Send email asynchronously with the celery worker
 ************************************************
 
-Forthcoming...
+By default, email notifications are sent during processing of pages.
+This behaviour can slow down the user experience.
+It is recommanded to use a seperated thread to asynchronously send the emails.
 
+PonyTracker is designed to use celery as a worker to send emails.
+In order to get celery working, you need a broker.
+This guide use the ``redis`` broker but you can find how to install an other
+broker in the `celery documentation`_.
+
+.. _celery documentation: http://celery.readthedocs.org/en/latest/getting-started/brokers/
+
+Install ``redis``::
+
+  # aptitude install redis
+
+Enter in the virtualenv and install python requirements::
+
+  # su ponytracker
+  $ cd /srv/www/ponytracker/ponytracker
+  $ source env/bin/activate
+  $ pip install celery[redis]
+  $ pip install django-celery
+
+Add ``djcelery`` to yours enabled applications in your
+local settings (``ponytracker/local_settings.py``)::
+
+  INSTALLED_APPS += ('djcelery',)
+
+Enable celery specific commands for the manage.py script by adding theses lines
+in your local settings::
+
+  from djcelery import celery
+  celery.setup_loader()
+
+Tell celery to use your redis broker by adding the ``BROKER_URL`` in your
+local settings::
+
+  BROKER_URL = 'redis://localhost:6379/0'
+
+Run the celery worker::
+
+  $ python manage.py celery worker --loglevel=info --settings=ponytracker.local_setting
+
+Forthcomming: how to launch celery from supervisord.
 
 Use LDAP authentication
 ***********************
