@@ -28,3 +28,4 @@ Planed features
 * Jabber notifications
 * Searching on body
 * Sorting criteria
+* RSS
