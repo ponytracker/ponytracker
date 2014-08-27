@@ -18,12 +18,19 @@ import json
 from issue.templatetags.issue_tags import *
 
 
+@python_2_unicode_compatible
 class User(AbstractUser):
 
     @property
     def teams(self):
         query = Q(groups__in=self.groups.all()) | Q(users=self)
         return Team.objects.filter(query)
+
+    def __str__(self):
+        if self.first_name and self.last_name:
+            return self.first_name + ' ' + self.last_name
+        else:
+            return self.username
 
 
 @python_2_unicode_compatible
