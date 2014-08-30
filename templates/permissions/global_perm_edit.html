@@ -9,9 +9,7 @@
 {% block permtab %} class="active"{% endblock %}
 
 {% block moretabs %}
-  <div class="pull-right">
-    <a href="#" data-action="{% url 'add-global-permission' %}" data-toggle="modal" data-target="#add-perm-form-modal" class="btn btn-success">Add permission</a>
-  </div>
+<a href="#" data-action="{% url 'add-global-permission' %}" data-toggle="modal" data-target="#add-perm-form-modal" class="pull-right btn btn-success">Add permission</a>
 {% endblock %}
 
 {% block tabcontent %}
@@ -22,7 +20,7 @@
 
     <div class="page-header">
       <h1>
-        {% if perm %}
+        {% if permission %}
         Edit permission
         {% else %}
         Add permission

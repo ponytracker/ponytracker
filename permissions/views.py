@@ -37,7 +37,7 @@ def global_perm_edit(request, id=None):
         else:
             name = ''
     return render(request, 'permissions/global_perm_edit.html', {
-        'perm': perm,
+        'permission': perm,
         'form': form,
         'name': name,
     })
@@ -101,7 +101,7 @@ def project_perm_edit(request, project, id=None):
             name = ''
     return render(request, 'permissions/project_perm_edit.html', {
         'project': project,
-        'perm': perm,
+        'permission': perm,
         'form': form,
         'name': name,
     })
