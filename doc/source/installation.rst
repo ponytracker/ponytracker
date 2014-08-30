@@ -25,6 +25,9 @@ You can install it with the package with the same name.
 Installation
 ************
 
+Clone and configuration
+=======================
+
 Be sure ``/srv/www`` exists::
 
   # mkdir -p /srv/www
@@ -77,7 +80,6 @@ Create a virtualenv and activate it::
 Install the requirements::
 
   $ pip install -r requirements.txt
-  $ pip install gunicorn
 
 Initialize the database tables::
 
@@ -90,6 +92,18 @@ Create an account for the administrator::
 Collect static files in the ``STATIC_DIR``::
 
   $ python manage.py collecstatic --settings=ponytracker.local_settings
+
+Run django
+==========
+
+You can use ``gunicorn`` or ``uwsgi``, both started by ``supervisord``.
+
+Using gunicorn
+--------------
+
+Install gunicorn::
+
+  $ pip install gunicorn
 
 Create the new file ``/etc/supervisor/conf.d/ponytracker.conf`` containing::
 
@@ -112,6 +126,39 @@ this modification::
 
   $ git update-index --assume-unchanged ponytracker/wsgi.py
 
+Using uwsgi
+-----------
+
+Install uwsgi::
+
+  $ pip install uwsgi
+
+Create the new file ``/etc/supervisor/conf.d/ponytracker.conf`` containing::
+
+  [program:ponytracker]
+  command=/srv/www/ponytracker/ponytracker/env/bin/uwsgi --ini uwsgi.ini
+  directory=/srv/www/ponytracker/ponytracker
+  environment=PATH="/srv/www/ponytracker/ponytracker/env/bin"
+  environment=DJANGO_SETTINGS_MODULE="settings.local_settings"
+  user=ponytracker
+  autostart=true
+  autorestart=true
+  redirect_stderr=true
+
+Create the new file ``/srv/www/ponytracker/ponytracker/uwsgi.ini`` containing::
+
+  [uwsgi]
+  chdir=/srv/www/ponytracker/ponytracker
+  module=ponytracker.wsgi:application
+  master=True
+  pidfile=/tmp/ponytracker.pid
+  vacuum=True
+  max-requests=5000
+  http-socket = 127.0.0.1:8000
+
+Verify
+------
+
 Start ``supervisord`` to run the server::
 
   $ service supervisor start
@@ -125,8 +172,11 @@ This documentation shows sample configuration files for both `apache` and
 `nginx`.
 
 
-Using Apache as front-end
--------------------------
+Front-end
+=========
+
+Apache
+------
 
 ::
 
@@ -164,8 +214,8 @@ Using Apache as front-end
   </VirtualHost>
 
 
-Using nginx as front-end
--------------------------
+nginx
+-----
 
 Forthcoming...
 
