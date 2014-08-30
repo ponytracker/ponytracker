@@ -1,0 +1,49 @@
+{% extends 'base_project.html' %}
+
+{% load bootstrap3 %}
+
+{% block milestonetab %} class="active"{% endblock %}
+
+{% block moretabs %}
+<div class="pull-right">
+  <a href="{% url 'list-milestone' project.name %}?show=open" class="btn btn-default btn-sm{% if show == 'open' %} active{% endif %}">Open</a>
+  <a href="{% url 'list-milestone' project.name %}?show=close" class="btn btn-default btn-sm{% if show == 'close' %} active{% endif %}">Close</a>
+  <a href="{% url 'list-milestone' project.name %}?show=all" class="btn btn-default btn-sm{% if show == 'all' %} active{% endif %}">All</a>
+  {% if perm.manage_tags %}
+  <a href="{% url 'add-milestone' project.name %}" class="btn btn-success">New milestone</a>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block media %}
+{{ form.media }}
+{% endblock %}
+
+{% block tabcontent %}
+
+<div class="row">
+  <div class="col-md-offset-4 col-md-4">
+
+    <div class="page-header">
+      <h1>
+        {% if milestone %}
+        Edit milestone
+        {% else %}
+        New milestone
+        {% endif %}
+      </h1>
+    </div>
+
+    <form action="" method="post" role="form">
+      {% bootstrap_form form %}
+      {% csrf_token %}
+      {% buttons %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'list-milestone' project.name %}" class="btn btn-default">Cancel</a>
+      {% endbuttons %}
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

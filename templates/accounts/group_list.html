@@ -1,0 +1,31 @@
+{% extends 'base_settings.html' %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% load bootstrap3 %}
+
+{% block grouptab %} class="active"{% endblock %}
+
+{% block moretabs %}
+<a href="{% url 'add-group' %}" class="pull-right btn btn-success">Add group</a>
+{% endblock %}
+
+{% block tabcontent %}
+
+<ul class="list-group">
+  {% if not groups.exists %}
+  <li class="list-group-item">
+    <em>There are no groups quit yet.</em>
+  </li>
+  {% endif %}
+  {% for group in groups %}
+  <a class="list-group-item" href="{% url 'show-group' group.id %}">
+    <strong>
+      {{ group }}
+    </strong>
+    — {{ group.users.count }} user{{ group.users.count|pluralize }}
+  </a>
+  {% endfor %}
+</ul>
+
+{% endblock %}

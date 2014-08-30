@@ -1,0 +1,54 @@
+{% extends 'base_project.html' %}
+
+{% load django_markdown %}
+{% load permissions_tags %}
+{% load permissions_filters %}
+{% load bootstrap3 %}
+{% load staticfiles %}
+
+{% block moretabs %}
+  <li class="active"><a href="{% url 'list-project-permission' project.name %}"><b>Permissions</b></a></li>
+  <div class="pull-right">
+    <a href="#" data-action="{% url 'add-global-permission' %}" data-toggle="modal" data-target="#add-perm-form-modal" class="btn btn-success">Add permission</a>
+  </div>
+{% endblock %}
+
+{% block tabcontent %}
+
+<div class="row">
+  <div class="col-md-offset-4 col-md-4">
+
+
+    <div class="page-header">
+      <h1>
+        {% if perm %}
+        Edit permission
+        {% else %}
+        Add permission
+        {% endif %}
+      </h1>
+    </div>
+
+    <form method="post" role="form">
+      {% csrf_token %}
+      {% bootstrap_form_errors form %}
+      {% bootstrap_field form.grantee_type %}
+      {% bootstrap_field form.grantee_id %}
+      <div class="form-group">
+        <label class="control-label" for="id_grantee_name">Grantee name</label>
+        <input class="form-control" id="id_grantee_name" maxlength="32" name="grantee_name" placeholder="Grantee name" required="required" title="" type="text" value="{{ name }}" />
+      </div>
+      <div class="form-group text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'list-global-permission' %}" class="btn btn-default">Cancel</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block js_end %}
+<script src="{% static 'js/perm.js' %}"></script>
+{% endblock %}

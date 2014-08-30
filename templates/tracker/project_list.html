@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% load django_markdown %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>
+    Welcome on PonyTracker!
+    {% if perm.create_project %}
+    <div class="pull-right">
+      <a href="{% url 'add-project' %}" class="btn btn-success">Create new project</a>
+    </div>
+    {% endif %}
+  </h1>
+</div>
+
+{% if projects.exists %}
+{% for project in projects %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+      <a class="h4 panel-title" href="{% url 'list-issue' project.name %}">{{ project }}</a>
+  </div>
+  <div class="panel-body">
+    {% if project.description %}
+    {{ project.description|linebreaksbr }}
+    {% else %}
+    <em>No description provided.</em>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% elif user.is_authenticated %}
+<div class="well">
+  Sorry, you have no access to any project.
+</div>
+{% else %}
+<div class="well">
+  There is not any public project. You should probably <a href="{% url 'login' %}">login</a>.
+</div>
+{% endif %}
+
+{% endblock %}

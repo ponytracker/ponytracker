@@ -1,0 +1,76 @@
+{% extends 'base_settings.html' %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% load bootstrap3 %}
+{% load accounts_tags %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+{% endblock %}
+
+{% block grouptab %} class="active"{% endblock %}
+
+{% block moretabs %}
+<a href="{% url 'add-group' %}" class="pull-right btn btn-success">Add group</a>
+{% endblock %}
+
+{% block tabcontent %}
+
+<div class="page-header">
+  <h1>
+    Group {{ group }}
+    &#160;
+    <small><span id="users-counter">{{ group.users.count }}</span> users</small>
+    <div class="pull-right">
+      <a href="{% url 'edit-group' group.id %}" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> edit</a>
+      <a href="javascript:void(0);" data-item="group" data-action="{% url 'delete-group' group.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> delete</a>
+    </div>
+  </h1>
+</div>
+
+<ul class="nav nav-tabs" role="tablist">
+  <li class="active"><a href="#" role="tab">Members</a></li>
+  <form class="form-inline pull-right" method="post" action="{% url 'add-user-to-group' group.id %}" role="form" id="add-user-form">
+    {% csrf_token %}
+    <div class="form-group">
+      <div class="input-group ui-widget">
+        <input type="text" class="form-control" name="user" placeholder="add users to group" value="">
+        <div class="input-group-addon">
+          <a href="javascript:void(0);" onclick="$('#add-user-form').submit();"><span class="glyphicon glyphicon-plus"></span></a>
+        </div>
+      </div>
+    </div>
+  </form>
+</ul>
+
+<br />
+
+<div class="tab-pane">
+  <ul class="list-group">
+    <li class="list-group-item{% if group.users.exists %} hidden{% endif %}" id="users-empty">
+      <em>No users belong to this group.</em>
+    </li>
+    {% for user in group.users.all %}
+    <li class="list-group-item">
+      {{ user.username }}
+      {% if user.fullname %}
+      <span class="text-muted">— {{ user.fullname }}</span>
+      {% endif %}
+      <a href="javascript:void(0);" data-href="{% url 'remove-user-from-group' group.id user.id %}" data-type="users" class="pull-right btn btn-danger btn-xs" role="remove">remove</a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% delete_modal %}
+
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script type="text/javascript">
+$('input[name="user"]').autocomplete({
+  source: "{% url 'add-user-to-group' group.id %}"
+});
+</script>
+<script src="{% static 'js/accounts.js' %}"></script>
+
+{% endblock %}

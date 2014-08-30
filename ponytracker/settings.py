@@ -24,6 +24,14 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates'),
+)
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
 ALLOWED_HOSTS = []
 
 
@@ -44,7 +52,9 @@ INSTALLED_APPS = (
     'bootstrap3_datetime',
     'bootstrap3',
     'colorful',
-    'issue',
+    'accounts',
+    'permissions',
+    'tracker',
 )
 
 from django import VERSION
@@ -61,7 +71,7 @@ if VERSION >= (1, 7):
 MIDDLEWARE_CLASSES += (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'issue.middleware.ProjectMiddleware',
+    'tracker.middleware.ProjectMiddleware',
 )
 
 ROOT_URLCONF = 'ponytracker.urls'
@@ -106,13 +116,13 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
-    'issue.context_processors.projects',
-    'issue.context_processors.perm',
+    'tracker.context_processors.projects',
+    'permissions.context_processors.perm',
 )
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'issue.backends.ProjectBackend',
+    'permissions.backends.Backend',
 )
 
 SITE_ID = 1
@@ -150,4 +160,6 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
-AUTH_USER_MODEL = 'issue.User'
+AUTH_USER_MODEL = 'accounts.User'
+
+RESERVED_PROJECT_NAME = [ 'login', 'logout', 'profile', 'admin', 'django-admin' ]

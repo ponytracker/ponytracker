@@ -1,0 +1,211 @@
+{% extends 'tracker/issue_base.html' %}
+
+{% load humanize %}
+{% load django_markdown %}
+{% load tracker_tags %}
+
+{% block media %}
+{{ form.media }}
+{% endblock %}
+
+{% block tabcontent %}
+
+<div class="well">
+  <h1>{{ issue }} <small>#{{ issue.id }}</small></h1>
+
+  {% if issue.closed %}
+  <span class="label label-danger" style="font-size: 120%;">Closed</span>
+  {% else %}
+  <span class="label label-success" style="font-size: 120%;">Open</span>
+  {% endif %}
+  &#160;
+  <a href="{% same_author issue.author %}"><b>{{ issue.author}}</b></a> opened this issue {{ issue.opened_at|naturaltime }}
+  - {{ issue.comments.count }} comment{{ issue.comments.count|pluralize }}
+</div>
+
+<div class="row">
+
+  <div class="col-md-10">
+
+    {% for event in events %}
+    <div class="panel panel-default">
+
+      <div class="panel-heading">
+        <span class="badge"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
+        &#160;
+        <a href="{% same_author event.author %}"><b>{{ event.author}}</b></a> {{ event }} {{ event.date|naturaltime }}
+        {% if event.code == event.DESCRIBE %}
+        <div class="pull-right">
+          {% if perm.delete_issue %}
+          <a href="#" data-item="issue" data-action="{% url 'delete-issue' project.name issue.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
+          {% endif %}
+          {% if perm.modify_issue %}
+          <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+          {% endif %}
+        </div>
+        {% elif event.code == event.COMMENT %}
+        <div class="pull-right">
+          {% if perm.delete_comment %}
+          <a href="#" data-item="comment" data-action="{% url 'delete-comment' project.name issue.id event.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
+          {% endif %}
+          {% if perm.modify_comment %}
+          <a href="{% url 'edit-comment' project.name issue.id event.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      {% if event.additionnal_section %}
+      <div class="panel-body">
+        {{ event.additionnal_section|markdown }}
+      </div>
+      {% elif event.code == event.DESCRIBE %}
+      <div class="panel-body">
+        <em>No description provided.</em>
+      </div>
+      {% endif %}
+
+    </div>
+    {% endfor %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <b>Comment</b>
+      </div>
+      <div class="panel-body">
+        {% if perm.create_comment %}
+        <form action="{% url 'comment-issue' project.name issue.id %}" method="post" role="form">
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.comment }}
+          </div>
+          <div class="text-center">
+            {% if perm.manage_issue %}
+            {% if issue.closed %}
+            <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
+            {% else %}
+            <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
+            {% endif %}
+            {% endif %}
+            <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Add a comment</button>
+          </div>
+        </form>
+        {% elif request.user.is_authenticated %}
+        Sorry, you are not allowed to comment this issue.
+        {% else %}
+        To post a comment, please <a href="{% url 'login' %}?prev={{ request.path }}&next={{ request.path }}">login</a>.
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-md-2">
+    <b>Labels</b>
+    {% if perm.manage_tags %}
+    <div class="pull-right">
+      <div class="dropdown">
+        <button class="btn btn-default btn-xs" type="button" id="labels-menu" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="labels-menu">
+          {% if labels.count %}
+          {% for label in labels %}
+          <li role="presentation">
+            <a href="{% url 'add-label-to-issue' project.name issue.id label.id %}">{% labeled label %}</a>
+          </li>
+          {% endfor %}
+          <li role="presentation" class="divider"></li>
+          {% endif %}
+          <li role="presentation">
+            <a href="{% url 'add-label' project.name %}?issue={{ issue.id }}"><button class="btn btn-success btn-xs btn-block">New label...</button></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+    <br /><br />
+    {% if issue.labels.count %}
+    {% for label in issue.labels.all %}
+    <div class="row">
+      {% if perm.manage_tags %}
+      <a href="{% url 'remove-label-from-issue' project.name issue.id label.id %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
+      {% else %}
+      <span style="display: inline-block; margin-left: 14px;"></span>
+      {% endif %}
+      <a href="{% same_label label %}">{% labeled label %}</a>
+    </div>
+    {% endfor %}
+    {% else %}
+    None yet
+    {% endif %}
+    <hr>
+    <b>Milestone</b>
+    {% if perm.manage_tags %}
+    <div class="pull-right">
+      <div class="dropdown">
+        <button class="btn btn-default btn-xs" type="button" id="labels-menu" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="labels-menu">
+          {% if milestones.count %}
+          {% for milestone in milestones %}
+          <li role="presentation">
+            <a href="{% url 'add-milestone-to-issue' project.name issue.id milestone.name %}">{{ milestone }}</a>
+          </li>
+          {% endfor %}
+          <li role="presentation" class="divider"></li>
+          {% endif %}
+          <li role="presentation">
+            <a href="{% url 'add-milestone' project.name %}?issue={{ issue.id }}"><button class="btn btn-success btn-xs btn-block">New milestone...</button></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+    <br /><br />
+    {% if issue.milestone %}
+    <div class="row">
+      {% if perm.manage_tags %}
+      <a href="{% url 'remove-milestone-from-issue' project.name issue.id issue.milestone.name %}"><span class="glyphicon glyphicon-remove remove-label"></span></a>
+      {% else %}
+      <span style="display: inline-block; margin-left: 14px;"></span>
+      {% endif %}
+      <a href="{% same_milestone issue.milestone  %}"><b>{{ issue.milestone }}</b></a>
+    </div>
+    {% else %}
+    No milestone
+    {% endif %}
+    {% comment %}
+    <hr>
+    <h5>
+      <b>Assignee</b>
+      <div class="pull-right">
+        <a href="#"><button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-cog"></span></button></a>
+      </div>
+    </h5>
+    {% if issue.assignee %}
+    <a href="{% same_author assignee %}"><b>{{ assignee.username }}</b></a>
+    {% else %}
+    No one assigned
+    {% endif %}
+    {% endcomment %}
+    {% if request.user.is_authenticated %}
+    <hr>
+    <h5>
+      <b>Notifications</b>
+    </h5>
+    <div class="row">
+      <span style="display: inline-block; margin-left: 14px;"></span>
+      {% if request.user in project.subscribers.all %}
+      Subscribed to the project
+      {% else %}
+      {% if request.user in issue.subscribers.all %}
+      <a href="{% url 'unsubscribe-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-eye-close"></span>&#160;Unsubscribe</a>
+      {% else %}
+      <a href="{% url 'subscribe-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-eye-open"></span>&#160;Subscribe</a>
+      {% endif %}
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base_project.html' %}
+
+{% block milestonetab %} class="active"{% endblock %}
+
+{% block moretabs %}
+<div class="pull-right">
+  <div class="btn-group">
+    <a href="{% url 'list-milestone' project.name %}?show=open" class="btn btn-default{% if show == 'open' %} active{% endif %}">Open</a>
+    <a href="{% url 'list-milestone' project.name %}?show=close" class="btn btn-default{% if show == 'close' %} active{% endif %}">Close</a>
+    <a href="{% url 'list-milestone' project.name %}?show=all" class="btn btn-default{% if show == 'all' %} active{% endif %}">All</a>
+  </div>
+  {% if perm.manage_tags %}
+  <a href="{% url 'add-milestone' project.name %}" class="btn btn-success">New milestone</a>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block tabcontent %}
+
+<ul class="list-group">
+  {% if milestones.count %}
+  {% for milestone in milestones %}
+  <li class="list-group-item">
+    <div class="pull-right">
+      {% if perm.manage_tags %}
+      {% if milestone.closed %}
+      <a href="{% url 'reopen-milestone' project.name milestone.name %}"><button class="btn btn-info"><span class="glyphicon glyphicon-repeat"></span> Reopen</button></a>
+      {% else %}
+      <a href="{% url 'close-milestone' project.name milestone.name %}"><button class="btn btn-info"><span class="glyphicon glyphicon-ok-circle"></span> Close</button></a>
+      {% endif %}
+      <a href="{% url 'edit-milestone' project.name milestone.name %}"><button class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
+      {% endif %}
+      {% if perm.delete_tags %}
+      <a href="#" data-item="milestone" data-action="{% url 'delete-milestone' project.name milestone.name %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+      {% endif %}
+    </div>
+    <b style="font-size: 200%;">
+      <span class="glyphicon glyphicon-road"></span> <a href="{% url 'list-issue' project.name %}?q=is:open%20milestone:{{ milestone.name }}">{{ milestone }}</a>
+    </b>
+    &#160;
+    <small>
+      <span style="white-space: nowrap;"><span class="glyphicon glyphicon-calendar"></span> {% if milestone.due_date %}Due by {{ milestone.due_date }}{% else %}No due date{% endif %}</span>
+    </small>
+    <br /><br />
+    <div class="progress">
+      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ milestone.progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ milestone.progress }}%;">
+        {{ milestone.progress }}% complete
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+  {% else %}
+  <li class="list-group-item">
+    <em>There aren't any milestones matching your desired criteria.</em>
+  </li>
+  {% endif %}
+</ul>
+
+{% endblock %}

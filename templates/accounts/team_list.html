@@ -1,0 +1,32 @@
+{% extends 'base_settings.html' %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% load bootstrap3 %}
+
+{% block teamtab %} class="active"{% endblock %}
+
+{% block moretabs %}
+<a href="{% url 'add-team' %}" class="pull-right btn btn-success">Add team</a>
+{% endblock %}
+
+{% block tabcontent %}
+
+<ul class="list-group">
+  {% if not teams.exists %}
+  <li class="list-group-item">
+    <em>There are no teams quite yet.</em>
+  </li>
+  {% endif %}
+  {% for team in teams %}
+  <a class="list-group-item" href="{% url 'show-team' team.id %}">
+    <strong>
+      {{ team }}
+    </strong>
+    — {{ team.users.count }} user{{ team.users.count|pluralize }}
+    — {{ team.groups.count }} group{{ team.groups.count|pluralize }}
+  </a>
+  {% endfor %}
+</ul>
+
+{% endblock %}

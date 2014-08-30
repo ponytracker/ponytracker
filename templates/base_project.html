@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% load accounts_tags %}
+
+{% block title %}PonyTracker - {{ project }}{% endblock %}
+
+{% block project %}{{ project }}{% endblock %}
+
+{% block navbar-left %}
+
+<form class="navbar-form navbar-right" role="search" id="search-form">
+  <div class="form-group">
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Search this project">
+      <a href="#" class="input-group-addon" onclick="$('#search-form').submit();"><span class="glyphicon glyphicon-search"></span></a>
+    </div>
+  </div>
+</form>
+
+{% if request.user in project.subscribers.all %}
+<li><a href="{% url 'unsubscribe-project' project.name %}?next={{ request.get_full_path }}"><span class="glyphicon glyphicon-eye-close"></span> Unwatch</a></li>
+{% else %}
+<li><a href="{% url 'subscribe-project' project.name %}?next={{ request.get_full_path }}"><span class="glyphicon glyphicon-eye-open"></span> Watch</a></li>
+{% endif %}
+
+{% if perm.manage_project_permission or perm.modify_project or perm.delete_project %}
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <span class="caret"></span></a>
+  <ul class="dropdown-menu" role="menu">
+    {% if perm.manage_project_permission %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-project-permission' project.name %}"><span class="glyphicon glyphicon-cog"></span> Manage permissions</a></li>
+    {% endif %}
+    {% if perm.modify_project %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'edit-project' project.name %}"><span class="glyphicon glyphicon-wrench"></span> Modify this project</a></li>
+    {% endif %}
+    {% if perm.delete_project %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-item="project" data-action="{% url 'delete-project' project.name %}" data-toggle="modal" data-target="#confirm-delete"><span class="glyphicon glyphicon-trash"></span> Delete this project</a></li>
+    {% endif %}
+  </ul>
+</li>
+
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs" role="tablist">
+  <li{% block issuetab %}{% endblock %}><a href="{% url 'list-issue' project.name %}"><b>Issues</b></a></li>
+  <li{% block labeltab %}{% endblock %}><a href="{% url 'list-label' project.name %}"><b>Labels</b></a></li>
+  <li{% block milestonetab %}{% endblock %}><a href="{% url 'list-milestone' project.name %}"><b>Milestones</b></a></li>
+  {% block moretabs %}{% endblock %}
+</ul>
+<br />
+
+{% block tabcontent %}{% endblock %}
+
+{% delete_modal %}
+
+{% endblock %}

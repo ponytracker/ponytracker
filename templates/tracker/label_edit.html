@@ -1,0 +1,33 @@
+{% extends 'base_project.html' %}
+
+{% load bootstrap3 %}
+
+{% block labeltab %} class="active"{% endblock %}
+
+{% block tabcontent %}
+
+<div class="row">
+  <div class="col-md-offset-4 col-md-4">
+
+    <div class="page-header">
+      <h3>
+        {% if label %}
+        Edit label
+        {% else %}
+        New label
+        {% endif %}
+      </h3>
+    </div>
+
+    <form action="" method="post" role="form">
+      {% bootstrap_form form %}
+      {% csrf_token %}
+      {% buttons %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'list-label' project.name %}" class="btn btn-default">Cancel</a>
+      {% endbuttons %}
+    </form>
+  </div>
+</div>
+
+{% endblock %}

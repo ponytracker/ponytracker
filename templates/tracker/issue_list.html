@@ -1,0 +1,106 @@
+{% extends 'tracker/issue_base.html' %}
+
+{% load humanize %}
+{% load tracker_tags %}
+
+{% block tabcontent %}
+
+<ul class="list-group">
+  <li class="list-group-item disabled">
+    <div class="row">
+      <div class="col-md-6">
+        <form class="form-inline" role="form" method="GET" id="filter-form">
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-addon">
+                <a href="#" onclick="$('#filter-form').submit();"><span class="glyphicon glyphicon-search"></span></a>
+              </div>
+              <input class="form-control" name="q" type="text" placeholder="filter" value="{{ query }}"/>
+            </div>
+          </div>
+          <div class="form-group">
+              {% if is_all_query %}
+              <a href="{% url 'list-issue' project.name %}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-remove"> Reset filter</span></a>
+              {% endif %}
+          </div>
+        </form>
+      </div>
+      <div class="col-md-6 text-right">
+        <div class="btn-group">
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" type="button" id="issue-filter-label" data-toggle="dropdown">
+              Labels
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="issue-filter-label">
+              <li role="presentation" class="dropdown-header">Filter by label</li>
+              {% if labels.exists %}
+              {% for label in labels %}
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }} label:{{ label.quotted_name }}{{ sort }}">{{ label }}</a></li>
+              {% endfor %}
+              {% else %}
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><em>No labels</em></a></li>
+              {% endif %}
+            </ul>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" type="button" id="issue-filter-milestone" data-toggle="dropdown">
+              Milestone
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="issue-filter-milestone">
+              <li role="presentation" class="dropdown-header">Filter by milestone</li>
+              {% if milestones.exists %}
+              {% for milestone in milestones %}
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }} milestone:{{ milestone }}{{ sort }}">{{ milestone }}</a></li>
+              {% endfor %}
+              {% else %}
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><em>No milestones</em></a></li>
+              {% endif %}
+            </ul>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" type="button" id="issue-sort-menu" data-toggle="dropdown">
+              Sort
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="issue-sort-menu">
+              <li role="presentation" class="dropdown-header">Sort by</li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=newest">Newest</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=oldest">Oldest</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=most commented">Most commented</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=least-commented">Least commented</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=recently-updated">Recently updated</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=least-recently-updated">Least recently updated</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+  {% if issues.count %}
+  {% for issue in issues %}
+  <li class="list-group-item">
+    {% if issue.closed %}
+    <span class="text-danger"><span class="glyphicon glyphicon-ok-circle"></span></span>
+    {% else %}
+    <span class="text-success"><span class="glyphicon glyphicon-hand-right"></span></span>
+    {% endif %}
+    <a href="{% url 'show-issue' project.name issue.id %}"><b>{{ issue }}</b></a>
+    {% for label in issue.labels.all %}
+    <a href="{% same_label label %}" class="label" style="{% label_style label %}">{{ label }}</a>
+    {% endfor %}
+    <br />
+    <small>#{{ issue.id }} opened by <a href="{% same_author issue.author %}"><b>{{ issue.author.username }}</b></a> {{ issue.opened_at|naturaltime }}</small>
+    {% if issue.milestone %}
+    &#160;–&#160;&#160;<span class="glyphicon glyphicon-road"></span> <a href="{% same_milestone issue.milestone %}"><b>{{ issue.milestone }}</b></a>
+    {% endif %}
+    &#160;–&#160;&#160;<span><span class="badge">{{ issue.comments.count }}</span></span>
+  </li>
+  {% endfor %}
+  {% else %}
+  <li class="list-group-item"><em>No issues match your desired criteria.</em></li>
+  {% endif %}
+</ul>
+
+{% endblock %}

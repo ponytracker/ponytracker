@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% load django_markdown %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>Profile</h1>
+</div>
+
+<ul class="list-group">
+  <li class="list-group-item disabled">
+    <h3>Your groups</h3>
+  </li>
+  {% for group in request.user.groups.all %}
+  <li class="list-group-item">
+    {{ group }}
+    <div class="pull-right">
+      <a href="javascript:alert('Not yet implemented.');" class="btn btn-xs btn-danger">
+        <span class="glyphicon glyphicon-log-out"></span> leave
+      </a>
+    </div>
+  </li>
+  {% endfor %}
+  {% if not request.user.groups.exists %}
+  <li class="list-group-item">
+    <em>You belong to no groups.</em>
+  </li>
+  {% endif %}
+</ul>
+
+<ul class="list-group">
+  <li class="list-group-item disabled">
+    <h3>Your teams</h3>
+  </li>
+  {% for team in request.user.teams.all %}
+  <li class="list-group-item">
+    {{ team }}
+    <div class="pull-right">
+      <a href="javascript:alert('Not yet implemented.');" class="btn btn-xs btn-danger">
+        <span class="glyphicon glyphicon-log-out"></span> leave
+      </a>
+    </div>
+  </li>
+  {% endfor %}
+  {% if not request.user.teams.exists %}
+  <li class="list-group-item">
+    <em>You belong to no teams.</em>
+  </li>
+  {% endif %}
+</ul>
+
+<ul class="list-group">
+  <li class="list-group-item disabled">
+    <h3>Projects that you are watching</h3>
+  </li>
+  {% for project in request.user.subscribed_projects.all %}
+  <li class="list-group-item">
+    {{ project }}
+    <div class="pull-right">
+      <a href="{% url 'unsubscribe-project' project.name %}?next={{ request.path }}" class="btn btn-xs btn-danger">
+        <span class="glyphicon glyphicon-eye-close"></span> unwatch
+      </a>
+    </div>
+  </li>
+  {% endfor %}
+  {% if not request.user.subscribed_projects.exists %}
+  <li class="list-group-item">
+    <em>You are not watching any projects.</em>
+  </li>
+  {% endif %}
+</ul>
+
+{% endblock %}

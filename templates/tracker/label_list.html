@@ -1,0 +1,41 @@
+{% extends 'base_project.html' %}
+
+{% load tracker_tags %}
+
+{% block labeltab %} class="active"{% endblock %}
+
+{% if perm.manage_tags %}
+{% block moretabs %}
+<div class="pull-right">
+  <a href="{% url 'add-label' project.name %}" class="btn btn-success">New label</a>
+</div>
+{% endblock %}
+{% endif %}
+
+{% block tabcontent %}
+
+<ul class="list-group">
+  {% if labels.count %}
+  {% for label in labels %}
+  <li class="list-group-item">
+      <a href="{% same_label label %}" class="btn" style="{% label_style label %}"><span class="glyphicon glyphicon-tag" style="font-size: 100%;"></span> {{ label }}</a>
+      {% if perm.manage_tags or perm.delete_tags %}
+      <div class="pull-right">
+        {% if perm.manage_tags %}
+        <a href="{% url 'edit-label' project.name label.id %}" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Edit</a>
+        {% endif %}
+        {% if perm.delete_tags %}
+        <a href="#" data-item="label" data-action="{% url 'delete-label' project.name label.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span> Delete</a>
+        {% endif %}
+      </div>
+      {% endif %}
+  </li>
+  {% endfor %}
+  {% else %}
+  <li class="list-group-item">
+    <em>There aren't any labels for this repository quite yet.</em>
+  </li>
+  {% endif %}
+</ul>
+
+{% endblock %}

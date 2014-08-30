@@ -1,0 +1,38 @@
+{% extends 'base_settings.html' %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% load bootstrap3 %}
+
+{% block usertab %} class="active"{% endblock %}
+
+{% block tabcontent %}
+
+<div class="row">
+
+  <div class="col-md-offset-3 col-md-6">
+
+    <div class="page-header">
+      <h1>
+        {% if user %}
+        Add user
+        {% else %}
+        New user
+        {% endif %}
+      </h1>
+    </div>
+
+    <form action="#" method="post" class="form">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% buttons %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'list-user' %}" class="btn btn-default">Cancel</a>
+      {% endbuttons %}
+    </form>
+
+  </div>
+
+</div>
+
+{% endblock %}

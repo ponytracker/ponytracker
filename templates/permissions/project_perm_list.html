@@ -1,0 +1,92 @@
+{% extends 'base_project.html' %}
+
+{% load django_markdown %}
+{% load accounts_tags %}
+{% load permissions_tags %}
+{% load permissions_filters %}
+{% load staticfiles %}
+
+{% block moretabs %}
+  <li class="active"><a href="{% url 'list-project-permission' project.name %}"><b>Permissions</b></a></li>
+  <div class="pull-right">
+    <a href="{% url 'add-project-permission' project.name %}" class="btn btn-success">Add permission</a>
+  </div>
+{% endblock %}
+
+{% block tabcontent %}
+
+{% if permissions.count %}
+<div class="panel-group" id="accordion">
+{% for perm in permissions %}
+<div class="panel panel-default">
+  <div class="pannel panel-heading">
+    <h4 class="panel-title">
+      <a name="perm{{ perm.id }}" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ perm.id }}">
+        {{ perm.type }} {{ perm.name }}
+      </a>
+      <div class="pull-right">
+        <a href="{% url 'edit-project-permission' project.name perm.id %}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-edit"></span> edit</a>
+        <a href="#perm{{ perm.id }}" data-item="permission" data-action="{% url 'delete-project-permission' project.name perm.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span> delete</a>
+      </div>
+    </h4>
+  </div>
+  <div class="panel-collapse collapse" id="collapse{{ perm.id }}">
+    <div class="panel-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          Create issue
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'create-issue' %}">{{ perm.create_issue|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Manage issue
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'modify-issue' %}">{{ perm.manage_issue|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Modify issue
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'manage-issue' %}">{{ perm.modify_issue|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Delete issue
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'delete-issue' %}">{{ perm.delete_issue|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Create comment
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'create-comment' %}">{{ perm.create_comment|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Modify comment
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'modify-comment' %}">{{ perm.modify_comment|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Delete comment
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'delete-comment' %}">{{ perm.delete_comment|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Manage tags
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'manage-tags' %}">{{ perm.manage_tags|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Delete tags
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'delete-tags' %}">{{ perm.delete_tags|boolean }}</a>
+        </li>
+        <li class="list-group-item">
+          Manage permissions
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'manage-project-permission' %}">{{ perm.manage_project_permission|boolean }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div class="well">
+  No permissions defined yet.
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block js_end %}
+<script src="{% static 'js/perm.js' %}"></script>
+{% endblock %}

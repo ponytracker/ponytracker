@@ -1,0 +1,21 @@
+{% load staticfiles %}
+
+<div class="modal" id="confirm-delete" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="panel panel-danger">
+      <div class="panel-heading" id="confirm-delete-title">
+        Delete
+      </div>
+      <div class="panel-body">
+        <form action="#" method="post" role="form" id="confirm-delete-form" class="text-center">
+          {% csrf_token %}
+          <p id="confirm-delete-message">Are you sure?</p>
+          <button type="submit" class="btn btn-danger">{% block confirm-ok %}Confirm{% endblock %}</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/delete_modal.js' %}"></script>
