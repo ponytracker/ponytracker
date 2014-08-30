@@ -9,9 +9,7 @@
 {% block permtab %} class="active"{% endblock %}
 
 {% block moretabs %}
-  <div class="pull-right">
-    <a href="{% url 'add-global-permission' %}" class="btn btn-success">Add permission</a>
-  </div>
+<a href="{% url 'add-global-permission' %}" class="pull-right btn btn-success">Add permission</a>
 {% endblock %}
 
 {% block tabcontent %}
