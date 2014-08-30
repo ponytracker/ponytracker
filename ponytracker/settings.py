@@ -162,4 +162,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-RESERVED_PROJECT_NAME = [ 'login', 'logout', 'profile', 'admin', 'django-admin' ]
+RESERVED_PROJECT_URLS = [
+    'login', 'logout', 'profile', 'admin', 'django-admin'
+]

@@ -5,7 +5,7 @@ urlpatterns = [
     # Administration: redirect on first available admin page
     url(r'^admin/$', 'tracker.views.admin', name='admin'),
     # Settings
-    url(r'^admin/settings/$', 'tracker.views.settings', name='settings'),
+    url(r'^admin/settings/$', 'tracker.views.settings_list', name='settings'),
     # Projects
     url(r'^$', 'tracker.views.project_list', name='list-project'),
     url(r'^add/$', 'tracker.views.project_add', name='add-project'),

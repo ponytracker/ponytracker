@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.conf import settings
 
 from tracker.forms import *
 from tracker.models import *
@@ -39,7 +40,7 @@ def admin(request):
 ############
 
 @project_perm_required('manage_settings')
-def settings(request):
+def settings_list(request):
     return render(request, 'tracker/settings.html')
 
 
@@ -66,9 +67,9 @@ def project_add(request):
     if request.method == 'POST' and form.is_valid():
 
         name = form.cleaned_data['name']
-        if Project.objects.filter(name__iexact=name).exists():
-            form._errors['name'] = ['There is already a project '
-                                            'with a similar name.']
+        if name in settings.RESERVED_PROJECT_URLS:
+            form._errors['name'] = ['Sorry, this URL is reserved '
+                                    'and can not be used.']
         else:
             project = form.save()
             messages.success(request, 'Project added successfully.')
