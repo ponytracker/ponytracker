@@ -94,7 +94,7 @@ Collect static files in the ``STATIC_DIR``::
 Create the new file ``/etc/supervisor/conf.d/ponytracker.conf`` containing::
 
   [program:ponytracker]
-  command=/srv/www/ponytracker/ponytracker/env/bin/gunicorn ponytracker.wsgi
+  command=/srv/www/ponytracker/ponytracker/env/bin/gunicorn ponytracker.wsgi:application
   directory=/srv/www/ponytracker/ponytracker
   environment=PATH="/srv/www/ponytracker/ponytracker/env/bin"
   user=ponytracker
@@ -204,8 +204,8 @@ local settings (``ponytracker/local_settings.py``)::
 Enable celery specific commands for the manage.py script by adding theses lines
 in your local settings::
 
-  from djcelery import celery
-  celery.setup_loader()
+  import djcelery
+  djcelery.setup_loader()
 
 Tell celery to use your redis broker by adding the ``BROKER_URL`` in your
 local settings::
