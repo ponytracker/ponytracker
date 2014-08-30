@@ -1,5 +1,10 @@
 PonyTracker changelog
 
 
-version 0.1 [not released yet]:
+version 0.2 [no released yet]
+- new design
+- new permission managment system
+- user/group/team managment
+
+version 0.1 [2014.08.29]:
 - initial public release
