@@ -19,9 +19,10 @@
   {% for user in users %}
   <a class="list-group-item" href="{% url 'show-user' user.id %}">
     <div class="row" style="line-height: 48px;">
-      <div class="col-md-6">
-        <h4 class="media-heading">{{ user.username }}</h4>
-        {{ user.first_name }} {{ user.last_name }}
+      <div class="col-md-6" style="line-height: 24px;">
+        <strong>{{ user.username }}</strong>
+        <br />
+        <span class="text-muted">{{ user.first_name }} {{ user.last_name }}</span>
       </div>
       <div class="col-md-2">
         {% if not user.is_active %}
