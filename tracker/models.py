@@ -82,6 +82,7 @@ class Milestone(models.Model):
 
     class Meta:
         ordering = ['due_date']
+        unique_together = ['project', 'name']
 
     name_validator = RegexValidator(regex='^[a-z0-9_.-]+$',
             message="Please enter only lowercase characters, number, "
@@ -90,9 +91,6 @@ class Milestone(models.Model):
     project = models.ForeignKey(Project, related_name='milestones')
 
     name = models.CharField(max_length=32, validators=[name_validator])
-
-    class Meta:
-        unique_together = ['project', 'name']
 
     due_date = models.DateTimeField(blank=True, null=True)
 
