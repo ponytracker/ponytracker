@@ -17,11 +17,11 @@
 
 {% if projects.exists %}
 {% for project in projects %}
-<div class="panel panel-default">
-  <div class="panel-heading">
-      <a class="h4 panel-title" href="{% url 'list-issue' project.name %}">{{ project }}</a>
-  </div>
-  <div class="panel-body">
+<div class="list-group">
+  <a class="list-group-item disabled" href="{% url 'list-issue' project.name %}">
+    <h4>{{ project }}</h4>
+  </a>
+  <div class="list-group-item">
     {% if project.description %}
     {{ project.description|linebreaksbr }}
     {% else %}
