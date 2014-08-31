@@ -11,6 +11,7 @@ on the foreign object id, we can rely on database cascade deletion to delete
 outaded permissions and we have to do it our-self.
 """
 
+
 @receiver(pre_delete, sender=User, dispatch_uid="clean_user_perms")
 def clean_user_perms(sender, instance, **kwargs):
     # Clean global permissions

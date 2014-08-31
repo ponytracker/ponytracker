@@ -16,7 +16,8 @@ class ProjectForm(forms.ModelForm):
         model = Project
         fields = ['display_name', 'name', 'description', 'access']
         help_texts = {
-            'name': 'Warning: if you change this value, this will break existing URLs.'
+            'name': 'Warning: if you change this value, '
+                    'this will break existing URLs.'
         }
 
 

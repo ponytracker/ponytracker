@@ -7,7 +7,7 @@ from permissions.models import PermissionModel
 from accounts.models import *
 
 
-__all__ = [ 'GlobalPermissionForm', 'ProjectPermissionForm' ]
+__all__ = ['GlobalPermissionForm', 'ProjectPermissionForm']
 
 
 class PermissionForm(forms.ModelForm):
@@ -52,9 +52,9 @@ class GlobalPermissionForm(PermissionForm):
 
     class Meta:
         model = GlobalPermission
-        fields =  [ 'grantee_type', 'grantee_id' ]
+        fields = ['grantee_type', 'grantee_id']
         widgets = {
-                'grantee_id': HiddenInput,
+            'grantee_id': HiddenInput,
         }
 
 
@@ -63,7 +63,7 @@ class ProjectPermissionForm(PermissionForm):
     class Meta:
         model = ProjectPermission
         # project is required for the unicity check
-        fields =  [ 'project', 'grantee_type', 'grantee_id' ]
+        fields = ['project', 'grantee_type', 'grantee_id']
         widgets = {
             'project': HiddenInput,
             'grantee_id': HiddenInput,

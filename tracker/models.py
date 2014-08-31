@@ -14,14 +14,14 @@ from accounts.models import User
 from tracker.templatetags.tracker_tags import *
 
 
-__all__ = [ 'Project', 'Issue', 'Label', 'Milestone', 'Event' ]
+__all__ = ['Project', 'Issue', 'Label', 'Milestone', 'Event']
 
 
 @python_2_unicode_compatible
 class Project(models.Model):
 
     class Meta:
-        ordering = [ 'name' ]
+        ordering = ['name']
 
     ACCESS_PUBLIC = 1
     ACCESS_REGISTERED = 2
@@ -81,7 +81,7 @@ class Label(models.Model):
 class Milestone(models.Model):
 
     class Meta:
-        ordering = [ 'due_date' ]
+        ordering = ['due_date']
 
     name_validator = RegexValidator(regex='^[a-z0-9_.-]+$',
             message="Please enter only lowercase characters, number, "

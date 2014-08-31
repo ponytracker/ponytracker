@@ -9,7 +9,7 @@ from permissions.models import PermissionModel as PermModel
 
 
 # This middleware protect only views of the following modules
-modules = [ 'accounts.views', 'permissions.views', 'tracker.views' ]
+modules = ['accounts.views', 'permissions.views', 'tracker.views']
 
 
 class ProjectMiddleware:

@@ -7,7 +7,7 @@ from tracker.models import Project
 from accounts.models import *
 
 
-__all__ = [ 'GlobalPermission', 'ProjectPermission' ]
+__all__ = ['GlobalPermission', 'ProjectPermission']
 
 
 @python_2_unicode_compatible
@@ -82,7 +82,7 @@ class PermissionModel(models.Model):
 class GlobalPermission(PermissionModel):
 
     class Meta:
-        unique_together = ( 'grantee_type', 'grantee_id' )
+        unique_together = ('grantee_type', 'grantee_id')
 
     # Global permissions
 
@@ -120,7 +120,7 @@ class GlobalPermission(PermissionModel):
 class ProjectPermission(PermissionModel):
 
     class Meta:
-        unique_together = ( 'project', 'grantee_type', 'grantee_id' )
+        unique_together = ('project', 'grantee_type', 'grantee_id')
 
     project = models.ForeignKey(Project, related_name='permissions')
 

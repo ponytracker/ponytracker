@@ -5,14 +5,14 @@ from django.contrib import auth
 from django.utils.encoding import python_2_unicode_compatible
 
 
-__all__ = [ 'User', 'Group', 'Team' ]
+__all__ = ['User', 'Group', 'Team']
 
 
 @python_2_unicode_compatible
 class User(AbstractUser):
 
     class Meta:
-        ordering = [ 'username' ]
+        ordering = ['username']
 
     @property
     def teams(self):
@@ -45,7 +45,7 @@ class User(AbstractUser):
 class Group(auth.models.Group):
 
     class Meta:
-        ordering = [ 'name' ]
+        ordering = ['name']
         proxy = True
 
     @property
@@ -57,7 +57,7 @@ class Group(auth.models.Group):
 class Team(models.Model):
 
     class Meta:
-        ordering = [ 'name' ]
+        ordering = ['name']
 
     name = models.CharField(max_length=128, unique=True)
 

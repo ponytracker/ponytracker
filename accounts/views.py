@@ -151,7 +151,8 @@ def group_add_user(request, group):
                 else:
                     user.groups.add(group)
                     user.save()
-                    messages.success(request, 'User added to group successfully.')
+                    messages.success(request,
+                            'User added to group successfully.')
         else:
             messages.error(request, 'User not found.')
         return redirect('show-group', group.id)
@@ -160,12 +161,12 @@ def group_add_user(request, group):
         if not term:
             return Http404()
         query = Q(username__icontains=term) \
-                | Q(first_name__icontains=term) \
-                | Q(last_name__icontains=term)
+            | Q(first_name__icontains=term) \
+            | Q(last_name__icontains=term)
         users = User.objects.exclude(groups=group).filter(query)[:10]
         response = []
         for user in users:
-            response += [ {
+            response += [{
                 'label': user.username_and_fullname,
                 'value': user.username,
             }]
@@ -249,7 +250,8 @@ def team_add_user(request, team):
                 else:
                     team.users.add(user)
                     team.save()
-                    messages.success(request, 'User added to team successfully.')
+                    messages.success(request,
+                            'User added to team successfully.')
         else:
             messages.error(request, 'User not found.')
         request.session['team-tab'] = 'user'
@@ -259,15 +261,15 @@ def team_add_user(request, team):
         if not term:
             return Http404()
         query = Q(username__icontains=term) \
-                | Q(first_name__icontains=term) \
-                | Q(last_name__icontains=term)
+            | Q(first_name__icontains=term) \
+            | Q(last_name__icontains=term)
         users = User.objects \
-                .exclude(groups__in=team.groups.all()) \
-                .exclude(id__in=team.users.values('id')) \
-                .filter(query)[:10]
+            .exclude(groups__in=team.groups.all()) \
+            .exclude(id__in=team.users.values('id')) \
+            .filter(query)[:10]
         response = []
         for user in users:
-            response += [ {
+            response += [{
                 'label': user.username_and_fullname,
                 'value': user.username,
             }]
@@ -299,7 +301,8 @@ def team_add_group(request, team):
                 else:
                     team.groups.add(group)
                     team.save()
-                    messages.success(request, 'Group added to team successfully.')
+                    messages.success(request,
+                            'Group added to team successfully.')
         else:
             messages.error(request, 'Group not found.')
         request.session['team-tab'] = 'group'
@@ -309,11 +312,11 @@ def team_add_group(request, team):
         if not term:
             return Http404()
         groups = Group.objects \
-                .exclude(id__in=team.groups.values('id')) \
-                .filter(name__icontains=term)[:10]
+            .exclude(id__in=team.groups.values('id')) \
+            .filter(name__icontains=term)[:10]
         response = []
         for group in groups:
-            response += [ {
+            response += [{
                 'label': group.name,
                 'value': group.name,
             }]

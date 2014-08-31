@@ -143,19 +143,22 @@ BOOTSTRAP3 = {
     #'base_url': '//netdna.bootstrapcdn.com/bootstrap/3.2.0/',
     'base_url': STATIC_URL,
 
-    # The complete URL to the Bootstrap CSS file (None means derive it from base_url)
+    # The complete URL to the Bootstrap CSS file
+    # (None means derive it from base_url)
     'css_url': None,
 
-    # The complete URL to the Bootstrap CSS file (None means no theme)
+    # The complete URL to the Bootstrap CSS file
+    # (None means no theme)
     'theme_url': None,
 
-    # The complete URL to the Bootstrap JavaScript file (None means derive it from base_url)
+    # The complete URL to the Bootstrap JavaScript file
+    # (None means derive it from base_url)
     'javascript_url': None,
 }
 
 # Celery configuration
 BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
