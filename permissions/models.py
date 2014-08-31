@@ -96,12 +96,14 @@ class GlobalPermission(PermissionModel):
 
     # Project permissions, given on ALL projects
 
-    create_issue = models.BooleanField(default=True)
+    access_project = models.BooleanField(default=False)
+
+    create_issue = models.BooleanField(default=False)
     modify_issue = models.BooleanField(default=False)
     manage_issue = models.BooleanField(default=False)
     delete_issue = models.BooleanField(default=False)
 
-    create_comment = models.BooleanField(default=True)
+    create_comment = models.BooleanField(default=False)
     modify_comment = models.BooleanField(default=False)
     delete_comment = models.BooleanField(default=False)
 

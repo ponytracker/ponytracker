@@ -67,6 +67,10 @@
         <div class="tab-pane" id="project{{ perm.id }}">
           <ul class="list-group">
             <li class="list-group-item">
+              Access
+              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'access-project' %}">{{ perm.access_project|boolean }}</a>
+            </li>
+            <li class="list-group-item">
               Create issue
               <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'create-issue' %}">{{ perm.create_issue|boolean }}</a>
             </li>

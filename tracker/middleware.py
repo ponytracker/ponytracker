@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
 from tracker.models import Project
+from permissions.models import GlobalPermission
 from permissions.models import PermissionModel as PermModel
 
 
@@ -30,25 +31,45 @@ class ProjectMiddleware:
                 " 'django.contrib.auth.middleware.AuthenticationMiddleware'"
                 " before the ProjectMiddleware class.")
 
-        # projects
+        # projectS
         if request.user.is_authenticated() and request.user.is_staff:
             projects = Project.objects.all()
-        else:
-            query = Q(access=Project.ACCESS_PUBLIC)
-            if request.user.is_authenticated():
+        elif request.user.is_authenticated():
+            teams = request.user.teams.values_list('id')
+            groups = request.user.groups.values_list('id')
+            # check for a global permission allowing access
+            if GlobalPermission.objects.filter(access_project=True) \
+                    .filter(
+                        # directly
+                        Q(grantee_type=PermModel.GRANTEE_USER,
+                            grantee_id=request.user.id)
+                        # through a group
+                        | Q(grantee_type=PermModel.GRANTEE_GROUP,
+                            grantee_id__in=groups)
+                        # through a team
+                        | Q(grantee_type=PermModel.GRANTEE_TEAM,
+                            grantee_id__in=teams)
+                    ).exists():
+                projects = Project.objects.all()
+            # searching project reachable throught project permission
+            else:
+                # public project
+                query = Q(access=Project.ACCESS_PUBLIC)
+                # project reserved to logged users
                 query |= Q(access=Project.ACCESS_REGISTERED)
                 # access granted through a team
-                teams = request.user.teams.values_list('id')
                 query |= Q(permissions__grantee_type=PermModel.GRANTEE_TEAM,
-                           permissions__grantee_id__in=teams)
+                        permissions__grantee_id__in=teams)
                 # access granted through a group
-                groups = request.user.groups.values_list('id')
                 query |= Q(permissions__grantee_type=PermModel.GRANTEE_GROUP,
-                           permissions__grantee_id__in=groups)
+                        permissions__grantee_id__in=groups)
                 # access granted by specific permission
                 query |= Q(permissions__grantee_type=PermModel.GRANTEE_USER,
-                           permissions__grantee_id=request.user.id)
-            projects = Project.objects.filter(query).distinct()
+                        permissions__grantee_id=request.user.id)
+                projects = Project.objects.filter(query).distinct()
+        else:
+            # only public projects
+            projects = Project.objects.filter(access=Project.ACCESS_PUBLIC)
         request.projects = projects
 
         # project
