@@ -91,9 +91,7 @@ class GlobalPermission(PermissionModel):
     delete_project = models.BooleanField(default=False)
 
     manage_settings = models.BooleanField(default=False)
-    manage_user = models.BooleanField(default=False)
-    manage_group = models.BooleanField(default=False)
-    manage_team = models.BooleanField(default=False)
+    manage_accounts = models.BooleanField(default=False)
     manage_global_permission = models.BooleanField(default=False)
 
     # Project permissions, given on ALL projects

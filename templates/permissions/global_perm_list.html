@@ -55,16 +55,8 @@
               <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-settings' %}">{{ perm.manage_settings|boolean }}</a>
             </li>
             <li class="list-group-item">
-              Manage users
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-user' %}">{{ perm.manage_user|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Manage groups
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-group' %}">{{ perm.manage_group|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Manage teams
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-team' %}">{{ perm.manage_team|boolean }}</a>
+              Manage users, groups and teams
+              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-accounts' %}">{{ perm.manage_accounts|boolean }}</a>
             </li>
             <li class="list-group-item">
               Manage permissions

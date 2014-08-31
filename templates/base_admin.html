@@ -10,13 +10,9 @@
   {% if perm.manage_settings %}
   <li{% block settingtab %}{% endblock %}><a href="{% url 'settings' %}"><b>Settings</b></a></li>
   {% endif %}
-  {% if perm.manage_user %}
+  {% if perm.manage_accounts %}
   <li{% block usertab %}{% endblock %}><a href="{% url 'list-user' %}"><b>User</b></a></li>
-  {% endif %}
-  {% if perm.manage_group %}
   <li{% block grouptab %}{% endblock %}><a href="{% url 'list-group' %}"><b>Group</b></a></li>
-  {% endif %}
-  {% if perm.manage_team %}
   <li{% block teamtab %}{% endblock %}><a href="{% url 'list-team' %}"><b>Team</b></a></li>
   {% endif %}
   {% if perm.manage_global_permission %}

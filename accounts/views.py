@@ -26,14 +26,14 @@ def profile(request):
 # Users #
 #########
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_list(request):
     return render(request, 'accounts/user_list.html', {
         'users': User.objects.all(),
     })
 
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_details(request, user):
     tab = request.session.pop('user-tab', 'group')
     return render(request, 'accounts/user_details.html', {
@@ -43,7 +43,7 @@ def user_details(request, user):
     })
 
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_edit(request, user=None):
 
     if user:
@@ -64,7 +64,7 @@ def user_edit(request, user=None):
     })
 
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_activate(request, user):
     user = get_object_or_404(User, id=user)
     if user.is_active:
@@ -76,7 +76,7 @@ def user_activate(request, user):
     return redirect('show-user', user.id)
 
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_disable(request, user):
     user = get_object_or_404(User, id=user)
     if user.is_active:
@@ -89,7 +89,7 @@ def user_disable(request, user):
 
 
 @require_http_methods(["POST"])
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_delete(request, user):
     user = get_object_or_404(User, id=user)
     user.delete()
@@ -97,7 +97,7 @@ def user_delete(request, user):
     return redirect('list-user')
 
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_add_group(request, user):
     user = get_object_or_404(User, id=user)
     if request.method == 'POST':
@@ -135,7 +135,7 @@ def user_add_group(request, user):
         return JsonResponse(response, safe=False)
 
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_remove_group(request, user, group):
     user = get_object_or_404(User, pk=user)
     group = get_object_or_404(Group, pk=group)
@@ -144,7 +144,7 @@ def user_remove_group(request, user, group):
     return HttpResponse()
 
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_add_team(request, user):
     user = get_object_or_404(User, id=user)
     if request.method == 'POST':
@@ -184,7 +184,7 @@ def user_add_team(request, user):
         return JsonResponse(response, safe=False)
 
 
-@project_perm_required('manage_user')
+@project_perm_required('manage_accounts')
 def user_remove_team(request, user, team):
     user = get_object_or_404(User, pk=user)
     team = get_object_or_404(Team, pk=team)
@@ -201,21 +201,21 @@ def user_remove_team(request, user, team):
 # Groups #
 ##########
 
-@project_perm_required('manage_group')
+@project_perm_required('manage_accounts')
 def group_list(request):
     return render(request, 'accounts/group_list.html', {
         'groups': Group.objects.all(),
     })
 
 
-@project_perm_required('manage_group')
+@project_perm_required('manage_accounts')
 def group_details(request, group):
     return render(request, 'accounts/group_details.html', {
         'group': get_object_or_404(Group, id=group),
     })
 
 
-@project_perm_required('manage_group')
+@project_perm_required('manage_accounts')
 def group_edit(request, group=None):
 
     if group:
@@ -237,7 +237,7 @@ def group_edit(request, group=None):
 
 
 @require_http_methods(["POST"])
-@project_perm_required('manage_group')
+@project_perm_required('manage_accounts')
 def group_delete(request, group):
     group = get_object_or_404(Group, id=group)
     group.delete()
@@ -245,7 +245,7 @@ def group_delete(request, group):
     return redirect('list-group')
 
 
-@project_perm_required('manage_group')
+@project_perm_required('manage_accounts')
 def group_add_user(request, group):
     group = get_object_or_404(Group, id=group)
     if request.method == 'POST':
@@ -283,7 +283,7 @@ def group_add_user(request, group):
         return JsonResponse(response, safe=False)
 
 
-@project_perm_required('manage_group')
+@project_perm_required('manage_accounts')
 def group_remove_user(request, group, user):
     group = get_object_or_404(Group, id=group)
     user = get_object_or_404(User, id=user)
@@ -296,14 +296,14 @@ def group_remove_user(request, group, user):
 # Teams #
 #########
 
-@project_perm_required('manage_team')
+@project_perm_required('manage_accounts')
 def team_list(request):
     return render(request, 'accounts/team_list.html', {
         'teams': Team.objects.all(),
     })
 
 
-@project_perm_required('manage_team')
+@project_perm_required('manage_accounts')
 def team_details(request, team):
     tab = request.session.pop('team-tab', 'user')
     return render(request, 'accounts/team_details.html', {
@@ -312,7 +312,7 @@ def team_details(request, team):
     })
 
 
-@project_perm_required('manage_team')
+@project_perm_required('manage_accounts')
 def team_edit(request, team=None):
 
     if team:
@@ -336,7 +336,7 @@ def team_edit(request, team=None):
 
 
 @require_http_methods(["POST"])
-@project_perm_required('manage_team')
+@project_perm_required('manage_accounts')
 def team_delete(request, team):
     team = get_object_or_404(Team, pk=team)
     team.delete()
@@ -344,7 +344,7 @@ def team_delete(request, team):
     return redirect('list-team')
 
 
-@project_perm_required('manage_team')
+@project_perm_required('manage_accounts')
 def team_add_user(request, team):
     team = get_object_or_404(Team, id=team)
     if request.method == 'POST':
@@ -386,7 +386,7 @@ def team_add_user(request, team):
         return JsonResponse(response, safe=False)
 
 
-@project_perm_required('manage_team')
+@project_perm_required('manage_accounts')
 def team_remove_user(request, team, user):
     team = get_object_or_404(Team, pk=team)
     user = get_object_or_404(User, pk=user)
@@ -395,7 +395,7 @@ def team_remove_user(request, team, user):
     return HttpResponse()
 
 
-@project_perm_required('manage_team')
+@project_perm_required('manage_accounts')
 def team_add_group(request, team):
     team = get_object_or_404(Team, id=team)
     if request.method == 'POST':
@@ -433,7 +433,7 @@ def team_add_group(request, team):
         return JsonResponse(response, safe=False)
 
 
-@project_perm_required('manage_team')
+@project_perm_required('manage_accounts')
 def team_remove_group(request, team, group):
     team = get_object_or_404(Team, pk=team)
     group = get_object_or_404(Group, pk=group)
