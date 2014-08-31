@@ -62,7 +62,9 @@ class ProjectPermissionForm(PermissionForm):
 
     class Meta:
         model = ProjectPermission
-        fields =  [ 'grantee_type', 'grantee_id' ]
+        # project is required for the unicity check
+        fields =  [ 'project', 'grantee_type', 'grantee_id' ]
         widgets = {
+            'project': HiddenInput,
             'grantee_id': HiddenInput,
         }

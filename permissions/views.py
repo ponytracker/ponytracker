@@ -82,7 +82,8 @@ def project_perm_edit(request, project, id=None):
         perm = get_object_or_404(ProjectPermission, project=project, id=id)
     else:
         perm = None
-    form = ProjectPermissionForm(request.POST or None, instance=perm)
+    form = ProjectPermissionForm(request.POST or None, instance=perm,
+            initial={'project': project.id})
     if request.method == 'POST' and form.is_valid():
         if id:
             form.save()

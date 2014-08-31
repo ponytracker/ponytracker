@@ -82,7 +82,7 @@ class PermissionModel(models.Model):
 class GlobalPermission(PermissionModel):
 
     class Meta:
-        unique_together = [ 'grantee_type', 'grantee_id' ]
+        unique_together = ( 'grantee_type', 'grantee_id' )
 
     # Global permissions
 
@@ -120,10 +120,9 @@ class GlobalPermission(PermissionModel):
 class ProjectPermission(PermissionModel):
 
     class Meta:
-        unique_together = [ 'project', 'grantee_type', 'grantee_id' ]
+        unique_together = ( 'project', 'grantee_type', 'grantee_id' )
 
-    project = models.ForeignKey(Project, editable=False,
-            related_name='permissions')
+    project = models.ForeignKey(Project, related_name='permissions')
 
     manage_project_permission = models.BooleanField(default=False)
 
