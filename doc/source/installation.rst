@@ -290,10 +290,8 @@ Enter in the virtualenv and install needed packages::
 Add ``django_auth_ldap.backend.LDAPBackend`` to your authentication backends
 in ``ponytracker/local_settings.py``::
 
-  AUTHENTICATION_BACKENDS = (
-      'django.contrib.auth.backends.ModelBackend',
+  AUTHENTICATION_BACKENDS += (
       'django_auth_ldap.backend.LDAPBackend',
-      'issue.backends.ProjectBackend',
   )
 
 Configure the backend by adding required variables in your local settings.
