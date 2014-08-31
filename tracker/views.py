@@ -290,7 +290,7 @@ def issue_edit(request, project, issue=None):
         init_data = {'title': issue.title,
                      'description': issue.description}
     else:
-        if not request.user.has_perm('create_issue', project.name):
+        if not request.user.has_perm('create_issue', project):
             raise PermissionDenied()
         issue = None
         init_data = None
