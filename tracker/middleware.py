@@ -38,16 +38,16 @@ class ProjectMiddleware:
             if request.user.is_authenticated():
                 query |= Q(access=Project.ACCESS_REGISTERED)
                 # access granted through a team
-                teams = request.user.teams.values_list('name')
+                teams = request.user.teams.values_list('id')
                 query |= Q(permissions__grantee_type=PermModel.GRANTEE_TEAM,
-                           permissions__grantee_name__in=teams)
+                           permissions__grantee_id__in=teams)
                 # access granted through a group
-                groups = request.user.groups.values_list('name')
+                groups = request.user.groups.values_list('id')
                 query |= Q(permissions__grantee_type=PermModel.GRANTEE_GROUP,
-                           permissions__grantee_name__in=groups)
+                           permissions__grantee_id__in=groups)
                 # access granted by specific permission
                 query |= Q(permissions__grantee_type=PermModel.GRANTEE_USER,
-                           permissions__grantee_name=request.user.username)
+                           permissions__grantee_id=request.user.id)
             projects = Project.objects.filter(query).distinct()
         request.projects = projects
 
