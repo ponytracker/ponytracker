@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.http import Http404, HttpResponse
+from django.core.exceptions import PermissionDenied
 
 
 from permissions.models import *
@@ -85,13 +86,12 @@ def project_perm_edit(request, project, id=None):
     form = ProjectPermissionForm(request.POST or None, instance=perm,
             initial={'project': project.id})
     if request.method == 'POST' and form.is_valid():
+        if not form.cleaned_data['project'] == project:
+            raise PermissionDenied()
+        form.save()
         if id:
-            form.save()
             messages.success(request, 'Permission updated successfully.')
         else:
-            perm = form.save(commit=False)
-            perm.project = project
-            perm.save()
             messages.success(request, 'Permission added successfully.')
         return redirect('list-project-permission', project.name)
     name = request.POST.get('grantee_name')
