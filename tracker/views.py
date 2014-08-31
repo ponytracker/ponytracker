@@ -535,7 +535,7 @@ def issue_subscribe(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
-    if issue.subscribers.filter(pk=user.pk).exists():
+    if issue.subscribers.filter(pk=request.user.pk).exists():
         messages.warning(request, 'You are already subscribed to this issue.')
     else:
         issue.subscribers.add(request.user)
