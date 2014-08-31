@@ -7,7 +7,7 @@
 *.bak
 *.patch
 .coverage
-/ponytracker/local_settings.py
+/ponytracker/*_settings.py
 /htmlcov/
 /doc/build/
 /uwsgi.ini
