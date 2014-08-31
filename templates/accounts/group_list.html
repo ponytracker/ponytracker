@@ -14,16 +14,22 @@
 
 <ul class="list-group">
   {% if not groups.exists %}
-  <li class="list-group-item">
+  <li class="list-group-item" style="line-height: 48px;">
     <em>There are no groups quit yet.</em>
   </li>
   {% endif %}
   {% for group in groups %}
-  <a class="list-group-item" href="{% url 'show-group' group.id %}">
-    <strong>
-      {{ group }}
-    </strong>
-    — {{ group.users.count }} user{{ group.users.count|pluralize }}
+  <a class="list-group-item" href="{% url 'show-group' group.id %}" style="line-height: 48px;">
+    <div class="row">
+      <div class="col-md-10">
+        <strong>
+          {{ group }}
+        </strong>
+      </div>
+      <div class="col-md-2 text-muted">
+        {{ group.users.count }} user{{ group.users.count|pluralize }}
+      </div>
+    </div>
   </a>
   {% endfor %}
 </ul>

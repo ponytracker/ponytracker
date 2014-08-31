@@ -34,6 +34,16 @@ def user_list(request):
 
 
 @project_perm_required('manage_user')
+def user_details(request, user):
+    tab = request.session.pop('user-tab', 'group')
+    return render(request, 'accounts/user_details.html', {
+        'user': get_object_or_404(User, id=user),
+        'directteams': Team.objects.filter(users__id=user),
+        'tab': tab,
+    })
+
+
+@project_perm_required('manage_user')
 def user_edit(request, user=None):
 
     if user:
@@ -41,12 +51,12 @@ def user_edit(request, user=None):
 
     form = UserForm(request.POST or None, instance=user)
     if request.method == 'POST' and form.is_valid():
-        form.save()
+        user = form.save()
         if user:
             messages.success(request, 'User modified successfully.')
         else:
             messages.success(request, 'User added successfully.')
-        return redirect('list-user')
+        return redirect('show-user', user.id)
 
     return render(request, 'accounts/user_edit.html', {
         'user': user,
@@ -63,7 +73,7 @@ def user_activate(request, user):
         user.is_active = True
         user.save()
         messages.success(request, 'Account activated successfully.')
-    return redirect('list-user')
+    return redirect('show-user', user.id)
 
 
 @project_perm_required('manage_user')
@@ -75,7 +85,7 @@ def user_disable(request, user):
         messages.success(request, 'Account disabled successfully.')
     else:
         messages.info(request, 'Account already disabled.')
-    return redirect('list-user')
+    return redirect('show-user', user.id)
 
 
 @require_http_methods(["POST"])
@@ -85,6 +95,106 @@ def user_delete(request, user):
     user.delete()
     messages.success(request, 'User deleted successfully.')
     return redirect('list-user')
+
+
+@project_perm_required('manage_user')
+def user_add_group(request, user):
+    user = get_object_or_404(User, id=user)
+    if request.method == 'POST':
+        group = request.POST.get('group')
+        if group:
+            try:
+                group = Group.objects.get(name=group)
+            except ObjectDoesNotExist:
+                messages.error(request, 'Group not found.')
+            else:
+                if user.groups.filter(id=group.id).exists():
+                    messages.info(request, 'User already in group.')
+                else:
+                    user.groups.add(group)
+                    user.save()
+                    messages.success(request,
+                            'User added to group successfully.')
+        else:
+            messages.error(request, 'Group not found.')
+        request.session['user-tab'] = 'group'
+        return redirect('show-user', user.id)
+    else:
+        term = request.GET.get('term')
+        if not term:
+            return Http404()
+        groups = Group.objects \
+            .exclude(id__in=user.groups.values('id')) \
+            .filter(name__icontains=term)[:10]
+        response = []
+        for group in groups:
+            response += [{
+                'label': group.name,
+                'value': group.name,
+            }]
+        return JsonResponse(response, safe=False)
+
+
+@project_perm_required('manage_user')
+def user_remove_group(request, user, group):
+    user = get_object_or_404(User, pk=user)
+    group = get_object_or_404(Group, pk=group)
+    user.groups.remove(group)
+    user.save()
+    return HttpResponse()
+
+
+@project_perm_required('manage_user')
+def user_add_team(request, user):
+    user = get_object_or_404(User, id=user)
+    if request.method == 'POST':
+        team = request.POST.get('team')
+        if team:
+            try:
+                team = Team.objects.get(name=team)
+            except ObjectDoesNotExist:
+                messages.error(request, 'Team not found.')
+            else:
+                # We do not use user.teams because we want to be able to add an
+                # user to a team even if he is already a member through a group
+                if Team.objects.filter(users=user).exists():
+                    messages.info(request, 'User already in team.')
+                else:
+                    team.users.add(user)
+                    team.save()
+                    messages.success(request,
+                            'User added to team successfully.')
+        else:
+            messages.error(request, 'Team not found.')
+        request.session['user-tab'] = 'team'
+        return redirect('show-user', user.id)
+    else:
+        term = request.GET.get('term')
+        if not term:
+            return Http404()
+        teams = Team.objects \
+            .exclude(users=user) \
+            .filter(name__icontains=term)[:10]
+        response = []
+        for team in teams:
+            response += [{
+                'label': team.name,
+                'value': team.name,
+            }]
+        return JsonResponse(response, safe=False)
+
+
+@project_perm_required('manage_user')
+def user_remove_team(request, user, team):
+    user = get_object_or_404(User, pk=user)
+    team = get_object_or_404(Team, pk=team)
+    team.users.remove(user)
+    team.save()
+    response = ''
+    if team.groups.filter(id__in=user.groups.values('id')).exists():
+        # style a member throught a group
+        response = '<em>member throught group</em>'
+    return HttpResponse(response)
 
 
 ##########

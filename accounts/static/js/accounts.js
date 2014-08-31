@@ -8,19 +8,23 @@ $('a[role="remove"]').on("click", function () {
   a.html('removing...');
   $.ajax(href)
     .done(function(data, textStatus) {
-      a.parents('li').remove();
-      var counter = $('#' + type + '-counter');
-      var empty = $('#' + type + '-empty');
-      var count = parseInt(counter.html());
-      count--;
-      counter.html(count);
-      if (count < 0) {
-        // should not happen
-        window.location.reload();
-      } else if (count == 0) {
-        empty.removeClass('hidden');
+      if (data) {
+        a.parents('span').html(data);
       } else {
-        empty.addClass('hidden');
+        a.parents('li').remove();
+        var counter = $('#' + type + '-counter');
+        var empty = $('#' + type + '-empty');
+        var count = parseInt(counter.html());
+        count--;
+        counter.html(count);
+        if (count < 0) {
+          // should not happen
+          window.location.reload();
+        } else if (count == 0) {
+          empty.removeClass('hidden');
+        } else {
+          empty.addClass('hidden');
+        }
       }
     })  
     .fail(function () {

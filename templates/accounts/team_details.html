@@ -34,8 +34,8 @@
 </div>
 
 <ul class="nav nav-tabs" role="tablist">
-  <li{% if tab == 'user' %} class="active"{% endif %}><a href="#user-pane" role="tab" data-toggle="tab" data-tab="user">Users</a></li>
-  <li{% if tab == 'group' %} class="active"{% endif %}><a href="#group-pane" role="tab" data-toggle="tab" data-tab="group">Groups</a></li>
+  <li{% if tab == 'user' %} class="active"{% endif %}><a href="#user-pane" role="tab" data-toggle="tab" data-showtab="user" data-hidetab="group">Users</a></li>
+  <li{% if tab == 'group' %} class="active"{% endif %}><a href="#group-pane" role="tab" data-toggle="tab" data-showtab="group" data-hidetab="user">Groups</a></li>
   <form class="form-inline pull-right{% if tab == 'group' %} hidden{% endif %}" method="post" action="{% url 'add-user-to-team' team.id %}" role="form" id="add-user-form">
     {% csrf_token %}
     <div class="form-group">
@@ -106,6 +106,6 @@ $('input[name="group"]').autocomplete({
 });
 </script>
 <script src="{% static 'js/accounts.js' %}"></script>
-<script src="{% static 'js/team.js' %}"></script>
+<script src="{% static 'js/tabswitch.js' %}"></script>
 
 {% endblock %}

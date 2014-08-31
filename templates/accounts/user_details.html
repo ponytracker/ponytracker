@@ -1,0 +1,119 @@
+{% extends 'base_admin.html' %}
+
+{% load staticfiles %}
+{% load humanize %}
+{% load bootstrap3 %}
+{% load accounts_tags %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+{% endblock %}
+
+{% block usertab %} class="active"{% endblock %}
+
+{% block moretabs %}
+<a href="{% url 'add-user' %}" class="pull-right btn btn-success">Add user</a>
+{% endblock %}
+
+{% block tabcontent %}
+
+<div class="page-header">
+  <h1>
+    User {{ user }}
+    &#160;
+    <small>
+      <span id="groups-counter">{{ user.groups.count }}</span> groups
+      —
+      <span id="teams-counter">{{ user.teams.count }}</span> teams
+    </small>
+    <div class="pull-right">
+      {% if user.is_active %}
+      <a href="{% url 'disable-user' user.id %}" class="btn btn-default"><span class="glyphicon glyphicon-ban-circle"></span> disable</a>
+      {% else %}
+      <a href="{% url 'activate-user' user.id %}" class="btn btn-default"><span class="glyphicon glyphicon-check"></span> activate</a>
+      {% endif %}
+      <a href="{% url 'edit-user' user.id %}" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> edit</a>
+      <a href="javascript:void(0);" data-item="delete" data-action="{% url 'delete-user' user.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> delete</a>
+    </div>
+  </h1>
+</div>
+
+<ul class="nav nav-tabs" role="tablist">
+  <li{% if tab == 'group' %} class="active"{% endif %}><a href="#group-pane" role="tab" data-toggle="tab" data-showtab="group" data-hidetab="team">Groups</a></li>
+  <li{% if tab == 'team' %} class="active"{% endif %}><a href="#team-pane" role="tab" data-toggle="tab" data-showtab="team" data-hidetab="group">Teams</a></li>
+  <form class="form-inline pull-right{% if tab == 'team' %} hidden{% endif %}" method="post" action="{% url 'add-group-to-user' user.id %}" role="form" id="add-group-form">
+    {% csrf_token %}
+    <div class="form-group">
+      <div class="input-group ui-widget">
+        <input type="text" class="form-control" name="group" placeholder="add user to groups" value="">
+        <div class="input-group-addon">
+          <a href="javascript:void(0);" onclick="$('#add-group-form').submit();"><span class="glyphicon glyphicon-plus"></span></a>
+        </div>
+      </div>
+    </div>
+  </form>
+  <form class="form-inline pull-right{% if tab == 'group' %} hidden{% endif %}" method="post" action="{% url 'add-team-to-user' user.id %}" role="form" id="add-team-form">
+    {% csrf_token %}
+    <div class="form-group">
+      <div class="input-group ui-widget">
+        <input type="text" class="form-control" name="team" placeholder="add user to teams" value="">
+        <div class="input-group-addon">
+          <a href="javascript:void(0);" onclick="$('#add-team-form').submit();"><span class="glyphicon glyphicon-plus"></span></a>
+        </div>
+      </div>
+    </div>
+  </form>
+</ul>
+
+<br />
+
+<div class="tab-content">
+  <div class="tab-pane{% if tab == 'group' %} active{% endif %}" id="group-pane">
+    <ul class="list-group">
+      <li class="list-group-item{% if user.groups.exists %} hidden{% endif %}" id="groups-empty">
+        <em>This user belong to no groups.</em>
+      </li>
+      {% for group in user.groups.all %}
+      <li class="list-group-item">
+        {{ group }}
+        <a href="javascript:void(0);" data-href="{% url 'remove-group-from-user' user.id group.id %}" data-type="groups" class="pull-right btn btn-danger btn-xs" role="remove">remove</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="tab-pane{% if tab == 'team' %} active{% endif %}" id="team-pane">
+    <ul class="list-group">
+      <li class="list-group-item{% if user.teams.exists %} hidden{% endif %}" id="teams-empty">
+        <em>This user belong to no teams.</em>
+      </li>
+      {% for team in user.teams.all %}
+      <li class="list-group-item">
+        {{ team }}
+        <span class="pull-right">
+        {% if team in directteams %}
+        <a href="javascript:void(0);" data-href="{% url 'remove-team-from-user' user.id team.id %}" data-type="teams" class="btn btn-danger btn-xs" role="remove">remove</a>
+        {% else %}
+        <em>member throught group</em>
+        {% endif %}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+{% delete_modal %}
+
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+<script type="text/javascript">
+$('input[name="group"]').autocomplete({
+  source: "{% url 'add-group-to-user' user.id %}"
+});
+$('input[name="team"]').autocomplete({
+  source: "{% url 'add-team-to-user' user.id %}"
+});
+</script>
+<script src="{% static 'js/accounts.js' %}"></script>
+<script src="{% static 'js/tabswitch.js' %}"></script>
+
+{% endblock %}

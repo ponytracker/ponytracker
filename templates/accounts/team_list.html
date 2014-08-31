@@ -14,17 +14,25 @@
 
 <ul class="list-group">
   {% if not teams.exists %}
-  <li class="list-group-item">
+  <li class="list-group-item" style="line-height: 48px;">
     <em>There are no teams quite yet.</em>
   </li>
   {% endif %}
   {% for team in teams %}
-  <a class="list-group-item" href="{% url 'show-team' team.id %}">
-    <strong>
-      {{ team }}
-    </strong>
-    — {{ team.users.count }} user{{ team.users.count|pluralize }}
-    — {{ team.groups.count }} group{{ team.groups.count|pluralize }}
+  <a class="list-group-item" href="{% url 'show-team' team.id %}" style="line-height: 48px;">
+    <div class="row">
+      <div class="col-md-8">
+        <strong>
+          {{ team }}
+        </strong>
+      </div>
+      <div class="col-md-2 text-muted">
+          {{ team.users.count }} user{{ team.users.count|pluralize }}
+      </div>
+      <div class="col-md-2 text-muted">
+        {{ team.groups.count }} group{{ team.groups.count|pluralize }}
+      </div>
+    </div>
   </a>
   {% endfor %}
 </ul>
