@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^admin/users/add/$', 'accounts.views.user_edit', name='add-user'),
     url(r'^admin/users/(?P<user>[0-9]+)/$', 'accounts.views.user_details', name='show-user'),
     url(r'^admin/users/(?P<user>[0-9]+)/edit/$', 'accounts.views.user_edit', name='edit-user'),
+    url(r'^admin/users/(?P<user>[0-9]+)/edit-password/$', 'accounts.views.user_edit_password', name='edit-user-password'),
     url(r'^admin/users/(?P<user>[0-9]+)/delete/$', 'accounts.views.user_delete', name='delete-user'),
     url(r'^admin/users/(?P<user>[0-9]+)/activate/$', 'accounts.views.user_activate', name='activate-user'),
     url(r'^admin/users/(?P<user>[0-9]+)/disable/$', 'accounts.views.user_disable', name='disable-user'),

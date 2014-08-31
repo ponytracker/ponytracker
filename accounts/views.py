@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.db.models import Q
@@ -58,6 +59,20 @@ def user_edit(request, user=None):
             messages.success(request, 'User added successfully.')
         return redirect('show-user', newuser.id)
 
+    return render(request, 'accounts/user_edit.html', {
+        'user': user,
+        'form': form,
+    })
+
+
+@project_perm_required('manage_accounts')
+def user_edit_password(request, user):
+    user = get_object_or_404(User, id=user)
+    form = AdminPasswordChangeForm(user, request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'User password modified successfully.')
+        return redirect('show-user', user.id)
     return render(request, 'accounts/user_edit.html', {
         'user': user,
         'form': form,

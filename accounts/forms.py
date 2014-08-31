@@ -9,8 +9,7 @@ __all__ = ['UserForm', 'GroupForm', 'TeamForm']
 
 UserForm = modelform_factory(User,
         fields=['username', 'first_name',
-        'last_name', 'email', 'is_superuser'],
-        widgets={'password': PasswordInput})
+            'last_name', 'email', 'is_superuser'])
 GroupForm = modelform_factory(Group,
         fields=['name'])
 TeamForm = modelform_factory(Team,
