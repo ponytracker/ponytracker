@@ -1,0 +1,33 @@
+{% extends 'tracker/issue_base.html' %}
+
+{% load bootstrap3 %}
+
+{% block media %}
+{{ form.media }}
+{% endblock media %}
+
+{% block tabcontent %}
+
+<div class="row">
+  <div class="col-md-offset-2 col-md-8">
+    <div class="page-header">
+      <h1>
+        {% if comment %}
+        Edit comment
+        {% else %}
+        New comment
+        {% endif %}
+      </h1>
+    </div>
+    <form action="" method="post" role="form">
+      {% bootstrap_form form %}
+      {% csrf_token %}
+      {% buttons %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'show-issue' project.name issue.id %}" class="btn btn-default">Cancel</a>
+      {% endbuttons %}
+    </form>
+  </div>
+</div>
+
+{% endblock %}
