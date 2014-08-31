@@ -286,11 +286,11 @@ def issue_edit(request, project, issue=None):
     if issue:
         if not request.user.has_perm('modify_issue', project):
             raise PermissionDenied()
-        issue = get_object_or_404(Issue, project=project.name, id=issue)
+        issue = get_object_or_404(Issue, project=project, id=issue)
         init_data = {'title': issue.title,
                      'description': issue.description}
     else:
-        if not request.user.has_perm('create_issue', project):
+        if not request.user.has_perm('create_issue', project.name):
             raise PermissionDenied()
         issue = None
         init_data = None
