@@ -51,12 +51,12 @@ def user_edit(request, user=None):
 
     form = UserForm(request.POST or None, instance=user)
     if request.method == 'POST' and form.is_valid():
-        user = form.save()
+        newuser = form.save()
         if user:
             messages.success(request, 'User modified successfully.')
         else:
             messages.success(request, 'User added successfully.')
-        return redirect('show-user', user.id)
+        return redirect('show-user', newuser.id)
 
     return render(request, 'accounts/user_edit.html', {
         'user': user,
