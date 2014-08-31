@@ -168,3 +168,5 @@ AUTH_USER_MODEL = 'accounts.User'
 RESERVED_PROJECT_URLS = [
     'login', 'logout', 'profile', 'admin', 'django-admin'
 ]
+
+GROUP_MANAGMENT = True
