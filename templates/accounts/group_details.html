@@ -22,15 +22,18 @@
     Group {{ group }}
     &#160;
     <small><span id="users-counter">{{ group.users.count }}</span> users</small>
+    {% if group_managment %}
     <div class="pull-right">
       <a href="{% url 'edit-group' group.id %}" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> edit</a>
       <a href="javascript:void(0);" data-item="group" data-action="{% url 'delete-group' group.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> delete</a>
     </div>
+    {% endif %}
   </h1>
 </div>
 
 <ul class="nav nav-tabs" role="tablist">
   <li class="active"><a href="#" role="tab">Members</a></li>
+  {% if group_managment %}
   <form class="form-inline pull-right" method="post" action="{% url 'add-user-to-group' group.id %}" role="form" id="add-user-form">
     {% csrf_token %}
     <div class="form-group">
@@ -42,6 +45,7 @@
       </div>
     </div>
   </form>
+  {% endif %}
 </ul>
 
 <br />
@@ -57,7 +61,9 @@
       {% if user.fullname %}
       <span class="text-muted">— {{ user.fullname }}</span>
       {% endif %}
+      {% if group_managment %}
       <a href="javascript:void(0);" data-href="{% url 'remove-user-from-group' group.id user.id %}" data-type="users" class="pull-right btn btn-danger btn-xs" role="remove">remove</a>
+      {% endif %}
     </li>
     {% endfor %}
   </ul>

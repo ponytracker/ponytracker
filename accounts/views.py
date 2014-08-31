@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 from django.http import Http404, HttpResponse, JsonResponse
 
@@ -41,6 +42,7 @@ def user_details(request, user):
         'user': get_object_or_404(User, id=user),
         'directteams': Team.objects.filter(users__id=user),
         'tab': tab,
+        'group_managment': settings.GROUP_MANAGMENT,
     })
 
 
@@ -114,6 +116,8 @@ def user_delete(request, user):
 
 @project_perm_required('manage_accounts')
 def user_add_group(request, user):
+    if not settings.GROUP_MANAGMENT:
+        raise Http404()
     user = get_object_or_404(User, id=user)
     if request.method == 'POST':
         group = request.POST.get('group')
@@ -152,6 +156,8 @@ def user_add_group(request, user):
 
 @project_perm_required('manage_accounts')
 def user_remove_group(request, user, group):
+    if not settings.GROUP_MANAGMENT:
+        raise Http404()
     user = get_object_or_404(User, pk=user)
     group = get_object_or_404(Group, pk=group)
     user.groups.remove(group)
@@ -227,11 +233,14 @@ def group_list(request):
 def group_details(request, group):
     return render(request, 'accounts/group_details.html', {
         'group': get_object_or_404(Group, id=group),
+        'group_managment': settings.GROUP_MANAGMENT,
     })
 
 
 @project_perm_required('manage_accounts')
 def group_edit(request, group=None):
+    if not settings.GROUP_MANAGMENT:
+        raise Http404()
 
     if group:
         group = get_object_or_404(Group, id=group)
@@ -254,6 +263,8 @@ def group_edit(request, group=None):
 @require_http_methods(["POST"])
 @project_perm_required('manage_accounts')
 def group_delete(request, group):
+    if not settings.GROUP_MANAGMENT:
+        raise Http404()
     group = get_object_or_404(Group, id=group)
     group.delete()
     messages.success(request, 'Group deleted successfully.')
@@ -262,6 +273,8 @@ def group_delete(request, group):
 
 @project_perm_required('manage_accounts')
 def group_add_user(request, group):
+    if not settings.GROUP_MANAGMENT:
+        raise Http404()
     group = get_object_or_404(Group, id=group)
     if request.method == 'POST':
         user = request.POST.get('user')
@@ -300,6 +313,8 @@ def group_add_user(request, group):
 
 @project_perm_required('manage_accounts')
 def group_remove_user(request, group, user):
+    if not settings.GROUP_MANAGMENT:
+        raise Http404()
     group = get_object_or_404(Group, id=group)
     user = get_object_or_404(User, id=user)
     user.groups.remove(group)

@@ -42,6 +42,7 @@
 <ul class="nav nav-tabs" role="tablist">
   <li{% if tab == 'group' %} class="active"{% endif %}><a href="#group-pane" role="tab" data-toggle="tab" data-showtab="group" data-hidetab="team">Groups</a></li>
   <li{% if tab == 'team' %} class="active"{% endif %}><a href="#team-pane" role="tab" data-toggle="tab" data-showtab="team" data-hidetab="group">Teams</a></li>
+  {% if group_managment %}
   <form class="form-inline pull-right{% if tab == 'team' %} hidden{% endif %}" method="post" action="{% url 'add-group-to-user' user.id %}" role="form" id="add-group-form">
     {% csrf_token %}
     <div class="form-group">
@@ -53,6 +54,7 @@
       </div>
     </div>
   </form>
+  {% endif %}
   <form class="form-inline pull-right{% if tab == 'group' %} hidden{% endif %}" method="post" action="{% url 'add-team-to-user' user.id %}" role="form" id="add-team-form">
     {% csrf_token %}
     <div class="form-group">
@@ -77,7 +79,9 @@
       {% for group in user.groups.all %}
       <li class="list-group-item">
         {{ group }}
+        {% if group_managment %}
         <a href="javascript:void(0);" data-href="{% url 'remove-group-from-user' user.id group.id %}" data-type="groups" class="pull-right btn btn-danger btn-xs" role="remove">remove</a>
+        {% endif %}
       </li>
       {% endfor %}
     </ul>
