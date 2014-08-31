@@ -10,3 +10,4 @@
 /ponytracker/local_settings.py
 /htmlcov/
 /doc/build/
+/uwsgi.ini
