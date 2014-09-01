@@ -144,7 +144,7 @@ def user_add_group(request, user):
     else:
         term = request.GET.get('term')
         if not term:
-            return Http404()
+            raise Http404()
         groups = Group.objects \
             .exclude(id__in=user.groups.values('id')) \
             .filter(name__icontains=term)[:10]
@@ -195,7 +195,7 @@ def user_add_team(request, user):
     else:
         term = request.GET.get('term')
         if not term:
-            return Http404()
+            raise Http404()
         teams = Team.objects \
             .exclude(users=user) \
             .filter(name__icontains=term)[:10]
@@ -300,7 +300,7 @@ def group_add_user(request, group):
     else:
         term = request.GET.get('term')
         if not term:
-            return Http404()
+            raise Http404()
         query = Q(username__icontains=term) \
             | Q(first_name__icontains=term) \
             | Q(last_name__icontains=term)
@@ -402,7 +402,7 @@ def team_add_user(request, team):
     else:
         term = request.GET.get('term')
         if not term:
-            return Http404()
+            raise Http404()
         query = Q(username__icontains=term) \
             | Q(first_name__icontains=term) \
             | Q(last_name__icontains=term)
@@ -453,7 +453,7 @@ def team_add_group(request, team):
     else:
         term = request.GET.get('term')
         if not term:
-            return Http404()
+            raise Http404()
         groups = Group.objects \
             .exclude(id__in=team.groups.values('id')) \
             .filter(name__icontains=term)[:10]
