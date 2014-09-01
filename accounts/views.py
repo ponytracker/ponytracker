@@ -43,6 +43,7 @@ def user_details(request, user):
         'directteams': Team.objects.filter(users__id=user),
         'tab': tab,
         'group_managment': settings.GROUP_MANAGMENT,
+        'password_editable': settings.PASSWORD_EDITABLE,
     })
 
 
@@ -69,6 +70,8 @@ def user_edit(request, user=None):
 
 @project_perm_required('manage_accounts')
 def user_edit_password(request, user):
+    if not settings.PASSWORD_EDITABLE:
+        raise Http404()
     user = get_object_or_404(User, id=user)
     form = AdminPasswordChangeForm(user, request.POST or None)
     if request.method == 'POST' and form.is_valid():
