@@ -1,0 +1,98 @@
+[
+    {
+        "fields": {
+            "name": "group1",
+            "permissions": []
+        },
+        "model": "auth.group",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "name": "group2",
+            "permissions": []
+        },
+        "model": "auth.group",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "date_joined": "2014-09-01T23:31:37.882Z",
+            "email": "",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "last_login": "2014-09-02T00:16:20.195Z",
+            "last_name": "",
+            "password": "pbkdf2_sha256$12000$y4SCnZMDIsYt$f6QbDiZEMmATk/nVNl4v8L8wFocsO6pGRpf8XvNBBM4=",
+            "user_permissions": [],
+            "username": "admin"
+        },
+        "model": "accounts.user",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "date_joined": "2014-09-02T00:22:29.133Z",
+            "email": "",
+            "first_name": "Firstname1",
+            "groups": [
+                1
+            ],
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2014-09-02T00:22:29.132Z",
+            "last_name": "Lastname1",
+            "password": "pbkdf2_sha256$12000$NdWyIc2shP8l$X2lTOVHvsmpyI6clGAbUX3gbUC/OzTRqnWxmErtDbys=",
+            "user_permissions": [],
+            "username": "user1"
+        },
+        "model": "accounts.user",
+        "pk": 2
+    },
+      {
+        "fields": {
+            "date_joined": "2014-09-02T02:19:04.110Z",
+            "email": "",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2014-09-02T02:19:04.110Z",
+            "last_name": "",
+            "password": "",
+            "user_permissions": [],
+            "username": "user2"
+        },
+        "model": "accounts.user",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "groups": [],
+            "name": "team1",
+            "users": [
+                2
+            ]
+        },
+        "model": "accounts.team",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "groups": [
+                2
+            ],
+            "name": "team2",
+            "users": [
+                3
+            ]
+        },
+        "model": "accounts.team",
+        "pk": 2
+    }
+]
