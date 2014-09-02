@@ -38,12 +38,9 @@ def clean_group_perms(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=Team, dispatch_uid="clean_team_perms")
 def clean_team_perms(sender, instance, **kwargs):
-    print(instance)
-    print(instance.id)
     # Clean global permissions
     perms = GlobalPermission.objects.filter(grantee_id=instance.id,
             grantee_type=GlobalPermission.GRANTEE_TEAM)
-    print(perms)
     perms.delete()
     # Clean project permissions
     perms = ProjectPermission.objects.filter(grantee_id=instance.id,
