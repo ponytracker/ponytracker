@@ -181,7 +181,7 @@ def user_add_team(request, user):
             else:
                 # We do not use user.teams because we want to be able to add an
                 # user to a team even if he is already a member through a group
-                if Team.objects.filter(users=user).exists():
+                if Team.objects.filter(name=team,users=user).exists():
                     messages.info(request, 'User already in team.')
                 else:
                     team.users.add(user)
