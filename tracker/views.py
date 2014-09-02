@@ -23,12 +23,8 @@ import shlex
 def admin(request):
     if request.user.has_perm('manage_settings'):
         return redirect('settings')
-    elif request.user.has_perm('manage_user'):
+    elif request.user.has_perm('manage_accounts'):
         return redirect('list-user')
-    elif request.user.has_perm('manage_group'):
-        return redirect('list-group')
-    elif request.user.has_perm('manage_team'):
-        return redirect('list-team')
     elif request.user.has_perm('manage_global_permission'):
         return redirect('list-global-permission')
     else:
