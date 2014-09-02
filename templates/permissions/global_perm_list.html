@@ -38,82 +38,22 @@
       <div class="tab-content">
         <div class="tab-pane active" id="global{{ perm.id }}">
           <ul class="list-group">
+            {% for p, v in perm.global_perms_fields_values %}
             <li class="list-group-item">
-              Create project
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'create-project' %}">{{ perm.create_project|boolean }}</a>
+              {{ p.verbose_name }}
+              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id p.name %}">{{ v|boolean }}</a>
             </li>
-            <li class="list-group-item">
-              Modify projects
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'modify-project' %}">{{ perm.modify_project|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Delete projects
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'delete-project' %}">{{ perm.delete_project|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Manage settings
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-settings' %}">{{ perm.manage_settings|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Manage users, groups and teams
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-accounts' %}">{{ perm.manage_accounts|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Manage permissions
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-global-permission' %}">{{ perm.manage_global_permission|boolean }}</a>
-            </li>
+            {% endfor %}
           </ul>
         </div>
         <div class="tab-pane" id="project{{ perm.id }}">
           <ul class="list-group">
+            {% for p, v in perm.project_perms_fields_values %}
             <li class="list-group-item">
-              Access
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'access-project' %}">{{ perm.access_project|boolean }}</a>
+              {{ p.verbose_name }}
+              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id p.name %}">{{ v|boolean }}</a>
             </li>
-            <li class="list-group-item">
-              Create issue
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'create-issue' %}">{{ perm.create_issue|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Manage issue
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'modify-issue' %}">{{ perm.manage_issue|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Modify issue
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-issue' %}">{{ perm.modify_issue|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Delete issue
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'delete-issue' %}">{{ perm.delete_issue|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Create comment
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'create-comment' %}">{{ perm.create_comment|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Modify comment
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'modify-comment' %}">{{ perm.modify_comment|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Delete comment
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'delete-comment' %}">{{ perm.delete_comment|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Manage tags
-              &#160;
-              <span class="text-muted">create, assign and remove labels and milestones</span>
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-tags' %}">{{ perm.manage_tags|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Delete tags
-              &#160;
-              <span class="text-muted">delete labels and milestones</span>
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'delete-tags' %}">{{ perm.delete_tags|boolean }}</a>
-            </li>
-            <li class="list-group-item">
-              Manage permissions
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id 'manage-project-permission' %}">{{ perm.manage_project_permission|boolean }}</a>
-            </li>
+            {% endfor %}
           </ul>
         </div>
       </div>

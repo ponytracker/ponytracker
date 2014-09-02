@@ -11,6 +11,19 @@ __all__ = ['GlobalPermission', 'ProjectPermission']
 
 
 @python_2_unicode_compatible
+class PermissionField(models.BooleanField):
+    pass
+
+
+class GlobalPermissionField(PermissionField):
+    pass
+
+
+class ProjectPermissionField(PermissionField):
+    pass
+
+
+@python_2_unicode_compatible
 class PermissionModel(models.Model):
 
     GRANTEE_USER = 0
@@ -67,6 +80,18 @@ class PermissionModel(models.Model):
             return False
 
     @property
+    def all_perms(self):
+        for field in self._meta.fields:
+            if isinstance(field, PermissionField):
+                yield field.name
+
+    @property
+    def all_perms_fields_values(self):
+        for field in self._meta.fields:
+            if isinstance(field, PermissionField):
+                yield (field, getattr(self, field.name))
+
+    @property
     def type(self):
         return self.get_grantee_type_display()
 
@@ -84,33 +109,62 @@ class GlobalPermission(PermissionModel):
     class Meta:
         unique_together = ('grantee_type', 'grantee_id')
 
+    @property
+    def global_perms_fields_values(self):
+        for field in self._meta.fields:
+            if isinstance(field, GlobalPermissionField):
+                yield (field, getattr(self, field.name))
+
+    @property
+    def project_perms_fields_values(self):
+        for field in self._meta.fields:
+            if isinstance(field, ProjectPermissionField):
+                yield (field, getattr(self, field.name))
+
     # Global permissions
 
-    create_project = models.BooleanField(default=True)
-    modify_project = models.BooleanField(default=False)
-    delete_project = models.BooleanField(default=False)
+    create_project = GlobalPermissionField(default=True,
+            verbose_name='Create project')
+    modify_project = GlobalPermissionField(default=False,
+            verbose_name='Modify project')
+    delete_project = GlobalPermissionField(default=False,
+            verbose_name='Delete project')
 
-    manage_settings = models.BooleanField(default=False)
-    manage_accounts = models.BooleanField(default=False)
-    manage_global_permission = models.BooleanField(default=False)
+    manage_settings = GlobalPermissionField(default=False,
+            verbose_name='Manage settings')
+    manage_accounts = GlobalPermissionField(default=False,
+            verbose_name='Manage users, groups and teams')
+    manage_global_permission = GlobalPermissionField(default=False,
+            verbose_name='Manage global permissions')
 
     # Project permissions, given on ALL projects
 
-    access_project = models.BooleanField(default=False)
+    access_project = ProjectPermissionField(default=False,
+            verbose_name='Access all project')
 
-    create_issue = models.BooleanField(default=False)
-    modify_issue = models.BooleanField(default=False)
-    manage_issue = models.BooleanField(default=False)
-    delete_issue = models.BooleanField(default=False)
+    create_issue = ProjectPermissionField(default=False,
+            verbose_name='Create issue')
+    modify_issue = ProjectPermissionField(default=False,
+            verbose_name='Modify issue')
+    manage_issue = ProjectPermissionField(default=False,
+            verbose_name='Manage issue')
+    delete_issue = ProjectPermissionField(default=False,
+            verbose_name='Delete issue')
 
-    create_comment = models.BooleanField(default=False)
-    modify_comment = models.BooleanField(default=False)
-    delete_comment = models.BooleanField(default=False)
+    create_comment = ProjectPermissionField(default=False,
+            verbose_name='Create comment')
+    modify_comment = ProjectPermissionField(default=False,
+            verbose_name='Modify comment')
+    delete_comment = ProjectPermissionField(default=False,
+            verbose_name='Delete comment')
 
-    manage_tags = models.BooleanField(default=False)
-    delete_tags = models.BooleanField(default=False)
+    manage_tags = ProjectPermissionField(default=False,
+            verbose_name='Assign and remove labels and milestones')
+    delete_tags = ProjectPermissionField(default=False,
+            verbose_name='Delete labels and milestones')
 
-    manage_project_permission = models.BooleanField(default=False)
+    manage_project_permission = ProjectPermissionField(default=False,
+            verbose_name='Manage project permissions')
 
     def __str__(self):
         return self.grantee.__str__() + "'s global permissions"
@@ -124,19 +178,29 @@ class ProjectPermission(PermissionModel):
 
     project = models.ForeignKey(Project, related_name='permissions')
 
-    manage_project_permission = models.BooleanField(default=False)
+    create_issue = PermissionField(default=False,
+            verbose_name='Create issue')
+    modify_issue = PermissionField(default=False,
+            verbose_name='Modify issue')
+    manage_issue = PermissionField(default=False,
+            verbose_name='Manage issue')
+    delete_issue = PermissionField(default=False,
+            verbose_name='Delete issue')
 
-    create_issue = models.BooleanField(default=True)
-    modify_issue = models.BooleanField(default=False)
-    manage_issue = models.BooleanField(default=False)
-    delete_issue = models.BooleanField(default=False)
+    create_comment = PermissionField(default=False,
+            verbose_name='Create comment')
+    modify_comment = PermissionField(default=False,
+            verbose_name='Modify comment')
+    delete_comment = PermissionField(default=False,
+            verbose_name='Delete comment')
 
-    create_comment = models.BooleanField(default=True)
-    modify_comment = models.BooleanField(default=False)
-    delete_comment = models.BooleanField(default=False)
+    manage_tags = PermissionField(default=False,
+            verbose_name='Assign and remove labels and milestones')
+    delete_tags = PermissionField(default=False,
+            verbose_name='Delete labels and milestones')
 
-    manage_tags = models.BooleanField(default=False)
-    delete_tags = models.BooleanField(default=False)
+    manage_project_permission = PermissionField(default=False,
+            verbose_name='Manage project permissions')
 
     def __str__(self):
         return self.grantee.__str__() + "'s permissions on " \

@@ -33,46 +33,12 @@
   <div class="panel-collapse collapse" id="collapse{{ perm.id }}">
     <div class="panel-body">
       <ul class="list-group">
+        {% for p, v in perm.all_perms_fields_values %}
         <li class="list-group-item">
-          Create issue
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'create-issue' %}">{{ perm.create_issue|boolean }}</a>
+          {{ p.verbose_name }}
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id p.name %}">{{ v|boolean }}</a>
         </li>
-        <li class="list-group-item">
-          Manage issue
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'modify-issue' %}">{{ perm.manage_issue|boolean }}</a>
-        </li>
-        <li class="list-group-item">
-          Modify issue
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'manage-issue' %}">{{ perm.modify_issue|boolean }}</a>
-        </li>
-        <li class="list-group-item">
-          Delete issue
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'delete-issue' %}">{{ perm.delete_issue|boolean }}</a>
-        </li>
-        <li class="list-group-item">
-          Create comment
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'create-comment' %}">{{ perm.create_comment|boolean }}</a>
-        </li>
-        <li class="list-group-item">
-          Modify comment
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'modify-comment' %}">{{ perm.modify_comment|boolean }}</a>
-        </li>
-        <li class="list-group-item">
-          Delete comment
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'delete-comment' %}">{{ perm.delete_comment|boolean }}</a>
-        </li>
-        <li class="list-group-item">
-          Manage tags
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'manage-tags' %}">{{ perm.manage_tags|boolean }}</a>
-        </li>
-        <li class="list-group-item">
-          Delete tags
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'delete-tags' %}">{{ perm.delete_tags|boolean }}</a>
-        </li>
-        <li class="list-group-item">
-          Manage permissions
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id 'manage-project-permission' %}">{{ perm.manage_project_permission|boolean }}</a>
-        </li>
+        {% endfor %}
       </ul>
     </div>
   </div>

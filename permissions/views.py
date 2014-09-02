@@ -56,17 +56,12 @@ def global_perm_delete(request, id):
 @project_perm_required('manage_global_permission')
 def global_perm_toggle(request, id, perm):
     permission = get_object_or_404(GlobalPermission, id=id)
-    # to be sure to dont modify other attribut with the following trick
-    if '-' not in perm:
+    if perm not in permission.all_perms:
         raise Http404
-    perm = perm.replace('-', '_')
-    if hasattr(permission, perm):
-        state = not getattr(permission, perm)
-        setattr(permission, perm, state)
-        permission.save()
-        return HttpResponse('1' if state else '0')
-    else:
-        raise Http404
+    state = not getattr(permission, perm)
+    setattr(permission, perm, state)
+    permission.save()
+    return HttpResponse('1' if state else '0')
 
 
 @project_perm_required('manage_project_permission')
@@ -119,14 +114,9 @@ def project_perm_delete(request, project, id):
 @project_perm_required('manage_project_permission')
 def project_perm_toggle(request, project, id, perm):
     permission = get_object_or_404(ProjectPermission, project=project, id=id)
-    # to be sure to dont modify other attribut with the following trick
-    if '-' not in perm:
+    if perm not in permission.all_perms:
         raise Http404
-    perm = perm.replace('-', '_')
-    if hasattr(permission, perm):
-        state = not getattr(permission, perm)
-        setattr(permission, perm, state)
-        permission.save()
-        return HttpResponse('1' if state else '0')
-    else:
-        raise Http404
+    state = not getattr(permission, perm)
+    setattr(permission, perm, state)
+    permission.save()
+    return HttpResponse('1' if state else '0')

@@ -7,7 +7,7 @@ from permissions.models import GlobalPermission
 def user_has_perm(user, perm, perms):
     for p in perms:
         # this perm allow that action and the user is concerned by this perm
-        if hasattr(p, perm) and getattr(p, perm) and p.granted_to(user):
+        if perm in p.all_perms and getattr(p, perm) and p.granted_to(user):
             return True
 
 
