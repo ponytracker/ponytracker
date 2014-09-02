@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = issue
+source = accounts,permissions,tracker
 omit = issue/migrations/*.py
 
 [report]
