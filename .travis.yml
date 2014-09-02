@@ -15,7 +15,7 @@ install:
   - if [[ $DJANGO == '1.6' ]]; then pip install coveralls; fi
 
 script:
-  - if [[ $DJANGO == '1.6' ]]; then coverage run --branch --source=issue --omit=issue/migrations/*.py manage.py test; fi
+  - if [[ $DJANGO == '1.6' ]]; then coverage run --branch --source=accounts,permissions,tracker --omit=*/migrations/*.py manage.py test; fi
   - if [[ $DJANGO != '1.6' ]]; then python manage.py test; fi
 
 after_success:
