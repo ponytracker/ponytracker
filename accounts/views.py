@@ -52,8 +52,10 @@ def user_edit(request, user=None):
 
     if user:
         user = get_object_or_404(User, id=user)
+        form = EditUserForm(request.POST or None, instance=user)
+    else:
+        form = AddUserForm(request.POST or None)
 
-    form = UserForm(request.POST or None, instance=user)
     if request.method == 'POST' and form.is_valid():
         newuser = form.save()
         if user:
