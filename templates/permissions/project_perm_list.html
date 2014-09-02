@@ -33,10 +33,10 @@
   <div class="panel-collapse collapse" id="collapse{{ perm.id }}">
     <div class="panel-body">
       <ul class="list-group">
-        {% for p, v in perm.all_perms_fields_values %}
+        {% for field, value in perm.all_perms_fields_values %}
         <li class="list-group-item">
-          {{ p.verbose_name }}
-          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id p.name %}">{{ v|boolean }}</a>
+          {{ field.verbose_name }}
+          <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-project-permission' project.name perm.id field.name %}">{{ value|boolean }}</a>
         </li>
         {% endfor %}
       </ul>

@@ -38,20 +38,20 @@
       <div class="tab-content">
         <div class="tab-pane active" id="global{{ perm.id }}">
           <ul class="list-group">
-            {% for p, v in perm.global_perms_fields_values %}
+            {% for field, value in perm.global_perms_fields_values %}
             <li class="list-group-item">
-              {{ p.verbose_name }}
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id p.name %}">{{ v|boolean }}</a>
+              {{ field.verbose_name }}
+              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id field.name %}">{{ value|boolean }}</a>
             </li>
             {% endfor %}
           </ul>
         </div>
         <div class="tab-pane" id="project{{ perm.id }}">
           <ul class="list-group">
-            {% for p, v in perm.project_perms_fields_values %}
+            {% for field, value in perm.project_perms_fields_values %}
             <li class="list-group-item">
-              {{ p.verbose_name }}
-              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id p.name %}">{{ v|boolean }}</a>
+              {{ field.verbose_name }}
+              <a href="javascript:void(0);" class="pull-right perm-toggle" data-href="{% url 'toggle-global-permission' perm.id field.name %}">{{ value|boolean }}</a>
             </li>
             {% endfor %}
           </ul>
