@@ -103,6 +103,7 @@ def project_perm_edit(request, project, id=None):
     })
 
 
+@require_http_methods(["POST"])
 @project_perm_required('manage_project_permission')
 def project_perm_delete(request, project, id):
     perm = get_object_or_404(ProjectPermission, project=project, id=id)
