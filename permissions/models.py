@@ -10,7 +10,6 @@ from accounts.models import *
 __all__ = ['GlobalPermission', 'ProjectPermission']
 
 
-@python_2_unicode_compatible
 class PermissionField(models.BooleanField):
     pass
 
