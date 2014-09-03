@@ -555,7 +555,7 @@ def issue_unsubscribe(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
-    if issue.subscribers.filter(pk=user.pk).exists():
+    if issue.subscribers.filter(pk=request.user.pk).exists():
         issue.subscribers.remove(request.user)
         issue.save()
         messages.success(request, 'You will not receive any notifications '
