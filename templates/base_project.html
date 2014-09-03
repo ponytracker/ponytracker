@@ -8,6 +8,7 @@
 
 {% block navbar-left %}
 
+{% comment %}
 <form class="navbar-form navbar-right" role="search" id="search-form">
   <div class="form-group">
     <div class="input-group">
@@ -16,6 +17,7 @@
     </div>
   </div>
 </form>
+{% endcomment %}
 
 {% if request.user in project.subscribers.all %}
 <li><a href="{% url 'unsubscribe-project' project.name %}?next={{ request.get_full_path }}"><span class="glyphicon glyphicon-eye-close"></span> Unwatch</a></li>
