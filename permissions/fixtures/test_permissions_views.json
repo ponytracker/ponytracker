@@ -1,0 +1,143 @@
+[
+    {
+        "fields": {
+            "name": "group",
+            "permissions": []
+        },
+        "model": "auth.group",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "date_joined": "2014-09-02T16:07:38.747Z",
+            "email": "",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "last_login": "2014-09-02T16:08:05.839Z",
+            "last_name": "",
+            "password": "pbkdf2_sha256$12000$z8uHznukGN2w$HDJtFsQFDuYyONnx5Ejwj1XWtCQToFNvNRlwIfnNEcw=",
+            "user_permissions": [],
+            "username": "admin"
+        },
+        "model": "accounts.user",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "date_joined": "2014-09-02T16:09:27.744Z",
+            "email": "",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2014-09-02T16:09:27.744Z",
+            "last_name": "",
+            "password": "pbkdf2_sha256$12000$ZyViBuyRbbPA$PlsNahF3uCKR95IQurfxf7EwAK3cnK5kn2ysV6+8TaE=",
+            "user_permissions": [],
+            "username": "user"
+        },
+        "model": "accounts.user",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "date_joined": "2014-09-02T16:48:07.271Z",
+            "email": "",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2014-09-02T16:48:07.271Z",
+            "last_name": "",
+            "password": "pbkdf2_sha256$12000$MEGMcVXtzJAc$8aunLFrw+FHAJl+CAH+e/aCvpeQkrZUd7CAlIJkKSsE=",
+            "user_permissions": [],
+            "username": "guess"
+        },
+        "model": "accounts.user",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "groups": [],
+            "name": "team",
+            "users": []
+        },
+        "model": "accounts.team",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "access": 3,
+            "description": "",
+            "display_name": "Project 1",
+            "name": "project-1",
+            "subscribers": [
+                1
+            ]
+        },
+        "model": "tracker.project",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "access": 3,
+            "description": "",
+            "display_name": "Project 2",
+            "name": "project-2",
+            "subscribers": [
+                1
+            ]
+        },
+        "model": "tracker.project",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "access_project": false,
+            "create_comment": false,
+            "create_issue": false,
+            "create_project": true,
+            "delete_comment": false,
+            "delete_issue": false,
+            "delete_project": false,
+            "delete_tags": false,
+            "grantee_id": 2,
+            "grantee_type": 0,
+            "manage_accounts": false,
+            "manage_global_permission": false,
+            "manage_issue": false,
+            "manage_project_permission": false,
+            "manage_settings": false,
+            "manage_tags": false,
+            "modify_comment": false,
+            "modify_issue": false,
+            "modify_project": false
+        },
+        "model": "permissions.globalpermission",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "create_comment": false,
+            "create_issue": false,
+            "delete_comment": false,
+            "delete_issue": false,
+            "delete_tags": false,
+            "grantee_id": 2,
+            "grantee_type": 0,
+            "manage_issue": false,
+            "manage_project_permission": true,
+            "manage_tags": false,
+            "modify_comment": false,
+            "modify_issue": false,
+            "project": 1
+        },
+        "model": "permissions.projectpermission",
+        "pk": 1
+    }
+]

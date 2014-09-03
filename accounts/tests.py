@@ -8,7 +8,7 @@ from accounts.models import *
 
 class TestViews(TestCase):
 
-    fixtures = ['test_views']
+    fixtures = ['test_accounts_views']
 
     def setUp(self):
         self.client.login(username='admin', password='admin')
