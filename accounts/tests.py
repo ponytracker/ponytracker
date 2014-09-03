@@ -46,6 +46,8 @@ class TestViews(TestCase):
 
     def test_user_edit(self):
         user = User.objects.get(username='user1')
+        response = self.client.get(reverse('edit-user', args=[user.id]))
+        self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse('edit-user', args=[user.id]), {
             'first_name': 'newfirstname',
         })
@@ -157,6 +159,8 @@ class TestViews(TestCase):
 
     def test_group_edit(self):
         group = Group.objects.get(name='group1')
+        response = self.client.get(reverse('edit-group', args=[group.id]))
+        self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse('edit-group', args=[group.id]), {
             'name': 'newname',
         })
@@ -226,6 +230,8 @@ class TestViews(TestCase):
 
     def test_team_edit(self):
         team = Team.objects.get(name='team1')
+        response = self.client.get(reverse('edit-team', args=[team.id]))
+        self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse('edit-team', args=[team.id]), {
             'name': 'newname',
         })
