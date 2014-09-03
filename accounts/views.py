@@ -21,7 +21,14 @@ from accounts.forms import *
 
 @login_required
 def profile(request):
-    return render(request, 'accounts/profile.html')
+    form = ProfileForm(request.POST or None, instance=request.user)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Profile updated successfully.')
+        return redirect('profile')
+    return render(request, 'accounts/profile.html', {
+        'form': form,
+    })
 
 
 #########
