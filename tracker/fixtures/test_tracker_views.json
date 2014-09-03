@@ -1,0 +1,170 @@
+[
+    {
+        "fields": {
+            "color": "#FF0000",
+            "deleted": false,
+            "inverted": true,
+            "name": "bug",
+            "project": 1
+        },
+        "model": "tracker.label",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "color": "#00A000",
+            "deleted": false,
+            "inverted": true,
+            "name": "feature",
+            "project": 1
+        },
+        "model": "tracker.label",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "color": "#1D3DBE",
+            "deleted": false,
+            "inverted": true,
+            "name": "documentation",
+            "project": 1
+        },
+        "model": "tracker.label",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "color": "#FF0000",
+            "deleted": false,
+            "inverted": true,
+            "name": "bug",
+            "project": 2
+        },
+        "model": "tracker.label",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "color": "#00A000",
+            "deleted": false,
+            "inverted": true,
+            "name": "feature",
+            "project": 2
+        },
+        "model": "tracker.label",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "color": "#1D3DBE",
+            "deleted": false,
+            "inverted": true,
+            "name": "documentation",
+            "project": 2
+        },
+        "model": "tracker.label",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "closed": false,
+            "due_date": "2014-09-02T23:35:00Z",
+            "name": "v1.0",
+            "project": 1
+        },
+        "model": "tracker.milestone",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "date_joined": "2014-09-03T06:34:06.019Z",
+            "email": "",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": true,
+            "is_superuser": true,
+            "last_login": "2014-09-03T06:34:26.544Z",
+            "last_name": "",
+            "password": "pbkdf2_sha256$12000$WrD5Mo69v7O1$JqUWSog9wxF7wyJz+esO9EHlv9j+boD58VODEq+jYLY=",
+            "user_permissions": [],
+            "username": "admin"
+        },
+        "model": "accounts.user",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "date_joined": "2014-09-03T06:34:39.486Z",
+            "email": "",
+            "first_name": "",
+            "groups": [],
+            "is_active": true,
+            "is_staff": false,
+            "is_superuser": false,
+            "last_login": "2014-09-03T06:34:39.486Z",
+            "last_name": "",
+            "password": "pbkdf2_sha256$12000$51A5s5i71FWd$yOFaM/fJGEdykCbfhDRWbz0z/KGHiUNbM3mPzrieDe4=",
+            "user_permissions": [],
+            "username": "user1"
+        },
+        "model": "accounts.user",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "_args": "{}",
+            "additionnal_section": "",
+            "author": 1,
+            "code": 11,
+            "date": "2014-09-03T06:34:57.233Z",
+            "issue": 1
+        },
+        "model": "tracker.event",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "assignee": null,
+            "author": 1,
+            "closed": false,
+            "id": 1,
+            "labels": [],
+            "milestone": null,
+            "opened_at": "2014-09-03T06:34:56.913Z",
+            "project": 1,
+            "subscribers": [
+                1
+            ],
+            "title": "Issue 1"
+        },
+        "model": "tracker.issue",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "access": 1,
+            "description": "",
+            "display_name": "Project 1",
+            "name": "project-1",
+            "subscribers": [
+                1
+            ]
+        },
+        "model": "tracker.project",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "access": 1,
+            "description": "",
+            "display_name": "Project 2",
+            "name": "project-2",
+            "subscribers": [
+                1
+            ]
+        },
+        "model": "tracker.project",
+        "pk": 2
+    }
+]
