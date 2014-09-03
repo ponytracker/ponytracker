@@ -4,15 +4,15 @@ from django.forms.widgets import PasswordInput
 from accounts.models import *
 
 
-__all__ = ['AddUserForm', 'EditUserForm', 'GroupForm', 'TeamForm']
+__all__ = ['UserForm', 'UserFormWithoutUsername', 'GroupForm', 'TeamForm']
 
 
-user_fields=['first_name', 'last_name', 'email', 'is_superuser']
+user_fields=['first_name', 'last_name', 'email']
 
-AddUserForm = modelform_factory(User,
-        fields=['username']+user_fields)
-EditUserForm = modelform_factory(User,
-        fields=user_fields)
+UserForm = modelform_factory(User,
+        fields=['username']+user_fields+['is_superuser'])
+UserFormWithoutUsername = modelform_factory(User,
+        fields=user_fields+['is_superuser'])
 GroupForm = modelform_factory(Group,
         fields=['name'])
 TeamForm = modelform_factory(Team,
