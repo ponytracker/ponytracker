@@ -26,6 +26,9 @@ class ProjectPermissionField(PermissionField):
 @python_2_unicode_compatible
 class PermissionModel(models.Model):
 
+    class Meta:
+        abstract = True
+
     GRANTEE_USER = 0
     GRANTEE_GROUP = 1
     GRANTEE_TEAM = 2
@@ -37,7 +40,7 @@ class PermissionModel(models.Model):
 
     grantee_type = models.IntegerField(choices=GRANTEE_TYPE,
             default=GRANTEE_USER, verbose_name="Grantee type")
-    grantee_id = models.IntegerField(blank=True)
+    grantee_id = models.IntegerField()
 
     def get_grantee(self):
         if self.grantee_type == self.GRANTEE_USER:
@@ -61,9 +64,6 @@ class PermissionModel(models.Model):
         self.grantee_id = grantee.id
 
     grantee = property(get_grantee, set_grantee)
-
-    class Meta:
-        abstract = True
 
     def granted_to(self, user):
         if not user.is_authenticated():

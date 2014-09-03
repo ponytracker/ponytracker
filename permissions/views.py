@@ -21,9 +21,12 @@ def global_perm_list(request):
 def global_perm_edit(request, id=None):
     if id:
         perm = get_object_or_404(GlobalPermission, id=id)
+        form = GlobalPermissionForm(request.POST or None, instance=perm)
     else:
         perm = None
-    form = GlobalPermissionForm(request.POST or None, instance=perm)
+        form = GlobalPermissionForm(request.POST or None, initial={
+            'grantee_id': 0,
+        })
     if request.method == 'POST' and form.is_valid():
         form.save()
         if id:
@@ -76,10 +79,13 @@ def project_perm_list(request, project):
 def project_perm_edit(request, project, id=None):
     if id:
         perm = get_object_or_404(ProjectPermission, project=project, id=id)
+        form = ProjectPermissionForm(request.POST or None, instance=perm)
     else:
         perm = None
-    form = ProjectPermissionForm(request.POST or None, instance=perm,
-            initial={'project': project.id})
+        form = ProjectPermissionForm(request.POST or None, initial={
+            'project': project.id,
+            'grantee_id': 0,
+        })
     if request.method == 'POST' and form.is_valid():
         if not form.cleaned_data['project'] == project:
             raise PermissionDenied()
