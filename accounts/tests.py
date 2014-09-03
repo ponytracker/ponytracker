@@ -49,6 +49,7 @@ class TestViews(TestCase):
         response = self.client.get(reverse('edit-user', args=[user.id]))
         self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse('edit-user', args=[user.id]), {
+            'username': user.username,
             'first_name': 'newfirstname',
         })
         self.assertRedirects(response, reverse('show-user', args=[user.id]))
