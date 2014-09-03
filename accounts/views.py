@@ -83,7 +83,7 @@ def user_edit(request, user=None):
 
 @project_perm_required('manage_accounts')
 def user_edit_password(request, user):
-    if not settings.EXTERNAL_AUTH:
+    if settings.EXTERNAL_AUTH:
         raise Http404()
     user = get_object_or_404(User, id=user)
     form = AdminPasswordChangeForm(user, request.POST or None)
