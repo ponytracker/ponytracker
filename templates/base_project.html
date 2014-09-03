@@ -19,10 +19,12 @@
 </form>
 {% endcomment %}
 
-{% if request.user in project.subscribers.all %}
+{% if request.user.is_authenticated %}
+{% if request.user.email and request.user in project.subscribers.all %}
 <li><a href="{% url 'unsubscribe-project' project.name %}?next={{ request.get_full_path }}"><span class="glyphicon glyphicon-eye-close"></span> Unwatch</a></li>
 {% else %}
 <li><a href="{% url 'subscribe-project' project.name %}?next={{ request.get_full_path }}"><span class="glyphicon glyphicon-eye-open"></span> Watch</a></li>
+{% endif %}
 {% endif %}
 
 {% if perm.manage_project_permission or perm.modify_project or perm.delete_project %}

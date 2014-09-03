@@ -121,6 +121,10 @@ def project_delete(request, project):
 @login_required
 def project_subscribe(request, project):
 
+    if not request.user.email:
+        messages.error(request, 'You must set an email address in order to receive notifications.')
+        return redirect('profile')
+
     if project.subscribers.filter(pk=request.user.pk).exists():
         messages.warning(request,
                 'You are already subscribed to this project.')
@@ -530,6 +534,10 @@ def issue_remove_milestone(request, project, issue, milestone):
 def issue_subscribe(request, project, issue):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
+
+    if not request.user.email:
+        messages.error(request, 'You must set an email address in order to receive notifications.')
+        return redirect('profile')
 
     if issue.subscribers.filter(pk=request.user.pk).exists():
         messages.warning(request, 'You are already subscribed to this issue.')
