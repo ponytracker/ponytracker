@@ -645,9 +645,9 @@ def label_delete(request, project, id):
     return redirect('list-label', project.name)
 
 
-##########
-# Labels #
-##########
+##############
+# Milestones #
+##############
 
 def milestone_list(request, project):
 
@@ -731,7 +731,7 @@ def milestone_edit(request, project, name=None):
 @project_perm_required('manage_tags')
 def milestone_close(request, project, name):
 
-    milestone = get_object_or_404(Milestone, project=project, name=name)
+    milestone = get_object_or_404(Milestone, closed=False, project=project, name=name)
 
     milestone.closed = True
     milestone.save()
@@ -742,7 +742,7 @@ def milestone_close(request, project, name):
 @project_perm_required('manage_tags')
 def milestone_reopen(request, project, name):
 
-    milestone = get_object_or_404(Milestone, project=project, name=name)
+    milestone = get_object_or_404(Milestone, closed=True, project=project, name=name)
 
     milestone.closed = False
     milestone.save()
