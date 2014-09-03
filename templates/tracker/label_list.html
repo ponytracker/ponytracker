@@ -6,9 +6,7 @@
 
 {% if perm.manage_tags %}
 {% block moretabs %}
-<div class="pull-right">
-  <a href="{% url 'add-label' project.name %}" class="btn btn-success">New label</a>
-</div>
+<a href="{% url 'add-label' project.name %}" class="pull-right btn btn-success">New label</a>
 {% endblock %}
 {% endif %}
 

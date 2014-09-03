@@ -4,6 +4,12 @@
 
 {% block labeltab %} class="active"{% endblock %}
 
+{% block moretabs %}
+{% if label %}
+<a href="{% url 'add-label' project.name %}" class="pull-right btn btn-success">New label</a>
+{% endif %}
+{% endblock %}
+
 {% block tabcontent %}
 
 <div class="row">

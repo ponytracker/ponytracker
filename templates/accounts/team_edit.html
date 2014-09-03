@@ -6,6 +6,12 @@
 
 {% block teamtab %} class="active"{% endblock %}
 
+{% block moretabs %}
+{% if team %}
+<a href="{% url 'add-team' %}" class="pull-right btn btn-success">Add team</a>
+{% endif %}
+{% endblock %}
+
 {% block tabcontent %}
 
 <div class="row">

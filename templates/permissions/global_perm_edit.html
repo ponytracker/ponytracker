@@ -8,7 +8,9 @@
 {% block permtab %} class="active"{% endblock %}
 
 {% block moretabs %}
-<a href="#" data-action="{% url 'add-global-permission' %}" data-toggle="modal" data-target="#add-perm-form-modal" class="pull-right btn btn-success">Add permission</a>
+{% if permission %}
+<a href="{% url 'add-global-permission' %}" class="pull-right btn btn-success">Add permission</a>
+{% endif %}
 {% endblock %}
 
 {% block tabcontent %}

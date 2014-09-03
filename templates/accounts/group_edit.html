@@ -6,6 +6,12 @@
 
 {% block grouptab %} class="active"{% endblock %}
 
+{% block moretabs %}
+{% if group %}
+<a href="{% url 'add-group' %}" class="pull-right btn btn-success">Add group</a>
+{% endif %}
+{% endblock %}
+
 {% block tabcontent %}
 
 <div class="row">

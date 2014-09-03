@@ -8,9 +8,7 @@
 {% block usertab %} class="active"{% endblock %}
 
 {% block moretabs %}
-<div class="pull-right">
-  <a href="{% url 'add-user' %}" class="btn btn-success">Add user</a>
-</div>
+<a href="{% url 'add-user' %}" class="pull-right btn btn-success">Add user</a>
 {% endblock %}
 
 {% block tabcontent %}

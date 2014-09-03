@@ -7,9 +7,9 @@
 
 {% block moretabs %}
   <li class="active"><a href="{% url 'list-project-permission' project.name %}"><b>Permissions</b></a></li>
-  <div class="pull-right">
-    <a href="#" data-action="{% url 'add-global-permission' %}" data-toggle="modal" data-target="#add-perm-form-modal" class="btn btn-success">Add permission</a>
-  </div>
+  {% if permission %}
+  <a href="{% url 'add-project-permission' project.name %}" class="pull-right btn btn-success">Add permission</a>
+  {% endif %}
 {% endblock %}
 
 {% block tabcontent %}
