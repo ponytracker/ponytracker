@@ -1,4 +1,4 @@
--e git+git://github.com/django/django@1.7c2#egg=Django
+django
 django-markdown
 django-colorful
 django-bootstrap3
