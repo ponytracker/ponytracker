@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import AnonymousUser
 
 from permissions.models import *
 from permissions.models import PermissionModel as PermModel
@@ -142,6 +143,8 @@ class TestViews(TestCase):
         perm = GlobalPermission.objects.first()
         perm.create_project = True
         perm.save()
+        response = self.client.get(reverse('toggle-global-permission', args=[perm.id, 'not_existing']))
+        self.assertEqual(response.status_code, 404)
         response = self.client.get(reverse('toggle-global-permission', args=[perm.id, 'create_project']))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'), '0')
@@ -334,6 +337,8 @@ class TestViews(TestCase):
         perm = project.permissions.first()
         perm.create_issue = True
         perm.save()
+        response = self.client.get(reverse('toggle-project-permission', args=[project.name, perm.id, 'not_existing']))
+        self.assertEqual(response.status_code, 404)
         response = self.client.get(reverse('toggle-project-permission', args=[project.name, perm.id, 'create_issue']))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode('utf-8'), '0')
@@ -602,3 +607,89 @@ class TestProjectPerm(TestCase):
         self.assertTrue(user.has_perm('modify_issue', project1))
         self.assertFalse(user.has_perm('create_issue', project2))
         self.assertFalse(guess.has_perm('create_issue', project1))
+
+
+class TestModels(TestCase):
+
+    fixtures = ['test_permissions']
+
+    def test_user(self):
+        user = User.objects.first()
+        perm = GlobalPermission()
+        perm.grantee = user
+        self.assertEqual(perm.grantee_type, PermModel.GRANTEE_USER)
+        self.assertEqual(perm.grantee_id, user.id)
+
+    def test_group(self):
+        group = Group.objects.first()
+        perm = GlobalPermission()
+        perm.grantee = group
+        self.assertEqual(perm.grantee_type, PermModel.GRANTEE_GROUP)
+        self.assertEqual(perm.grantee_id, group.id)
+
+    def test_team(self):
+        team = Team.objects.first()
+        perm = GlobalPermission()
+        perm.grantee = team
+        self.assertEqual(perm.grantee_type, PermModel.GRANTEE_TEAM)
+        self.assertEqual(perm.grantee_id, team.id)
+
+    def test_error(self):
+        perm = GlobalPermission()
+        def test():
+            perm.grantee = "grantee"
+        self.assertRaisesMessage(ValueError, 'Grantee object must be an User, a Group or a Team instance.', test)
+
+    def test_broken(self):
+        user = User.objects.get(username='user')
+        perm = GlobalPermission() # not valid
+        self.assertFalse(perm.granted_to(user))
+
+    def test_direct(self):
+        user = User.objects.get(username='user')
+        guess = User.objects.get(username='guess')
+        perm = GlobalPermission.objects.create(
+                grantee_type=PermModel.GRANTEE_USER,
+                grantee_id=user.id)
+        self.assertTrue(perm.granted_to(user))
+        self.assertFalse(perm.granted_to(guess))
+        self.assertFalse(perm.granted_to(AnonymousUser()))
+
+    def test_through_group(self):
+        user = User.objects.get(username='user')
+        guess = User.objects.get(username='guess')
+        group = Group.objects.get(name='group')
+        user.groups.add(group)
+        user.save()
+        perm = GlobalPermission.objects.create(
+                grantee_type=PermModel.GRANTEE_GROUP,
+                grantee_id=group.id)
+        self.assertTrue(perm.granted_to(user))
+        self.assertFalse(perm.granted_to(guess))
+
+    def test_through_team_direct(self):
+        user = User.objects.get(username='user')
+        guess = User.objects.get(username='guess')
+        team = Team.objects.get(name='team')
+        team.users.add(user)
+        team.save()
+        perm = GlobalPermission.objects.create(
+                grantee_type=PermModel.GRANTEE_TEAM,
+                grantee_id=team.id)
+        self.assertTrue(perm.granted_to(user))
+        self.assertFalse(perm.granted_to(guess))
+
+    def test_through_team_throught_group(self):
+        user = User.objects.get(username='user')
+        guess = User.objects.get(username='guess')
+        group = Group.objects.get(name='group')
+        team = Team.objects.get(name='team')
+        user.groups.add(group)
+        user.save()
+        team.groups.add(group)
+        team.save()
+        perm = GlobalPermission.objects.create(
+                grantee_type=PermModel.GRANTEE_TEAM,
+                grantee_id=team.id)
+        self.assertTrue(perm.granted_to(user))
+        self.assertFalse(perm.granted_to(guess))
