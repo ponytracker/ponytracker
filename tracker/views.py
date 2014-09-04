@@ -63,9 +63,13 @@ def project_add(request):
     if request.method == 'POST' and form.is_valid():
 
         name = form.cleaned_data['name']
+        display_name = form.cleaned_data['display_name']
         if name in settings.RESERVED_PROJECT_URLS:
             form._errors['name'] = ['Sorry, this URL is reserved '
                                     'and can not be used.']
+        elif Project.objects.filter(display_name__iexact=display_name).exists():
+            form._errors['display_name'] = ['There is already a project '
+                                            'with a similar name.']
         else:
             project = form.save()
             messages.success(request, 'Project added successfully.')
@@ -89,8 +93,12 @@ def project_edit(request, project):
 
     if request.method == 'POST' and form.is_valid():
 
-        name = form.cleaned_data['display_name']
-        if Project.objects.filter(display_name__iexact=name) \
+        name = form.cleaned_data['name']
+        display_name = form.cleaned_data['display_name']
+        if name in settings.RESERVED_PROJECT_URLS:
+            form._errors['name'] = ['Sorry, this URL is reserved '
+                                    'and can not be used.']
+        elif Project.objects.filter(display_name__iexact=display_name) \
                 .exclude(pk=project.pk).exists():
             form._errors['display_name'] = ['There is already a project '
                                             'with a similar name.']
