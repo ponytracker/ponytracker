@@ -42,6 +42,9 @@ class PermissionForm(forms.ModelForm):
             grantees = Team.objects.filter(name=name)
             if not grantees.exists():
                 raise ValidationError("Team '%s' does not exists." % name)
+        else:
+            # grantee_type is not in choice set, an error will be reported
+            return data
 
         data['grantee_id'] = grantees.first().id
 
