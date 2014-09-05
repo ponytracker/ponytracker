@@ -7,7 +7,7 @@ from accounts.models import *
 __all__ = ['UserForm', 'UserFormWithoutUsername', 'ProfileForm', 'GroupForm', 'TeamForm']
 
 
-user_fields=['first_name', 'last_name', 'email']
+user_fields=['first_name', 'last_name', 'email', 'notifications']
 
 UserForm = modelform_factory(User,
         fields=['username']+user_fields+['is_superuser'])

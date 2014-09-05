@@ -20,6 +20,7 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse('profile'), {
             'first_name': 'newfirstname',
+            'notifications': User.NOTIFICATIONS_OTHERS,
         }, follow=True)
         self.assertRedirects(response, reverse('profile'))
         self.assertContains(response, 'successfully')
@@ -46,6 +47,7 @@ class TestViews(TestCase):
         user_count = User.objects.count()
         response = self.client.post(reverse('add-user'), {
             'username': 'newuser',
+            'notifications': User.NOTIFICATIONS_OTHERS,
         })
         self.assertEqual(User.objects.count(), user_count + 1)
         user = User.objects.get(username='newuser')
@@ -63,6 +65,7 @@ class TestViews(TestCase):
         response = self.client.post(reverse('edit-user', args=[user.id]), {
             'username': user.username,
             'first_name': 'newfirstname',
+            'notifications': User.NOTIFICATIONS_OTHERS,
         })
         self.assertRedirects(response, reverse('show-user', args=[user.id]))
         user = User.objects.get(pk=user.pk)

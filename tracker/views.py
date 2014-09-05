@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from tracker.forms import *
 from tracker.models import *
@@ -130,10 +131,14 @@ def project_delete(request, project):
 def project_subscribe(request, project):
 
     if not request.user.email:
-        messages.error(request, 'You must set an email address in order to receive notifications.')
-        return redirect('profile')
-
-    if project.subscribers.filter(pk=request.user.pk).exists():
+        messages.error(request, 'You must set an email address in your '
+            '<a href="' + reverse('profile') + '">profile</a> in order '
+            'to watch this project.')
+    elif request.user.notifications == User.NOTIFICATIONS_NEVER:
+        messages.error(request, 'You must enable notifications in your '
+            '<a href="' + reverse('profile') + '">profile</a> in order '
+            'to watch this project.')
+    elif project.subscribers.filter(pk=request.user.pk).exists():
         messages.warning(request,
                 'You are already subscribed to this project.')
     else:
@@ -544,10 +549,12 @@ def issue_subscribe(request, project, issue):
     issue = get_object_or_404(Issue, project=project, id=issue)
 
     if not request.user.email:
-        messages.error(request, 'You must set an email address in order to receive notifications.')
-        return redirect('profile')
-
-    if issue.subscribers.filter(pk=request.user.pk).exists():
+        messages.error(request, 'You must set an email address in your '
+            '<a href="' + reverse('profile') + '">profile</a> to subscribe.')
+    elif request.user.notifications == User.NOTIFICATIONS_NEVER:
+        messages.error(request, 'You must enable notifications in your '
+            '<a href="' + reverse('profile') + '">profile</a> to subscribe.')
+    elif issue.subscribers.filter(pk=request.user.pk).exists():
         messages.warning(request, 'You are already subscribed to this issue.')
     else:
         issue.subscribers.add(request.user)

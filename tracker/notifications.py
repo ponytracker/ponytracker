@@ -9,6 +9,8 @@ if 'djcelery' in settings.INSTALLED_APPS:
 else:
     from django.core.mail import send_mass_mail
 
+from accounts.models import User
+
 
 __all__ = [
     'notify_new_issue', 'notify_new_comment',
@@ -31,9 +33,11 @@ def notify_new_issue(issue):
     data = []
     for dest in dests:
 
-        if dest == issue.author:
+        if dest.notifications == User.NOTIFICATIONS_NEVER:
             continue
-
+        if dest == issue.author \
+                and dest.notifications == User.NOTIFICATIONS_OTHERS:
+            continue
         dest_addr = dest.email
         if not dest_addr:
             continue
@@ -87,9 +91,11 @@ def notify_event(event, template):
 
     for dest in dests:
 
-        if dest == event.author:
+        if dest.notifications == User.NOTIFICATIONS_NEVER:
             continue
-
+        if dest == issue.author \
+                and dest.notifications == User.NOTIFICATIONS_OTHERS:
+            continue
         dest_addr = dest.email
         if not dest_addr:
             continue

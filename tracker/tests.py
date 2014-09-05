@@ -127,9 +127,16 @@ class TestViews(TestCase):
         response = self.client.get(reverse('unsubscribe-project', args=[project.name]), follow=True)
         self.assertRedirects(response, reverse('list-issue', args=[project.name]))
         self.assertContains(response, 'not subscribed to this project')
-        response = self.client.get(reverse('subscribe-project', args=[project.name]))
-        self.assertRedirects(response, reverse('profile'))
+        response = self.client.get(reverse('subscribe-project', args=[project.name]), follow=True)
+        self.assertRedirects(response, reverse('list-issue', args=[project.name]))
+        self.assertContains(response, 'must set an email')
         user.email = 'user@example.com'
+        user.notifications = User.NOTIFICATIONS_NEVER
+        user.save()
+        response = self.client.get(reverse('subscribe-project', args=[project.name]), follow=True)
+        self.assertRedirects(response, reverse('list-issue', args=[project.name]))
+        self.assertContains(response, 'must enable notifications')
+        user.notifications = User.NOTIFICATIONS_OTHERS
         user.save()
         response = self.client.get(reverse('subscribe-project', args=[project.name]))
         self.assertRedirects(response, reverse('list-issue', args=[project.name]))
@@ -343,9 +350,16 @@ class TestViews(TestCase):
         response = self.client.get(reverse('unsubscribe-issue', args=[project.name, issue.id]), follow=True)
         self.assertRedirects(response, reverse('show-issue', args=[project.name, issue.id]))
         self.assertContains(response, 'not subscribed to this issue')
-        response = self.client.get(reverse('subscribe-issue', args=[project.name, issue.id]))
-        self.assertRedirects(response, reverse('profile'))
+        response = self.client.get(reverse('subscribe-issue', args=[project.name, issue.id]), follow=True)
+        self.assertRedirects(response, reverse('show-issue', args=[project.name, issue.id]))
+        self.assertContains(response, 'must set an email')
         user.email = 'user@example.com'
+        user.notifications = User.NOTIFICATIONS_NEVER
+        user.save()
+        response = self.client.get(reverse('subscribe-issue', args=[project.name, issue.id]), follow=True)
+        self.assertRedirects(response, reverse('show-issue', args=[project.name, issue.id]))
+        self.assertContains(response, 'must enable notifications')
+        user.notifications = User.NOTIFICATIONS_OTHERS
         user.save()
         response = self.client.get(reverse('subscribe-issue', args=[project.name, issue.id]))
         self.assertRedirects(response, reverse('show-issue', args=[project.name, issue.id]))

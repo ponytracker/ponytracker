@@ -14,6 +14,18 @@ class User(AbstractUser):
     class Meta:
         ordering = ['username']
 
+    NOTIFICATIONS_NEVER = 0 # do not change: used as boolean value
+    NOTIFICATIONS_OTHERS = 1
+    NOTIFICATIONS_ALWAYS = 2
+    NOTIFICATIONS_CHOICES = (
+        (NOTIFICATIONS_NEVER, 'Never'),
+        (NOTIFICATIONS_OTHERS, 'Ignore my actions'),
+        (NOTIFICATIONS_ALWAYS, 'Always'),
+    )
+
+    notifications = models.IntegerField(choices=NOTIFICATIONS_CHOICES,
+            default=NOTIFICATIONS_OTHERS)
+
     @property
     def teams(self):
         query = Q(groups__in=self.groups.all()) | Q(users=self)
