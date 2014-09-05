@@ -34,11 +34,13 @@
     {% for group in request.user.groups.all %}
     <li class="list-group-item">
       {{ group }}
+      {% comment %}
       <div class="pull-right">
         <a href="javascript:alert('Not yet implemented.');" class="btn btn-xs btn-danger">
           <span class="glyphicon glyphicon-log-out"></span> leave
         </a>
       </div>
+      {% endcomment %}
     </li>
     {% endfor %}
     {% if not request.user.groups.exists %}
@@ -57,11 +59,13 @@
     {% for team in request.user.teams.all %}
     <li class="list-group-item">
       {{ team }}
+      {% comment %}
       <div class="pull-right">
         <a href="javascript:alert('Not yet implemented.');" class="btn btn-xs btn-danger">
           <span class="glyphicon glyphicon-log-out"></span> leave
         </a>
       </div>
+      {% endcomment %}
     </li>
     {% endfor %}
     {% if not request.user.teams.exists %}
