@@ -19,13 +19,38 @@ class TestViews(TestCase):
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
         response = self.client.post(reverse('profile'), {
+            'update-profile': '',
             'first_name': 'newfirstname',
             'notifications': User.NOTIFICATIONS_OTHERS,
         }, follow=True)
         self.assertRedirects(response, reverse('profile'))
-        self.assertContains(response, 'successfully')
+        self.assertContains(response, 'Profile updated successfully')
         user = User.objects.get(username='admin')
         self.assertEqual(user.first_name, 'newfirstname')
+        with self.settings(EXTERNAL_AUTH=True):
+            response = self.client.get(reverse('profile'))
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(response, 'update-password')
+            response = self.client.post(reverse('profile'), {
+                'update-password': '',
+                'old_password': 'admin',
+                'new_password1': 'newpassword',
+                'new_password2': 'newpassword',
+            }, follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertNotContains(response, 'successfully')
+            user = User.objects.get(username='admin')
+            self.assertFalse(user.check_password('newpassword'))
+        response = self.client.post(reverse('profile'), {
+            'update-password': '',
+            'old_password': 'admin',
+            'new_password1': 'newpassword',
+            'new_password2': 'newpassword',
+        }, follow=True)
+        self.assertRedirects(response, reverse('login')+'?next='+reverse('profile'))
+        self.assertContains(response, 'Password updated successfully')
+        user = User.objects.get(username='admin')
+        self.assertTrue(user.check_password('newpassword'))
 
     # Users
 

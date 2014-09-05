@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 
 urlpatterns = [
     # Profile
-    url(r'^profile$', 'accounts.views.profile', name='profile'),
+    url(r'^profile/$', 'accounts.views.profile', name='profile'),
     # Users
     url(r'^admin/users/$', 'accounts.views.user_list', name='list-user'),
     url(r'^admin/users/add/$', 'accounts.views.user_edit', name='add-user'),

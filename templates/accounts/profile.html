@@ -13,18 +13,35 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3>Your profile</h3>
+    <h3>Update profile</h3>
   </div>
   <div class="panel-body">
     <form method="post" class="col-md-4" role="form">
       {% csrf_token %}
-      {% bootstrap_form form %}
+      {% bootstrap_form profileform %}
       <div class="form-group">
-        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="submit" name='update-profile' class="btn btn-primary">Update</button>
       </div>
     </form>
   </div>
 </div>
+
+{% if passwordform %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3>Update password</h3>
+  </div>
+  <div class="panel-body">
+    <form method="post" class="col-md-4" role="form">
+      {% csrf_token %}
+      {% bootstrap_form passwordform %}
+      <div class="form-group">
+        <button type="submit" name='update-password' class="btn btn-primary">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
 
 <div class="panel panel-default">
   <div class="panel-heading">
