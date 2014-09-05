@@ -222,9 +222,9 @@ class TestViews(TestCase):
         project = Project.objects.get(name='project-1')
         issue = project.issues.get(title='Issue 1')
         count = issue.comments.count()
-        response = self.client.get(reverse('comment-issue', args=[project.name, issue.id]))
+        response = self.client.get(reverse('add-comment', args=[project.name, issue.id]))
         self.assertEqual(response.status_code, 200)
-        response = self.client.post(reverse('comment-issue', args=[project.name, issue.id]), {
+        response = self.client.post(reverse('add-comment', args=[project.name, issue.id]), {
             'comment': 'New comment.',
         })
         self.assertRedirects(response, reverse('show-issue', args=[project.name, issue.id]))

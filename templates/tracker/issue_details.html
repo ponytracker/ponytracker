@@ -74,7 +74,7 @@
       </div>
       <div class="panel-body">
         {% if perm.create_comment %}
-        <form action="{% url 'comment-issue' project.name issue.id %}" method="post" role="form">
+        <form action="{% url 'add-comment' project.name issue.id %}" method="post" role="form">
           {% csrf_token %}
           <div class="form-group">
             {{ form.comment }}
