@@ -7,8 +7,13 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib.auth.forms import PasswordChangeForm
+from django import VERSION
 
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse
+if VERSION >= (1, 7):
+    from django.http import JsonResponse
+else:
+    import json
 
 from permissions.decorators import project_perm_required
 
@@ -186,9 +191,13 @@ def user_add_group(request, user):
                 'value': group.name,
                 'data': group.name,
             }]
-        return JsonResponse({
+        c = {
             'suggestions': response,
-        }, safe=False)
+        }
+        if VERSION >= (1, 7):
+            return JsonResponse(c, safe=False)
+        else:
+            return HttpResponse(json.dumps(c), content_type="application/json")
 
 
 @project_perm_required('manage_accounts')
@@ -239,9 +248,13 @@ def user_add_team(request, user):
                 'value': team.name,
                 'data': team.name,
             }]
-        return JsonResponse({
+        c = {
             'suggestions': response,
-        }, safe=False)
+        }
+        if VERSION >= (1, 7):
+            return JsonResponse(c, safe=False)
+        else:
+            return HttpResponse(json.dumps(c), content_type="application/json")
 
 
 @project_perm_required('manage_accounts')
@@ -321,17 +334,21 @@ def group_add_user(request, group):
             try:
                 user = User.objects.get(username=user)
             except ObjectDoesNotExist:
+                print('user not found')
                 messages.error(request, 'User not found.')
             else:
                 if group.users.filter(id=user.id).exists():
+                    print('already exist')
                     messages.info(request, 'User already in group.')
                 else:
                     user.groups.add(group)
                     user.save()
                     messages.success(request,
                             'User added to group successfully.')
+                    print('huge success')
         else:
             messages.error(request, 'User not found.')
+            print('not found 2')
         return redirect('show-group', group.id)
     else:
         term = request.GET.get('query')
@@ -347,9 +364,13 @@ def group_add_user(request, group):
                 'value': user.username_and_fullname,
                 'data': user.username,
             }]
-        return JsonResponse({
+        c = {
             'suggestions': response,
-        }, safe=False)
+        }
+        if VERSION >= (1, 7):
+            return JsonResponse(c, safe=False)
+        else:
+            return HttpResponse(json.dumps(c), content_type="application/json")
 
 
 @project_perm_required('manage_accounts')
@@ -454,9 +475,13 @@ def team_add_user(request, team):
                 'value': user.username_and_fullname,
                 'data': user.username,
             }]
-        return JsonResponse({
+        c = {
             'suggestions': response,
-        }, safe=False)
+        }
+        if VERSION >= (1, 7):
+            return JsonResponse(c, safe=False)
+        else:
+            return HttpResponse(json.dumps(c), content_type="application/json")
 
 
 @project_perm_required('manage_accounts')
@@ -503,9 +528,13 @@ def team_add_group(request, team):
                 'value': group.name,
                 'data': group.name,
             }]
-        return JsonResponse({
+        c = {
             'suggestions': response,
-        }, safe=False)
+        }
+        if VERSION >= (1, 7):
+            return JsonResponse(c, safe=False)
+        else:
+            return HttpResponse(json.dumps(c), content_type="application/json")
 
 
 @project_perm_required('manage_accounts')

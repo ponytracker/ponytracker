@@ -1,7 +1,8 @@
-import json
-
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django import VERSION
+
+import json
 
 from accounts.models import *
 
@@ -47,7 +48,11 @@ class TestViews(TestCase):
             'new_password1': 'newpassword',
             'new_password2': 'newpassword',
         }, follow=True)
-        self.assertRedirects(response, reverse('login')+'?next='+reverse('profile'))
+        if VERSION >= (1, 7):
+            # since django 1.7, session are  invalid after a password change
+            self.assertRedirects(response, reverse('login')+'?next='+reverse('profile'))
+        else:
+            self.assertRedirects(response, reverse('profile'))
         self.assertContains(response, 'Password updated successfully')
         user = User.objects.get(username='admin')
         self.assertTrue(user.check_password('newpassword'))
@@ -159,7 +164,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('show-user', args=[user.id]))
         user = User.objects.get(pk=user.pk)
-        self.assertTrue(group in user.groups.all())
+        self.assertTrue(user.groups.filter(pk=group.pk).exists())
 
     def test_user_remove_group(self):
         user = User.objects.get(username='user1')
@@ -168,11 +173,11 @@ class TestViews(TestCase):
             response = self.client.get(reverse('remove-group-from-user', args=[user.id, group.id]))
             self.assertEqual(response.status_code, 404)
             user = User.objects.get(pk=user.pk)
-            self.assertTrue(group in user.groups.all())
+            self.assertTrue(user.groups.filter(pk=group.pk).exists())
         response = self.client.get(reverse('remove-group-from-user', args=[user.id, group.id]))
         self.assertEqual(response.status_code, 200)
         user = User.objects.get(pk=user.pk)
-        self.assertFalse(group in user.groups.all())
+        self.assertFalse(user.groups.filter(pk=group.pk).exists())
 
     def test_user_add_team(self):
         user = User.objects.get(username='user1')
@@ -188,7 +193,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('show-user', args=[user.id]))
         team = Team.objects.get(pk=team.pk)
-        self.assertTrue(user in team.users.all())
+        self.assertTrue(team.users.filter(pk=user.pk).exists())
 
     def test_user_remove_team(self):
         user = User.objects.get(username='user1')
@@ -196,7 +201,7 @@ class TestViews(TestCase):
         response = self.client.get(reverse('remove-team-from-user', args=[user.id, team.id]))
         self.assertEqual(response.status_code, 200)
         team = Team.objects.get(pk=team.pk)
-        self.assertFalse(user in team.users.all())
+        self.assertFalse(team.users.filter(pk=user.pk).exists())
 
     # Group
 
@@ -257,7 +262,7 @@ class TestViews(TestCase):
             response = self.client.get(reverse('add-user-to-group', args=[group.id]) + '?query=new')
             self.assertEqual(response.status_code, 404)
             user = User.objects.get(pk=user.pk)
-            self.assertFalse(group in user.groups.all())
+            self.assertFalse(user.groups.filter(pk=group.pk).exists())
         response = self.client.get(reverse('add-user-to-group', args=[group.id]))
         self.assertEqual(response.status_code, 404)
         response = self.client.get(reverse('add-user-to-group', args=[group.id]) + '?query=new')
@@ -269,7 +274,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('show-group', args=[group.id]))
         user = User.objects.get(pk=user.pk)
-        self.assertTrue(group in user.groups.all())
+        self.assertTrue(user.groups.filter(pk=group.pk).exists())
 
     def test_group_remove_user(self):
         user = User.objects.get(username='user1')
@@ -278,11 +283,10 @@ class TestViews(TestCase):
             response = self.client.get(reverse('remove-user-from-group', args=[group.id, user.id]))
             self.assertEqual(response.status_code, 404)
             user = User.objects.get(pk=user.pk)
-            self.assertTrue(group in user.groups.all())
+            self.assertTrue(user.groups.filter(pk=group.pk).exists())
         response = self.client.get(reverse('remove-user-from-group', args=[group.id, user.id]))
         self.assertEqual(response.status_code, 200)
-        user = User.objects.get(pk=user.pk)
-        self.assertFalse(group in user.groups.all())
+        self.assertFalse(user.groups.filter(pk=group.pk).exists())
 
     # Team
 
@@ -345,7 +349,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('show-team', args=[team.id]))
         team = Team.objects.get(pk=team.pk)
-        self.assertTrue(user in team.users.all())
+        self.assertTrue(team.users.filter(pk=user.pk).exists())
 
     def test_team_remove_user(self):
         team = Team.objects.get(name='team2')
@@ -353,7 +357,7 @@ class TestViews(TestCase):
         response = self.client.get(reverse('remove-user-from-team', args=[team.id, user.id]))
         self.assertEqual(response.status_code, 200)
         team = Team.objects.get(pk=team.pk)
-        self.assertFalse(user in team.users.all())
+        self.assertFalse(team.users.filter(pk=user.pk).exists())
 
     def test_team_add_group(self):
         team = Team.objects.get(name='team2')
@@ -369,7 +373,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('show-team', args=[team.id]))
         team = Team.objects.get(pk=team.pk)
-        self.assertTrue(group in team.groups.all())
+        self.assertTrue(team.groups.filter(pk=group.pk).exists())
 
     def test_team_remove_group(self):
         team = Team.objects.get(name='team2')
@@ -377,7 +381,7 @@ class TestViews(TestCase):
         response = self.client.get(reverse('remove-group-from-team', args=[team.id, group.id]))
         self.assertEqual(response.status_code, 200)
         team = Team.objects.get(pk=team.pk)
-        self.assertFalse(group in team.groups.all())
+        self.assertFalse(team.groups.filter(pk=group.pk).exists())
 
 
 class TestModels(TestCase):
