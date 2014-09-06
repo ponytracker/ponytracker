@@ -94,7 +94,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('list-global-permission'))
         perm = GlobalPermission.objects.get(pk=perm.pk)
-        self.assertEquals(user, perm.grantee)
+        self.assertEqual(user, perm.grantee)
         # group
         response = self.client.post(reverse('edit-global-permission', args=[perm.id]), {
             'grantee_type': PermModel.GRANTEE_GROUP,
@@ -111,7 +111,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('list-global-permission'))
         perm = GlobalPermission.objects.get(pk=perm.pk)
-        self.assertEquals(group, perm.grantee)
+        self.assertEqual(group, perm.grantee)
         # team
         response = self.client.post(reverse('edit-global-permission', args=[perm.id]), {
             'grantee_type': PermModel.GRANTEE_TEAM,
@@ -128,7 +128,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('list-global-permission'))
         perm = GlobalPermission.objects.get(pk=perm.pk)
-        self.assertEquals(team, perm.grantee)
+        self.assertEqual(team, perm.grantee)
 
     def test_global_perm_delete(self):
         perm = GlobalPermission.objects.first()
@@ -265,7 +265,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('list-project-permission', args=[project.name]))
         perm = ProjectPermission.objects.get(pk=perm.pk)
-        self.assertEquals(user, perm.grantee)
+        self.assertEqual(user, perm.grantee)
         # group
         response = self.client.post(reverse('edit-project-permission', args=[project.name, perm.id]), {
             'project': project.id,
@@ -284,7 +284,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('list-project-permission', args=[project.name]))
         perm = ProjectPermission.objects.get(pk=perm.pk)
-        self.assertEquals(group, perm.grantee)
+        self.assertEqual(group, perm.grantee)
         # team
         response = self.client.post(reverse('edit-project-permission', args=[project.name, perm.id]), {
             'project': project.id,
@@ -303,7 +303,7 @@ class TestViews(TestCase):
         })
         self.assertRedirects(response, reverse('list-project-permission', args=[project.name]))
         perm = ProjectPermission.objects.get(pk=perm.pk)
-        self.assertEquals(team, perm.grantee)
+        self.assertEqual(team, perm.grantee)
         # wrong project
         response = self.client.post(reverse('edit-project-permission', args=[project.name, perm.id]), {
             'project': wrongproject.id,
