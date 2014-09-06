@@ -4,6 +4,10 @@
 {% load humanize %}
 {% load bootstrap3 %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
+{% endblock %}
+
 {% block teamtab %} class="active"{% endblock %}
 
 {% block moretabs %}
@@ -93,12 +97,19 @@
 
 {% block js_end %}
 {{ block.super }}
+<script src="{% static 'js/jquery.autocomplete.min.js' %}"></script>
 <script type="text/javascript">
 $('input[name="user"]').autocomplete({
-  source: "{% url 'add-user-to-team' team.id %}"
+  serviceUrl: "{% url 'add-user-to-team' team.id %}",
+  onSelect: function (data) {
+    $('input[name="user"]').val(data.data);
+  }
 });
 $('input[name="group"]').autocomplete({
-  source: "{% url 'add-group-to-team' team.id %}"
+  serviceUrl: "{% url 'add-group-to-team' team.id %}",
+  onSelect: function (data) {
+    $('input[name="group"]').val(data.data);
+  }
 });
 </script>
 <script src="{% static 'js/accounts.js' %}"></script>

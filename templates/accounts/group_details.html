@@ -3,6 +3,11 @@
 {% load staticfiles %}
 {% load humanize %}
 {% load bootstrap3 %}
+{% load accounts_tags %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
+{% endblock %}
 
 {% block grouptab %} class="active"{% endblock %}
 
@@ -68,9 +73,13 @@
 
 {% block js_end %}
 {{ block.super }}
+<script src="{% static 'js/jquery.autocomplete.min.js' %}"></script>
 <script type="text/javascript">
 $('input[name="user"]').autocomplete({
-  source: "{% url 'add-user-to-group' group.id %}"
+  serviceUrl: "{% url 'add-user-to-group' group.id %}",
+  onSelect: function (data) {
+    $('input[name="user"]').val(data.data);
+  }
 });
 </script>
 <script src="{% static 'js/accounts.js' %}"></script>

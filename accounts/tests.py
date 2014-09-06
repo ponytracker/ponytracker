@@ -146,14 +146,14 @@ class TestViews(TestCase):
         user = User.objects.get(username='user1')
         group = Group.objects.create(name='newgroup')
         with self.settings(GROUP_MANAGMENT=False):
-            response = self.client.get(reverse('add-group-to-user', args=[user.id]) + '?term=new')
+            response = self.client.get(reverse('add-group-to-user', args=[user.id]) + '?query=new')
             self.assertEqual(response.status_code, 404)
         response = self.client.get(reverse('add-group-to-user', args=[user.id]))
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(reverse('add-group-to-user', args=[user.id]) + '?term=new')
+        response = self.client.get(reverse('add-group-to-user', args=[user.id]) + '?query=new')
         self.assertEqual(response.status_code, 200)
         available = json.loads(response.content.decode('utf-8'))
-        name = available[0]['value']
+        name = available['suggestions'][0]['data']
         response = self.client.post(reverse('add-group-to-user', args=[user.id]), {
             'group': name,
         })
@@ -179,10 +179,10 @@ class TestViews(TestCase):
         team = Team.objects.create(name='newteam')
         response = self.client.get(reverse('add-team-to-user', args=[user.id]))
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(reverse('add-team-to-user', args=[user.id]) + '?term=new')
+        response = self.client.get(reverse('add-team-to-user', args=[user.id]) + '?query=new')
         self.assertEqual(response.status_code, 200)
         available = json.loads(response.content.decode('utf-8'))
-        name = available[0]['value']
+        name = available['suggestions'][0]['data']
         response = self.client.post(reverse('add-team-to-user', args=[user.id]), {
             'team': name,
         })
@@ -254,16 +254,16 @@ class TestViews(TestCase):
         group = Group.objects.get(name='group1')
         user = User.objects.create(username='newuser')
         with self.settings(GROUP_MANAGMENT=False):
-            response = self.client.get(reverse('add-user-to-group', args=[group.id]) + '?term=new')
+            response = self.client.get(reverse('add-user-to-group', args=[group.id]) + '?query=new')
             self.assertEqual(response.status_code, 404)
             user = User.objects.get(pk=user.pk)
             self.assertFalse(group in user.groups.all())
         response = self.client.get(reverse('add-user-to-group', args=[group.id]))
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(reverse('add-user-to-group', args=[group.id]) + '?term=new')
+        response = self.client.get(reverse('add-user-to-group', args=[group.id]) + '?query=new')
         self.assertEqual(response.status_code, 200)
         available = json.loads(response.content.decode('utf-8'))
-        name = available[0]['value']
+        name = available['suggestions'][0]['data']
         response = self.client.post(reverse('add-user-to-group', args=[group.id]), {
             'user': name,
         })
@@ -336,10 +336,10 @@ class TestViews(TestCase):
         user = User.objects.create(username='newuser')
         response = self.client.get(reverse('add-user-to-team', args=[team.id]))
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(reverse('add-user-to-team', args=[team.id]) + '?term=new')
+        response = self.client.get(reverse('add-user-to-team', args=[team.id]) + '?query=new')
         self.assertEqual(response.status_code, 200)
         available = json.loads(response.content.decode('utf-8'))
-        name = available[0]['value']
+        name = available['suggestions'][0]['data']
         response = self.client.post(reverse('add-user-to-team', args=[team.id]), {
             'user': name,
         })
@@ -360,10 +360,10 @@ class TestViews(TestCase):
         group = Group.objects.create(name='newgroup')
         response = self.client.get(reverse('add-group-to-team', args=[team.id]))
         self.assertEqual(response.status_code, 404)
-        response = self.client.get(reverse('add-group-to-team', args=[team.id]) + '?term=new')
+        response = self.client.get(reverse('add-group-to-team', args=[team.id]) + '?query=new')
         self.assertEqual(response.status_code, 200)
         available = json.loads(response.content.decode('utf-8'))
-        name = available[0]['value']
+        name = available['suggestions'][0]['data']
         response = self.client.post(reverse('add-group-to-team', args=[team.id]), {
             'group': name,
         })

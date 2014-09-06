@@ -174,7 +174,7 @@ def user_add_group(request, user):
         request.session['user-tab'] = 'group'
         return redirect('show-user', user.id)
     else:
-        term = request.GET.get('term')
+        term = request.GET.get('query')
         if not term:
             raise Http404()
         groups = Group.objects \
@@ -183,10 +183,12 @@ def user_add_group(request, user):
         response = []
         for group in groups:
             response += [{
-                'label': group.name,
                 'value': group.name,
+                'data': group.name,
             }]
-        return JsonResponse(response, safe=False)
+        return JsonResponse({
+            'suggestions': response,
+        }, safe=False)
 
 
 @project_perm_required('manage_accounts')
@@ -225,7 +227,7 @@ def user_add_team(request, user):
         request.session['user-tab'] = 'team'
         return redirect('show-user', user.id)
     else:
-        term = request.GET.get('term')
+        term = request.GET.get('query')
         if not term:
             raise Http404()
         teams = Team.objects \
@@ -234,10 +236,12 @@ def user_add_team(request, user):
         response = []
         for team in teams:
             response += [{
-                'label': team.name,
                 'value': team.name,
+                'data': team.name,
             }]
-        return JsonResponse(response, safe=False)
+        return JsonResponse({
+            'suggestions': response,
+        }, safe=False)
 
 
 @project_perm_required('manage_accounts')
@@ -330,7 +334,7 @@ def group_add_user(request, group):
             messages.error(request, 'User not found.')
         return redirect('show-group', group.id)
     else:
-        term = request.GET.get('term')
+        term = request.GET.get('query')
         if not term:
             raise Http404()
         query = Q(username__icontains=term) \
@@ -340,10 +344,12 @@ def group_add_user(request, group):
         response = []
         for user in users:
             response += [{
-                'label': user.username_and_fullname,
-                'value': user.username,
+                'value': user.username_and_fullname,
+                'data': user.username,
             }]
-        return JsonResponse(response, safe=False)
+        return JsonResponse({
+            'suggestions': response,
+        }, safe=False)
 
 
 @project_perm_required('manage_accounts')
@@ -432,7 +438,7 @@ def team_add_user(request, team):
         request.session['team-tab'] = 'user'
         return redirect('show-team', team.id)
     else:
-        term = request.GET.get('term')
+        term = request.GET.get('query')
         if not term:
             raise Http404()
         query = Q(username__icontains=term) \
@@ -445,10 +451,12 @@ def team_add_user(request, team):
         response = []
         for user in users:
             response += [{
-                'label': user.username_and_fullname,
-                'value': user.username,
+                'value': user.username_and_fullname,
+                'data': user.username,
             }]
-        return JsonResponse(response, safe=False)
+        return JsonResponse({
+            'suggestions': response,
+        }, safe=False)
 
 
 @project_perm_required('manage_accounts')
@@ -483,7 +491,7 @@ def team_add_group(request, team):
         request.session['team-tab'] = 'group'
         return redirect('show-team', team.id)
     else:
-        term = request.GET.get('term')
+        term = request.GET.get('query')
         if not term:
             raise Http404()
         groups = Group.objects \
@@ -492,10 +500,12 @@ def team_add_group(request, team):
         response = []
         for group in groups:
             response += [{
-                'label': group.name,
                 'value': group.name,
+                'data': group.name,
             }]
-        return JsonResponse(response, safe=False)
+        return JsonResponse({
+            'suggestions': response,
+        }, safe=False)
 
 
 @project_perm_required('manage_accounts')
