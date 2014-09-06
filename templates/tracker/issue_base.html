@@ -10,7 +10,7 @@
     <a href="{% url 'list-issue' project.name %}?q={% if is_all_query %}{{ is_all_query }}{% else %}*{% endif %}{{ sort }}" class="btn btn-default{{ is_all }}">All</a>
   </div>
   {% if perm.create_issue %}
-  <a href="{% url 'add-issue' project.name %}" class="btn btn-success">New issue</a>
+  <a href="{% url 'add-issue' project.name %}?prev={{ request.get_full_path }}" class="btn btn-success">New issue</a>
   {% endif %}
 </div>
 {% endblock %}

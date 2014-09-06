@@ -37,7 +37,7 @@
           {% if issue %}
           <a href="{% url 'show-issue' project.name issue.id %}" class="btn btn-default">Cancel</a>
           {% else %}
-          <a href="{% url 'list-issue' project.name %}" class="btn btn-default">Cancel</a>
+          <a href="{% if request.GET.prev %}{{ request.GET.prev }}{% else %}{% url 'list-issue' project.name %}{% endif %}" class="btn btn-default">Cancel</a>
           {% endif %}
         </div>
       </div>
