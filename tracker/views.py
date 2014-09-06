@@ -23,6 +23,7 @@ import shlex
 ####################
 
 @login_required
+@require_http_methods(["POST"])
 def markdown_preview(request):
     content = request.POST.get('data', '')
     return HttpResponse(markdown_to_html(content))

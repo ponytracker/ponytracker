@@ -13,6 +13,18 @@ class TestViews(TestCase):
     def setUp(self):
         self.client.login(username='admin', password='admin')
 
+    def test_markdown(self):
+        response = self.client.get(reverse('markdown'))
+        self.assertEqual(response.status_code, 405) # get method not allowed
+        response = self.client.post(reverse('markdown'), {
+            'data': '**bold**',
+        })
+        self.assertContains(response, '<strong>bold</strong>')
+        response = self.client.post(reverse('markdown'), {
+            'data': '<script></script>',
+        })
+        self.assertNotContains(response, '<script>')
+
     def test_admin(self):
         response = self.client.get(reverse('admin'))
         self.assertRedirects(response, reverse('settings'))
