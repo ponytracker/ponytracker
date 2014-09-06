@@ -334,21 +334,17 @@ def group_add_user(request, group):
             try:
                 user = User.objects.get(username=user)
             except ObjectDoesNotExist:
-                print('user not found')
                 messages.error(request, 'User not found.')
             else:
                 if group.users.filter(id=user.id).exists():
-                    print('already exist')
                     messages.info(request, 'User already in group.')
                 else:
                     user.groups.add(group)
                     user.save()
                     messages.success(request,
                             'User added to group successfully.')
-                    print('huge success')
         else:
             messages.error(request, 'User not found.')
-            print('not found 2')
         return redirect('show-group', group.id)
     else:
         term = request.GET.get('query')
