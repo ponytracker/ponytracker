@@ -712,8 +712,8 @@ def milestone_edit(request, project, name=None):
 
             if milestone:
                 if name != form.cleaned_data['name']:
-                    for issue in milestone.issues.all():
-                        event = Event(issue=issue, author=request.user,
+                    for i in milestone.issues.all():
+                        event = Event(issue=i, author=request.user,
                                 code=Event.CHANGE_MILESTONE, args={
                                     'old_milestone': name,
                                     'new_milestone': form.cleaned_data['name']
