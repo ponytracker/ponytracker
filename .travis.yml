@@ -9,16 +9,16 @@ env:
   - DJANGO='1.7'
 
 install:
-  - if [[ $DJANGO == '1.6' && $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install django==1.6; fi
+  - if [[ $DJANGO == '1.6' ]]; then pip install django==1.6; fi
   - pip install -r requirements.txt
-  - if [[ $DJANGO == '1.6' && $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install coveralls; fi
+  - if [[ $DJANGO == '1.7' && $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install coveralls; fi
 
 script:
-  - if [[ $DJANGO == '1.6' && $TRAVIS_PYTHON_VERSION == 3.4 ]]; then coverage run --branch --source=accounts,permissions,tracker --omit=accounts/migrations/*.py,permissions/migrations/*.py,tracker/migrations/*.py manage.py test; fi
-  - if [[ $DJANGO != '1.6' || $TRAVIS_PYTHON_VERSION != 3.4 ]]; then python manage.py test; fi
+  - if [[ $DJANGO == '1.7' && $TRAVIS_PYTHON_VERSION == 3.4 ]]; then coverage run --branch --source=accounts,permissions,tracker --omit=accounts/migrations/*.py,permissions/migrations/*.py,tracker/migrations/*.py manage.py test; fi
+  - if [[ $DJANGO != '1.7' || $TRAVIS_PYTHON_VERSION != 3.4 ]]; then python manage.py test; fi
 
 after_success:
-  if [[ $DJANGO == '1.6' && $TRAVIS_PYTHON_VERSION == 3.4 ]]; then coveralls; fi
+  if [[ $DJANGO == '1.7' && $TRAVIS_PYTHON_VERSION == 3.4 ]]; then coveralls; fi
 
 notifications:
   irc:
