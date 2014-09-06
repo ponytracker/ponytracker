@@ -10,3 +10,7 @@ register = template.Library()
 @register.inclusion_tag('accounts/tags/delete_modal.html')
 def delete_modal():
     return {}
+
+@register.inclusion_tag('accounts/tags/delete_modal_js.html')
+def delete_modal_js():
+    return {}

@@ -61,3 +61,8 @@
 {% delete_modal %}
 
 {% endblock %}
+
+{% block js_end %}
+{{ block.super }}
+{% delete_modal_js %}
+{% endblock %}

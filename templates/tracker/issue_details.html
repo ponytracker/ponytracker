@@ -1,8 +1,9 @@
 {% extends 'tracker/issue_base.html' %}
 
 {% load humanize %}
-{% load django_markdown %}
 {% load tracker_tags %}
+{% load tracker_filters %}
+{% load staticfiles %}
 
 {% block media %}
 {{ form.media }}
@@ -76,20 +77,31 @@
         {% if perm.create_comment %}
         <form action="{% url 'add-comment' project.name issue.id %}" method="post" role="form">
           {% csrf_token %}
-          <div class="form-group">
-            {{ form.comment }}
-          </div>
-          <div class="text-center">
-            {% if perm.manage_issue %}
-            {% if issue.closed %}
-            <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
-            {% else %}
-            <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
-            {% endif %}
-            {% endif %}
-            <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Add a comment</button>
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="active"><a href="#editor" role="tab" data-toggle="tab">Editor</a></li>
+            <li><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="editor" style="max-height: 220px;">
+              <div class="form-group">
+                <textarea style="width: 100%; height: 220px;" id="markdown-content" name="comment" required></textarea>
+              </div>
+            </div>
+            <div class="tab-pane well" id="preview" style="min-height: 200px; magin: 0;">
+              <div id="preview-content"></div>
+            </div>
+            <div class="text-center">
+              {% if perm.manage_issue %}
+              {% if issue.closed %}
+              <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
+              {% else %}
+              <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
+              {% endif %}
+              <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Add a comment</button>
+            </div>
           </div>
         </form>
+        {% endif %}
         {% elif request.user.is_authenticated %}
         Sorry, you are not allowed to comment this issue.
         {% else %}
@@ -206,4 +218,13 @@
 
 </div>
 
+{% endblock %}
+
+{% block js_end %}
+{{ block.super }}
+<script type="text/javascript">
+var markdown_preview_url = "{% url 'markdown' %}";
+</script>
+<script src="{% static 'js/jquery.cookie.js' %}"></script>
+<script src="{% static 'js/markdown-preview.js' %}"></script>
 {% endblock %}

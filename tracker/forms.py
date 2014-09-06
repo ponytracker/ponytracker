@@ -1,7 +1,6 @@
 from django import forms
 
 from bootstrap3_datetime.widgets import DateTimePicker
-from django_markdown.widgets import MarkdownWidget
 
 from tracker.models import *
 
@@ -23,11 +22,11 @@ class ProjectForm(forms.ModelForm):
 
 class IssueForm(forms.Form):
     title = forms.CharField(max_length=128)
-    description = forms.CharField(widget=MarkdownWidget, required=False)
+    description = forms.CharField(widget=forms.Textarea, required=False)
 
 
 class CommentForm(forms.Form):
-    comment = forms.CharField(widget=MarkdownWidget)
+    comment = forms.CharField(widget=forms.Textarea)
 
 
 class LabelForm(forms.ModelForm):

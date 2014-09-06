@@ -1,6 +1,5 @@
 {% extends 'base_project.html' %}
 
-{% load django_markdown %}
 {% load permissions_filters %}
 {% load bootstrap3 %}
 {% load staticfiles %}
@@ -50,5 +49,6 @@
 {% endblock %}
 
 {% block js_end %}
+{{ block.super }}
 <script src="{% static 'js/perm.js' %}"></script>
 {% endblock %}

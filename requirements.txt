@@ -1,5 +1,5 @@
 django
-django-markdown
 django-colorful
 django-bootstrap3
 django-bootstrap3-datetimepicker
+markdown

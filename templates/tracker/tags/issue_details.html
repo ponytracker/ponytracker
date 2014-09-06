@@ -1,0 +1,26 @@
+<form action="{% url 'add-comment' project.name issue.id %}" method="post" role="form">
+  {% csrf_token %}
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#editor" role="tab" data-toggle="tab">Editor</a></li>
+    <li><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="editor" style="max-height: 220px;">
+      <div class="form-group">
+        <textarea style="width: 100%; height: 220px;" id="id_comment" name="comment" required></textarea>
+      </div>
+    </div>
+    <div class="tab-pane well" id="preview" style="min-height: 200px; magin: 0;">
+      <div id="preview-content"></div>
+    </div>
+    <div class="text-center">
+      {% if perm.manage_issue %}
+      {% if issue.closed %}
+      <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
+      {% else %}
+      <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
+      {% endif %}
+      <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Add a comment</button>
+    </div>
+  </div>
+</form>

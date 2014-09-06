@@ -23,8 +23,6 @@
     <link href="{% static 'css/ponytracker.css' %}" rel="stylesheet">
     {% block css %}{% endblock %}
 
-    <script src="{% bootstrap_jquery_url %}"></script>
-    {% bootstrap_javascript %}
     {% block js %}{% endblock %}
 
     {% block media %}{% endblock %}
@@ -100,6 +98,8 @@
 
     </div> <!-- /container -->
 
+    <script src="{% bootstrap_jquery_url %}"></script>
+    {% bootstrap_javascript %}
     <script src="{% static 'js/ponytracker.js' %}"></script>
     {% block js_end %}{% endblock %}
   </body>

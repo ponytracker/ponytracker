@@ -48,7 +48,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.sites',
 
-    'django_markdown',
     'bootstrap3_datetime',
     'bootstrap3',
     'colorful',

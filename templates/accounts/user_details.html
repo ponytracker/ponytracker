@@ -3,11 +3,6 @@
 {% load staticfiles %}
 {% load humanize %}
 {% load bootstrap3 %}
-{% load accounts_tags %}
-
-{% block css %}
-<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
-{% endblock %}
 
 {% block usertab %} class="active"{% endblock %}
 
@@ -109,9 +104,10 @@
   </div>
 </div>
 
-{% delete_modal %}
+{% endblock %}
 
-<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+{% block js_end %}
+{{ block.super }}
 <script type="text/javascript">
 $('input[name="group"]').autocomplete({
   source: "{% url 'add-group-to-user' user.id %}"
@@ -122,5 +118,4 @@ $('input[name="team"]').autocomplete({
 </script>
 <script src="{% static 'js/accounts.js' %}"></script>
 <script src="{% static 'js/tabswitch.js' %}"></script>
-
 {% endblock %}

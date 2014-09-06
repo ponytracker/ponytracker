@@ -5,7 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 
+from tracker.utils import markdown_to_html
 from tracker.forms import *
 from tracker.models import *
 from tracker.notifications import *
@@ -14,6 +16,16 @@ from permissions.models import ProjectPermission
 from permissions.decorators import project_perm_required
 
 import shlex
+
+
+####################
+# Markdown preview #
+####################
+
+@login_required
+def markdown_preview(request):
+    content = request.POST.get('data', '')
+    return HttpResponse(markdown_to_html(content))
 
 
 #########

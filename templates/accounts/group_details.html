@@ -3,11 +3,6 @@
 {% load staticfiles %}
 {% load humanize %}
 {% load bootstrap3 %}
-{% load accounts_tags %}
-
-{% block css %}
-<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
-{% endblock %}
 
 {% block grouptab %} class="active"{% endblock %}
 
@@ -69,14 +64,14 @@
   </ul>
 </div>
 
-{% delete_modal %}
+{% endblock %}
 
-<script src="{% static 'js/jquery-ui.min.js' %}"></script>
+{% block js_end %}
+{{ block.super }}
 <script type="text/javascript">
 $('input[name="user"]').autocomplete({
   source: "{% url 'add-user-to-group' group.id %}"
 });
 </script>
 <script src="{% static 'js/accounts.js' %}"></script>
-
 {% endblock %}

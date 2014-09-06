@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 
 
 urlpatterns = [
+    url(r'^markdown/$', 'tracker.views.markdown_preview', name='markdown'),
     # Administration: redirect on first available admin page
     url(r'^admin/$', 'tracker.views.admin', name='admin'),
     # Settings

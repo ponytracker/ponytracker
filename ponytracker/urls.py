@@ -4,8 +4,6 @@ from django.contrib import admin
 urlpatterns = patterns('',
     # django admin
     url(r'^django-admin/', include(admin.site.urls)),
-    # markdown preview
-    url(r'^markdown/', include('django_markdown.urls')),
     # tracker
     url(r'^', include('tracker.urls')),
     # permissions managment

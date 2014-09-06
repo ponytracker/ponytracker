@@ -1,7 +1,5 @@
 {% extends 'base_admin.html' %}
 
-{% load django_markdown %}
-{% load accounts_tags %}
 {% load permissions_filters %}
 {% load staticfiles %}
 
@@ -67,10 +65,9 @@
 </div>
 {% endif %}
 
-{% delete_modal %}
-
 {% endblock %}
 
 {% block js_end %}
+{{ block.super }}
 <script src="{% static 'js/perm.js' %}"></script>
 {% endblock %}

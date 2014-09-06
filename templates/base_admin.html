@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load django_markdown %}
+{% load accounts_tags %}
 
 {% block admintab %} class="active"{% endblock %}
 
@@ -24,4 +24,11 @@
 
 {% block tabcontent %}{% endblock %}
 
+{% delete_modal %}
+
+{% endblock %}
+
+{% block js_end %}
+{{ block.super }}
+{% delete_modal_js %}
 {% endblock %}

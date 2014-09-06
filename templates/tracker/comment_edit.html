@@ -1,10 +1,6 @@
 {% extends 'tracker/issue_base.html' %}
 
-{% load bootstrap3 %}
-
-{% block media %}
-{{ form.media }}
-{% endblock media %}
+{% load staticfiles %}
 
 {% block tabcontent %}
 
@@ -19,15 +15,37 @@
         {% endif %}
       </h1>
     </div>
-    <form action="" method="post" role="form">
-      {% bootstrap_form form %}
+    <form method="post" role="form">
       {% csrf_token %}
-      {% buttons %}
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <a href="{% url 'show-issue' project.name issue.id %}" class="btn btn-default">Cancel</a>
-      {% endbuttons %}
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#editor" role="tab" data-toggle="tab">Editor</a></li>
+        <li><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="editor" style="max-height: 220px;">
+          <div class="form-group">
+            <textarea style="width: 100%; height: 220px;" id="markdown-content" name="comment" required>{{ form.comment.value }}</textarea>
+          </div>
+        </div>
+        <div class="tab-pane well" id="preview" style="min-height: 200px; magin: 0;">
+          <div id="preview-content"></div>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Submit</button>
+          <a href="{% url 'show-issue' project.name issue.id %}" class="btn btn-default">Cancel</a>
+        </div>
+      </div>
     </form>
   </div>
 </div>
 
+{% endblock %}
+
+{% block js_end %}
+{{ block.super }}
+<script type="text/javascript">
+var markdown_preview_url = "{% url 'markdown' %}";
+</script>
+<script src="{% static 'js/jquery.cookie.js' %}"></script>
+<script src="{% static 'js/markdown-preview.js' %}"></script>
 {% endblock %}
