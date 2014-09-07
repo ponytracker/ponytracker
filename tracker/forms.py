@@ -40,5 +40,5 @@ class MilestoneForm(forms.ModelForm):
         model = Milestone
         fields = ['name', 'due_date']
         widgets = {
-            'due_date': DateTimePicker(format="%Y-%m-%d %H:%M"),
+            'due_date': DateTimePicker(options=False),
         }

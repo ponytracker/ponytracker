@@ -5,8 +5,8 @@
 {% load tracker_filters %}
 {% load staticfiles %}
 
-{% block media %}
-{{ form.media }}
+{% block css %}
+{{ form.media.css }}
 {% endblock %}
 
 {% block tabcontent %}
@@ -227,4 +227,5 @@ var markdown_preview_url = "{% url 'markdown' %}";
 </script>
 <script src="{% static 'js/jquery.cookie.js' %}"></script>
 <script src="{% static 'js/markdown-preview.js' %}"></script>
+{{ form.media.js }}
 {% endblock %}

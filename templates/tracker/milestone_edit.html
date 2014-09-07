@@ -4,6 +4,11 @@
 
 {% block milestonetab %} class="active"{% endblock %}
 
+{% block css %}
+{{ block.super }}
+{{ form.media.css }}
+{% endblock %}
+
 {% block moretabs %}
 <div class="pull-right">
   <div class="btn-group">
@@ -15,10 +20,6 @@
   <a href="{% url 'add-milestone' project.name %}" class="btn btn-success">New milestone</a>
   {% endif %}
 </div>
-{% endblock %}
-
-{% block media %}
-{{ form.media }}
 {% endblock %}
 
 {% block tabcontent %}
@@ -48,4 +49,14 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block js_end %}
+{{ block.super }}
+{{ form.media.js }}
+<script>
+$(function() {
+    $("#id_due_date_picker").datetimepicker({"format": "YYYY-MM-DD HH:mm", "language": "en-us"});
+});
+</script>
 {% endblock %}
