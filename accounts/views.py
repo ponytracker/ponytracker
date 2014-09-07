@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib.auth.forms import PasswordChangeForm
+from django.forms.models import modelform_factory
 from django import VERSION
 
 from django.http import Http404, HttpResponse
@@ -82,14 +83,19 @@ def user_details(request, user):
 @project_perm_required('manage_accounts')
 def user_edit(request, user=None):
 
+    fields = []
     if user:
         user = get_object_or_404(User, id=user)
-        if settings.EXTERNAL_AUTH:
-            form = UserFormWithoutUsername(request.POST or None, instance=user)
-        else:
-            form = UserForm(request.POST or None, instance=user)
+        if not settings.EXTERNAL_AUTH:
+            fields += ['username']
     else:
-        form = UserForm(request.POST or None)
+        fields += ['username']
+    fields += ['first_name', 'last_name', 'email', 'notifications']
+    if request.user.is_superuser:
+        fields += ['is_superuser']
+
+    UserForm = modelform_factory(User, fields=fields)
+    form = UserForm(request.POST or None, instance=user)
 
     if request.method == 'POST' and form.is_valid():
         newuser = form.save()
