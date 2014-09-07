@@ -20,9 +20,6 @@ class ProjectMiddleware:
 
     def process_view(self, request, view, view_args, view_kwargs):
 
-        if view.__module__ not in modules:
-            return
-
         if not hasattr(request, 'user'):
             raise ImproperlyConfigured(
                 "The project middleware requires the"
@@ -73,6 +70,8 @@ class ProjectMiddleware:
         request.projects = projects
 
         # project
+        if view.__module__ not in modules:
+            return
         project = view_kwargs.get('project')
         if not project:
             return
