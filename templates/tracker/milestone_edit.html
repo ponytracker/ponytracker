@@ -41,7 +41,7 @@
       {% csrf_token %}
       {% buttons %}
         <button type="submit" class="btn btn-primary">Submit</button>
-        <a href="{% url 'list-milestone' project.name %}" class="btn btn-default">Cancel</a>
+        <a href="{{ cancel }}" class="btn btn-default">Cancel</a>
       {% endbuttons %}
     </form>
 

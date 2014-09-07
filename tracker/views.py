@@ -615,6 +615,9 @@ def label_edit(request, project, id=None):
         label = get_object_or_404(Label, project=project, id=id)
     else:
         label = None
+    issue = request.GET.get('issue')
+    if issue:
+        issue = get_object_or_404(Issue, project=project, id=issue)
 
     form = LabelForm(request.POST or None, instance=label)
 
@@ -641,17 +644,22 @@ def label_edit(request, project, id=None):
                 label.save()
                 messages.success(request, 'Label added successfully.')
 
-            issue = request.GET.get('issue')
             if issue:
-                return redirect('add-label-to-issue', project.name,
-                        issue, label.id)
+                return redirect('add-label-to-issue',
+                        project.name, issue.id, label.id)
 
             return redirect('list-label', project.name)
+
+    if issue:
+        cancel = reverse('show-issue', args=[project.name, issue.id])
+    else:
+        cancel = reverse('list-label', args=[project.name])
 
     c = {
         'project': project,
         'form': form,
         'label': label,
+        'cancel': cancel,
     }
 
     return render(request, 'tracker/label_edit.html', c)
@@ -705,6 +713,9 @@ def milestone_edit(request, project, name=None):
         milestone = get_object_or_404(Milestone, project=project, name=name)
     else:
         milestone = None
+    issue = request.GET.get('issue')
+    if issue:
+        issue = get_object_or_404(Issue, project=project, id=issue)
 
     form = MilestoneForm(request.POST or None, instance=milestone)
 
@@ -740,17 +751,22 @@ def milestone_edit(request, project, name=None):
                 milestone.save()
                 messages.success(request, 'Milestone added successfully.')
 
-            issue = request.GET.get('issue')
             if issue:
-                return redirect('add-milestone-to-issue', project.name, issue,
-                        milestone.name)
+                return redirect('add-milestone-to-issue',
+                        project.name, issue.id, milestone.name)
 
             return redirect('list-milestone', project.name)
+
+    if issue:
+        cancel = reverse('show-issue', args=[project.name, issue.id])
+    else:
+        cancel = reverse('list-milestone', args=[project.name])
 
     c = {
         'project': project,
         'form': form,
         'milestone': milestone,
+        'cancel': cancel,
     }
 
     return render(request, 'tracker/milestone_edit.html', c)
