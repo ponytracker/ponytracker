@@ -69,6 +69,11 @@ def project_list(request):
     return render(request, 'tracker/project_list.html')
 
 
+def project_redirect(request, project):
+
+    return redirect('list-issue', project.name)
+
+
 @project_perm_required('create_project')
 def project_add(request):
 

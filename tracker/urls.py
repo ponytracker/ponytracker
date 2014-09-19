@@ -43,4 +43,6 @@ urlpatterns = [
     url(r'^(?P<project>[-\w]+)/milestones/(?P<name>[a-z0-9_.-]+)/close/$', 'tracker.views.milestone_close', name='close-milestone'),
     url(r'^(?P<project>[-\w]+)/milestones/(?P<name>[a-z0-9_.-]+)/reopen/$', 'tracker.views.milestone_reopen', name='reopen-milestone'),
     url(r'^(?P<project>[-\w]+)/milestones/(?P<name>[a-z0-9_.-]+)/delete/$', 'tracker.views.milestone_delete', name='delete-milestone'),
+    # Default redirection
+    url(r'^(?P<project>[-\w]+)/$', 'tracker.views.project_redirect'),
 ]
