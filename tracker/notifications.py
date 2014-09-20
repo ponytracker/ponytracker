@@ -23,41 +23,16 @@ def notify_new_issue(issue):
     project = issue.project
     dests = project.subscribers.all().distinct()
 
-    if hasattr(settings, 'FROM_ADDR'):
-        from_addr = settings.FROM_ADDR
-    else:
-        return
-
     subject = "[%s] %s" % (project, issue.title)
+    sender = issue.author
 
-    data = []
-    for dest in dests:
+    data = {
+        'description': issue.description,
+        'uri': settings.BASE_URL + reverse('show-issue',
+            args=[project.name, issue.id]),
+    }
 
-        if dest.notifications == User.NOTIFICATIONS_NEVER:
-            continue
-        if dest == issue.author \
-                and dest.notifications == User.NOTIFICATIONS_OTHERS:
-            continue
-        dest_addr = dest.email
-        if not dest_addr:
-            continue
-
-        c = {
-            'description': issue.description,
-            'uri': settings.BASE_URL + reverse('show-issue',
-                args=[project.name, issue.id]),
-        }
-
-        message = render_to_string('emails/new_issue.html', c)
-
-        data += [(subject, message,
-            "%s <%s>" % (issue.author.username, from_addr), [dest_addr])]
-
-    if 'djcelery' in settings.INSTALLED_APPS:
-        send_mass_mail.delay(tuple(data))
-    else:
-        send_mass_mail(tuple(data))
-
+    notify_by_email(data, 'new_issue', subject, sender, dests)
 
 def notify_new_comment(event):
     notify_event(event, 'new_comment')
@@ -80,14 +55,30 @@ def notify_event(event, template):
     dests |= project.subscribers.all()
     dests = dests.distinct()
 
+    subject = "Re: [%s] %s" % (project, issue.title)
+    sender = event.author
+
+    data = {
+        'comment': event.additionnal_section,
+        'uri': settings.BASE_URL + reverse('show-issue',
+            args=[project.name, issue.id]),
+    }
+
+    notify_by_email(data, template, subject, sender, dests)
+
+
+def notify_by_email(data, template, subject, sender, dests):
+
+    message = render_to_string('emails/%s.html' % template, data)
+
     if hasattr(settings, 'FROM_ADDR'):
         from_addr = settings.FROM_ADDR
     else:
         return
 
-    subject = "Re: [%s] %s" % (project, issue.title)
+    from_addr = '%s <%s>' % (sender.fullname or sender.username, from_addr)
 
-    data = []
+    mails = []
 
     for dest in dests:
 
@@ -100,18 +91,9 @@ def notify_event(event, template):
         if not dest_addr:
             continue
 
-        c = {
-            'comment': event.additionnal_section,
-            'uri': settings.BASE_URL + reverse('show-issue',
-                args=[project.name, issue.id]),
-        }
-
-        message = render_to_string('emails/%s.html' % template, c)
-
-        data += [(subject, message,
-            '%s <%s>' % (event.author.username, from_addr), [dest_addr])]
+        mails += [(subject, message, from_addr, [dest_addr])]
 
     if 'djcelery' in settings.INSTALLED_APPS:
-        send_mass_mail.delay(tuple(data))
+        send_mass_mail.delay(tuple(mails))
     else:
-        send_mass_mail(tuple(data))
+        send_mass_mail(tuple(mails))
