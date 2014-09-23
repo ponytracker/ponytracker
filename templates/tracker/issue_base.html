@@ -6,7 +6,7 @@
 <div class="pull-right">
   <div class="btn-group">
     <a href="{% url 'list-issue' project.name %}?q=is:open{% if is_all_query %} {{ is_all_query }}{% endif %}{{ sort }}" class="btn btn-default{{ is_open }}">Open</a>
-    <a href="{% url 'list-issue' project.name %}?q=is:close{% if is_all_query %} {{ is_all_query }}{% endif %}{{ sort }}" class="btn btn-default{{ is_close }}">Close</a>
+    <a href="{% url 'list-issue' project.name %}?q=is:close{% if is_all_query %} {{ is_all_query }}{% endif %}{{ sort }}" class="btn btn-default{{ is_close }}">Closed</a>
     <a href="{% url 'list-issue' project.name %}?q={% if is_all_query %}{{ is_all_query }}{% else %}*{% endif %}{{ sort }}" class="btn btn-default{{ is_all }}">All</a>
   </div>
   {% if perm.create_issue %}
