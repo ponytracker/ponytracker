@@ -84,7 +84,7 @@ def notify_by_email(data, template, subject, sender, dests):
 
         if dest.notifications == User.NOTIFICATIONS_NEVER:
             continue
-        if dest == issue.author \
+        if dest == sender \
                 and dest.notifications == User.NOTIFICATIONS_OTHERS:
             continue
         dest_addr = dest.email
