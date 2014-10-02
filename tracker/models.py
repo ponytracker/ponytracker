@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
+from django.utils.html import escape, format_html
 from django.utils.encoding import python_2_unicode_compatible
 from django import VERSION
 
@@ -359,10 +359,7 @@ class Event(models.Model):
         else:
             return None
 
-        # Escape args
-        safe_args = {k: escape(v) for k, v in args.items()}
-
-        return mark_safe(description.format(**safe_args))
+        return format_html(description, **args)
 
 
 if VERSION < (1, 7):
