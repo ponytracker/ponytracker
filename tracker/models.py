@@ -309,7 +309,7 @@ class Event(models.Model):
 
     def __str__(self):
 
-        args = self.args
+        args = {k: escape(v) for k, v in self.args.items()}
 
         if self.code == Event.COMMENT or self.code == Event.DESCRIBE:
             description = "commented"
@@ -318,8 +318,9 @@ class Event(models.Model):
         elif self.code == Event.REOPEN:
             description = "reopened this issue"
         elif self.code == Event.RENAME:
-            description = "changed the title from <mark>{old_title}</mark> " \
-                          "to <mark>{new_title}</mark>"
+            description = "changed the title from <mark>%s</mark> " \
+                          "to <mark>%s</mark>" \
+                          % (args['old_title'], args['new_title'])
         elif self.code == Event.ADD_LABEL or self.code == Event.DEL_LABEL:
             label = Label.objects.get(id=args['label'])
             if self.code == Event.ADD_LABEL:
@@ -340,8 +341,8 @@ class Event(models.Model):
                 action = 'removed'
             description = '%s this to the <span class="glyphicon ' \
                           'glyphicon-road"></span> <a href="%s">' \
-                          '<b>{milestone}</b></a> milestone' \
-                          % (action, same_milestone(milestone))
+                          '<b>%s</b></a> milestone' \
+                          % (action, same_milestone(milestone), milestone)
         elif self.code == Event.CHANGE_MILESTONE:
             old_ms = Milestone(name=args['old_milestone'],
                     project=self.issue.project)
@@ -349,17 +350,17 @@ class Event(models.Model):
                     project=self.issue.project)
             description = 'moved this from the <span class="glyphicon ' \
                           'glyphicon-road"></span> <a href="%s">' \
-                          '<b>{old_milestone}</b></a> milestone ' \
+                          '<b>%s</b></a> milestone ' \
                           'to the <span class="glyphicon ' \
                           'glyphicon-road"></span> <a href="%s">' \
-                          '<b>{new_milestone}</b></a> milestone' \
-                          % (same_milestone(old_ms), same_milestone(new_ms))
+                          '<b>%s</b></a> milestone' \
+                          % (same_milestone(old_ms), old_ms, same_milestone(new_ms), new_ms)
         elif self.code == Event.REFERENCE:
             description = "referenced this issue"
         else:
             return None
 
-        return format_html(description, **args)
+        return description
 
 
 if VERSION < (1, 7):
