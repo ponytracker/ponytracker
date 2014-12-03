@@ -6,6 +6,7 @@ from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
+from django.db.models import Max
 
 from tracker.utils import markdown_to_html
 from tracker.forms import *
@@ -202,8 +203,10 @@ def issue_list(request, project):
     milestones = Milestone.objects.filter(project=project)
 
     sort = request.GET.get('sort', '')
-    if sort:
-        sort = '&' + sort
+    sort_type = ['recently-updated', 'least-recently-updated',
+            'newest', 'oldest', '']
+    if sort not in sort_type:
+        sort = ''
 
     is_open = ''
     is_close = ''
@@ -290,10 +293,20 @@ def issue_list(request, project):
             is_all_query += ' ' + constraint
 
     if issues:
-        issues = issues.extra(order_by=['-opened_at'])
+        if sort and sort == 'newest':
+            issues = issues.extra(order_by=['-opened_at'])
+        elif sort and sort == 'oldest':
+            issues = issues.extra(order_by=['opened_at'])
+        elif sort and sort == 'least-recently-updated':
+            issues = issues.annotate(last_activity=Max('events__date')).order_by('last_activity')
+        else: # recently-updated
+            issues = issues.annotate(last_activity=Max('events__date')).order_by('-last_activity')
 
     if is_open == '' and is_close == '':
         is_all = ' active'
+
+    if sort and sort != 'recently-updated':
+        sort = '&sort=' + sort
 
     c = {
         'project': project,

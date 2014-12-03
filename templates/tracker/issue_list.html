@@ -61,7 +61,6 @@
               {% endif %}
             </ul>
           </div>
-          {% comment %}
           <div class="btn-group">
             <button class="btn btn-default dropdown-toggle" type="button" id="issue-sort-menu" data-toggle="dropdown">
               Sort
@@ -69,15 +68,16 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="issue-sort-menu">
               <li role="presentation" class="dropdown-header">Sort by</li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=newest">Newest</a></li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=oldest">Oldest</a></li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=most commented">Most commented</a></li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=least-commented">Least commented</a></li>
               <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=recently-updated">Recently updated</a></li>
               <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=least-recently-updated">Least recently updated</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=newest">Newest</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=oldest">Oldest</a></li>
+              {% comment %}
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=most commented">Most commented</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=least-commented">Least commented</a></li>
+              {% endcomment %}
             </ul>
           </div>
-          {% endcomment %}
         </div>
       </div>
     </div>
