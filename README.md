@@ -8,12 +8,15 @@ PonyTracker
 PonyTracker is a small and easy-to-use github-like issue tracker.
 It is an open source software released under license CeCILL-C.
 
+Official website: http://ponytracker.eu.org
+
 
 Main features
 -------------
 
 * Issues classified in project
-* Issues filterable by labels/milestones/author
+* Issues filterable by labels / milestones / author
+* Issues sortable by creation date / last activity
 * Markdown comments
 * Global and project-based permissions
 * Per user/group/team permissions
@@ -27,5 +30,4 @@ Planed features
 * API
 * Jabber notifications
 * Searching on body
-* Sorting criteria
 * RSS
