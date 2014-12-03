@@ -294,9 +294,9 @@ def issue_list(request, project):
 
     if issues:
         if sort and sort == 'newest':
-            issues = issues.extra(order_by=['-opened_at'])
+            issues = issues.order_by('-opened_at')
         elif sort and sort == 'oldest':
-            issues = issues.extra(order_by=['opened_at'])
+            issues = issues.order_by('opened_at')
         elif sort and sort == 'least-recently-updated':
             issues = issues.annotate(last_activity=Max('events__date')).order_by('last_activity')
         else: # recently-updated
