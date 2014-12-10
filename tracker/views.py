@@ -424,9 +424,7 @@ def issue_comment_edit(request, project, issue, comment=None):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
-    redirect = 'to-issue'
     change_state = False
-
     if 'change-state' in request.POST:
         if not request.user.has_perm('manage_issue', project):
             raise PermissionDenied()
@@ -448,8 +446,10 @@ def issue_comment_edit(request, project, issue, comment=None):
 
     if request.method == 'POST' and form.is_valid():
 
+        redirect_to = 'issue'
         comment = form.cleaned_data['comment']
 
+        # modification of an existent comment
         if event:
 
             if event.additionnal_section != comment:
@@ -459,6 +459,7 @@ def issue_comment_edit(request, project, issue, comment=None):
             else:
                 messages.info(request, 'Comment not modified.')
 
+        # creation of a new comment
         else:
 
             event = Event(issue=issue, author=request.user,
@@ -474,7 +475,7 @@ def issue_comment_edit(request, project, issue, comment=None):
                     event.save()
                     notify_close_issue(event)
                     messages.success(request, 'Comment added successfully and issue closed.')
-                    redirect = 'to-list'
+                    redirect_to = 'list'
                 else:
                     event = Event(issue=issue, author=request.user, code=Event.REOPEN)
                     event.save()
@@ -483,7 +484,7 @@ def issue_comment_edit(request, project, issue, comment=None):
             else:
                 messages.success(request, 'Comment added successfully.')
 
-        if redirect == 'to-issue':
+        if redirect_to == 'issue':
             return redirect('show-issue', project.name, issue.id)
         else:
             return redirect('list-issue', project.name)
