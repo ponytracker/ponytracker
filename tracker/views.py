@@ -424,6 +424,14 @@ def issue_comment_edit(request, project, issue, comment=None):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
+    redirect = 'to-issue'
+    change_state = False
+
+    if 'change-state' in request.POST:
+        if not request.user.has_perm('manage_issue', project):
+            raise PermissionDenied()
+        change_state = True
+
     if comment:
         if not request.user.has_perm('modify_comment', project):
             raise PermissionDenied()
@@ -458,9 +466,27 @@ def issue_comment_edit(request, project, issue, comment=None):
             event.save()
             issue.subscribers.add(request.user)
             notify_new_comment(event)
-            messages.success(request, 'Comment added successfully.')
+            if change_state:
+                issue.closed = not issue.closed
+                issue.save()
+                if issue.closed:
+                    event = Event(issue=issue, author=request.user, code=Event.CLOSE)
+                    event.save()
+                    notify_close_issue(event)
+                    messages.success(request, 'Comment added successfully and issue closed.')
+                    redirect = 'to-list'
+                else:
+                    event = Event(issue=issue, author=request.user, code=Event.REOPEN)
+                    event.save()
+                    notify_reopen_issue(event)
+                    messages.success(request, 'Issue reopened and omment added successfully.')
+            else:
+                messages.success(request, 'Comment added successfully.')
 
-        return redirect('show-issue', project.name, issue.id)
+        if redirect == 'to-issue':
+            return redirect('show-issue', project.name, issue.id)
+        else:
+            return redirect('list-issue', project.name)
 
     c = {
         'project': project,
@@ -498,6 +524,8 @@ def issue_close(request, project, issue):
 
     notify_close_issue(event)
 
+    messages.success(request, 'Issue closed.')
+
     return redirect('list-issue', project.name)
 
 
@@ -513,6 +541,8 @@ def issue_reopen(request, project, issue):
     event.save()
 
     notify_reopen_issue(event)
+
+    messages.success(request, 'Issue reopened.')
 
     return redirect('show-issue', project.name, issue.id)
 
