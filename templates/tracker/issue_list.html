@@ -2,6 +2,7 @@
 
 {% load humanize %}
 {% load tracker_tags %}
+{% load bootstrap3 %}
 
 {% block title %}{{ issue.name }} - {{ project }} - PonyTracker{% endblock %}
 
@@ -82,7 +83,7 @@
       </div>
     </div>
   </li>
-  {% if issues.count %}
+  {% if paginator.count %}
   {% for issue in issues %}
   <li class="list-group-item">
     {% if issue.closed %}
@@ -106,5 +107,11 @@
   <li class="list-group-item"><em>No issues match your desired criteria.</em></li>
   {% endif %}
 </ul>
+
+{% if issues %}
+<div style="text-align: center;">
+    {% bootstrap_pagination issues %}
+</div>
+{% endif %}
 
 {% endblock %}

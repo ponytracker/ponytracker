@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 from django.db.models import Max
 
@@ -301,6 +302,16 @@ def issue_list(request, project):
             issues = issues.annotate(last_activity=Max('events__date')).order_by('last_activity')
         else: # recently-updated
             issues = issues.annotate(last_activity=Max('events__date')).order_by('-last_activity')
+        page = request.GET.get('page')
+        paginator = Paginator(issues, settings.ITEMS_PER_PAGE)
+        try:
+            issues = paginator.page(page)
+        except PageNotAnInteger:
+            issues = paginator.page(1)
+        except EmptyPage:
+            issues = paginator.page(paginator.num_pages)
+    else:
+        paginator = None
 
     if is_open == '' and is_close == '':
         is_all = ' active'
@@ -311,6 +322,7 @@ def issue_list(request, project):
     c = {
         'project': project,
         'issues': issues,
+        'paginator': paginator,
         'query': query,
         'sort': sort,
         'is_open': is_open,
