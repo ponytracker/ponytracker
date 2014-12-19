@@ -13,7 +13,7 @@
 {% block tabcontent %}
 
 <ul class="list-group">
-  {% if not groups.exists %}
+  {% if not paginator.count %}
   <li class="list-group-item" style="line-height: 48px;">
     <em>There are no groups quit yet.</em>
   </li>
@@ -33,5 +33,9 @@
   </a>
   {% endfor %}
 </ul>
+
+<div style="text-align: center;">
+    {% bootstrap_pagination groups %}
+</div>
 
 {% endblock %}
