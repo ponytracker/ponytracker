@@ -1,4 +1,4 @@
-django
+django==1.7
 django-colorful
 django-bootstrap3
 django-bootstrap3-datetimepicker
