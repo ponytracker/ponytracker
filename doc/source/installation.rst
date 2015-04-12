@@ -91,7 +91,7 @@ Create an account for the administrator::
 
 Collect static files in the ``STATIC_DIR``::
 
-  $ python manage.py collecstatic --settings=ponytracker.local_settings
+  $ python manage.py collectstatic --settings=ponytracker.local_settings
 
 Run django
 ==========
