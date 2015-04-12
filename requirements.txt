@@ -1,5 +1,5 @@
-django==1.7
+django<1.9
 django-colorful
 django-bootstrap3
-django-bootstrap3-datetimepicker
+git+git://github.com/bouttier/django-bootstrap3-datetimepicker
 markdown

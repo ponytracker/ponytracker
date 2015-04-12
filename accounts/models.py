@@ -75,10 +75,8 @@ class Team(models.Model):
 
     # We dont want related field on User object because we use
     # a special function that retrieve also team through group
-    users = models.ManyToManyField(User, blank=True, null=True,
-            related_name='+')
-    groups = models.ManyToManyField(Group, blank=True, null=True,
-            related_name='teams')
+    users = models.ManyToManyField(User, blank=True, related_name='teams+')
+    groups = models.ManyToManyField(Group, blank=True, related_name='teams')
 
     def __str__(self):
         return self.name
