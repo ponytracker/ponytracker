@@ -43,7 +43,7 @@ class Project(models.Model):
 
     access = models.IntegerField(choices=ACCESS_TYPE, default=ACCESS_PUBLIC)
 
-    subscribers = models.ManyToManyField(User, blank=True, null=True,
+    subscribers = models.ManyToManyField(User, blank=True,
             related_name='subscribed_projects')
 
     def __str__(self):
@@ -138,7 +138,7 @@ class Issue(models.Model):
 
     closed = models.BooleanField(default=False)
 
-    labels = models.ManyToManyField(Label, blank=True, null=True,
+    labels = models.ManyToManyField(Label, blank=True,
             related_name='issues')
 
     milestone = models.ForeignKey(Milestone, blank=True, null=True,
@@ -146,7 +146,7 @@ class Issue(models.Model):
 
     assignee = models.ForeignKey(User, blank=True, null=True, related_name='+')
 
-    subscribers = models.ManyToManyField(User, blank=True, null=True,
+    subscribers = models.ManyToManyField(User, blank=True,
             related_name='subscribed_issues')
 
     @staticmethod
