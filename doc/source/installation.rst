@@ -195,7 +195,6 @@ Apache
       DocumentRoot /srv/www/ponytracker/www
 
       SSLEngine on
-      SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
       SSLCertificateFile /etc/apache2/ssl/ponytracker.example.com.pem
       SSLCertificateKeyFile /etc/apache2/ssl/ponytracker.example.com-Key.pem
       SSLCACertificateFile /etc/apache2/ssl/ponytracker.example.com-CA.pem
