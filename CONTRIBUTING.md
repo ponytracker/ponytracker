@@ -14,5 +14,5 @@ You can contribute in different ways:
 
   * Join the #ponytracker channel on freenode
   * Send an email to dev@lists.ponytracker.eu.org
-  * Open an issue on Github at https://github.com/bouttier/ponytracker/issues
+  * Open an issue on Github at https://github.com/ponytracker/ponytracker/issues
   * Fork the repository on Github and make a pull request

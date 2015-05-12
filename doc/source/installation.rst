@@ -47,7 +47,7 @@ Create ``log`` and ``www`` directories::
 
 Clone the git repository and switch to the release branch::
 
-  $ git clone http://github.com/bouttier/ponytracker
+  $ git clone http://github.com/ponytracker/ponytracker
   $ cd ponytracker # we are now in /srv/www/ponytracker/ponytracker
   $ git checkout release
 
