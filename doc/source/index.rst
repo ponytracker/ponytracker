@@ -16,8 +16,9 @@ Contents:
    :maxdepth: 2
 
     Installation <installation>
-    Documentation <documentation>
-    Developers guide <dev>
+    Upgrade <upgrade>
+    User guide <user>
+    Developer guide <dev>
 
 
 

@@ -1,2 +1,2 @@
-Developers guide
-################
+Developer guide
+###############
