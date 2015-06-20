@@ -39,7 +39,7 @@
               <li role="presentation" class="dropdown-header">Filter by label</li>
               {% if labels.exists %}
               {% for label in labels %}
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }} label:{{ label.quotted_name }}{{ sort }}">{{ label }}</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }} label:{{ label.quotted_name }}{{ sort_url }}">{{ label }}</a></li>
               {% endfor %}
               {% else %}
               <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><em>No labels</em></a></li>
@@ -55,7 +55,7 @@
               <li role="presentation" class="dropdown-header">Filter by milestone</li>
               {% if milestones.exists %}
               {% for milestone in milestones %}
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }} milestone:{{ milestone }}{{ sort }}">{{ milestone }}</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }} milestone:{{ milestone }}{{ sort_url }}">{{ milestone }}</a></li>
               {% endfor %}
               {% else %}
               <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><em>No milestones</em></a></li>
@@ -69,14 +69,9 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="issue-sort-menu">
               <li role="presentation" class="dropdown-header">Sort by</li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=recently-updated">Recently updated</a></li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=least-recently-updated">Least recently updated</a></li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=newest">Newest</a></li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=oldest">Oldest</a></li>
-              {% comment %}
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=most commented">Most commented</a></li>
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort=least-commented">Least commented</a></li>
-              {% endcomment %}
+              {% for key, value in sort_values.items %}
+              <li role="presentation"{% if sort == key %} class="disabled"{% endif%}><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort={{ key }}">{{ value }}</a></li>
+              {% endfor %}
             </ul>
           </div>
         </div>

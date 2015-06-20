@@ -18,6 +18,7 @@ from permissions.models import ProjectPermission
 from permissions.decorators import project_perm_required
 
 import shlex
+from collections import OrderedDict
 
 
 ####################
@@ -204,15 +205,23 @@ def issue_list(request, project):
     milestones = Milestone.objects.filter(project=project)
 
     sort = request.GET.get('sort', '')
-    sort_type = ['recently-updated', 'least-recently-updated',
-            'newest', 'oldest', '']
-    if sort not in sort_type:
-        sort = ''
+    sort_default_behaviour = 'recently-updated'
+    sort_values = OrderedDict([
+            ('recently-updated', 'Recentely updated'),
+            ('least-recently-updated', 'Least recently updated'),
+            ('newest', 'Newest'),
+            ('oldest', 'Oldest'),
+#            ('most-commented', 'Most commented'),
+#            ('least-commented', 'Least commented'),
+        ])
+    if sort == '' or sort not in sort_values.keys():
+        sort = sort_default_behaviour
 
     is_open = ''
     is_close = ''
     is_all = ''
     is_all_query = ''
+    status = None
 
     query = request.GET.get('q', '')
 
@@ -294,11 +303,11 @@ def issue_list(request, project):
             is_all_query += ' ' + constraint
 
     if issues:
-        if sort and sort == 'newest':
+        if sort == 'newest':
             issues = issues.order_by('-opened_at')
-        elif sort and sort == 'oldest':
+        elif sort == 'oldest':
             issues = issues.order_by('opened_at')
-        elif sort and sort == 'least-recently-updated':
+        elif sort == 'least-recently-updated':
             issues = issues.annotate(last_activity=Max('events__date')).order_by('last_activity')
         else: # recently-updated
             issues = issues.annotate(last_activity=Max('events__date')).order_by('-last_activity')
@@ -316,8 +325,10 @@ def issue_list(request, project):
     if is_open == '' and is_close == '':
         is_all = ' active'
 
-    if sort and sort != 'recently-updated':
-        sort = '&sort=' + sort
+    if sort != sort_default_behaviour:
+        sort_url = '&sort=' + sort
+    else:
+        sort_url = ''
 
     c = {
         'project': project,
@@ -325,6 +336,8 @@ def issue_list(request, project):
         'paginator': paginator,
         'query': query,
         'sort': sort,
+        'sort_url': sort_url,
+        'sort_values': sort_values,
         'is_open': is_open,
         'is_close': is_close,
         'is_all': is_all,
