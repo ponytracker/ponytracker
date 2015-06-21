@@ -80,6 +80,7 @@
           <ul class="nav nav-tabs" role="tablist">
             <li class="active"><a href="#editor" role="tab" data-toggle="tab">Editor</a></li>
             <li><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
+            <li><a href="https://daringfireball.net/projects/markdown/syntax" target="blank" role="tab">Syntaxe</a></li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="editor" style="max-height: 220px;">
@@ -93,9 +94,11 @@
             <div class="text-center">
               {% if perm.manage_issue %}
               {% if issue.closed %}
-              <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
+              <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default" id="normal-button"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
+              <button type="submit" class="btn btn-default" style="display: none;" id="comment-button" name="change-state"><span class="glyphicon glyphicon-refresh"></span> Reopen and comment</button>
               {% else %}
-              <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
+              <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default" id="normal-button"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
+              <button type="submit" class="btn btn-default" style="display: none;" id="comment-button" name="change-state"><span class="glyphicon glyphicon-ok-circle"></span> Comment and close</button>
               {% endif %}
               <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Add a comment</button>
             </div>
@@ -224,6 +227,15 @@
 {{ block.super }}
 <script type="text/javascript">
 var markdown_preview_url = "{% url 'markdown' %}";
+$('#markdown-content').on('keyup', function () {
+    if ($('#markdown-content').val()) {
+        $('#normal-button').hide();
+        $('#comment-button').show();
+    } else {
+        $('#normal-button').show();
+        $('#comment-button').hide();
+    }
+});
 </script>
 <script src="{% static 'js/jquery.cookie.js' %}"></script>
 <script src="{% static 'js/markdown-preview.js' %}"></script>

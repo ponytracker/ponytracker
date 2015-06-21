@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
 from django.contrib.auth.forms import PasswordChangeForm
 from django.forms.models import modelform_factory
@@ -62,8 +63,16 @@ def profile(request):
 
 @project_perm_required('manage_accounts')
 def user_list(request):
+    paginator = Paginator(User.objects.all(), settings.ITEMS_PER_PAGE)
+    page = request.GET.get('page')
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
     return render(request, 'accounts/user_list.html', {
-        'users': User.objects.all(),
+        'users': users,
         'external_auth': settings.EXTERNAL_AUTH,
     })
 
@@ -282,8 +291,17 @@ def user_remove_team(request, user, team):
 
 @project_perm_required('manage_accounts')
 def group_list(request):
+    paginator = Paginator(Group.objects.all(), settings.ITEMS_PER_PAGE)
+    page = request.GET.get('page')
+    try:
+        groups = paginator.page(page)
+    except PageNotAnInteger:
+        groups = paginator.page(1)
+    except EmptyPage:
+        groups = paginator.page(paginator.num_pages)
     return render(request, 'accounts/group_list.html', {
-        'groups': Group.objects.all(),
+        'groups': groups,
+        'paginator': paginator,
     })
 
 
@@ -392,8 +410,17 @@ def group_remove_user(request, group, user):
 
 @project_perm_required('manage_accounts')
 def team_list(request):
+    paginator = Paginator(Team.objects.all(), settings.ITEMS_PER_PAGE)
+    page = request.GET.get('page')
+    try:
+        teams = paginator.page(page)
+    except PageNotAnInteger:
+        teams = paginator.page(1)
+    except EmptyPage:
+        teams = paginator.page(paginator.num_pages)
     return render(request, 'accounts/team_list.html', {
-        'teams': Team.objects.all(),
+        'teams': teams,
+        'paginator': paginator,
     })
 
 

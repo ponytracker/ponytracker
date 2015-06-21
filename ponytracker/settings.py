@@ -6,6 +6,9 @@ https://docs.djangoproject.com/en/dev/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
+
+For ponytracker specific settings and their values, see
+https://ponytracker.readthedocs.org/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -170,3 +173,6 @@ RESERVED_PROJECT_URLS = [
 
 GROUP_MANAGMENT = True
 EXTERNAL_AUTH = False
+
+# Pagination
+ITEMS_PER_PAGE = 25

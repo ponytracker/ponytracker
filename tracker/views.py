@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 from django.db.models import Max
 
@@ -17,6 +18,22 @@ from permissions.models import ProjectPermission
 from permissions.decorators import project_perm_required
 
 import shlex
+from collections import OrderedDict
+
+
+STATUS_VALUES = OrderedDict([
+        ('is:open', 'Open'),
+        ('is:close', 'Closed'),
+        ('*', 'All'),
+    ])
+SORT_VALUES = OrderedDict([
+        ('recently-updated', 'Recentely updated'),
+        ('least-recently-updated', 'Least recently updated'),
+        ('newest', 'Newest'),
+        ('oldest', 'Oldest'),
+#        ('most-commented', 'Most commented'),
+#        ('least-commented', 'Least commented'),
+    ])
 
 
 ####################
@@ -203,25 +220,20 @@ def issue_list(request, project):
     milestones = Milestone.objects.filter(project=project)
 
     sort = request.GET.get('sort', '')
-    sort_type = ['recently-updated', 'least-recently-updated',
-            'newest', 'oldest', '']
-    if sort not in sort_type:
-        sort = ''
+    sort_default_behaviour = 'recently-updated'
+    if sort == '' or sort not in SORT_VALUES.keys():
+        sort = sort_default_behaviour
 
-    is_open = ''
-    is_close = ''
-    is_all = ''
-    is_all_query = ''
+    status = None
 
     query = request.GET.get('q', '')
-
-    if query == '':
-        query = 'is:open'
+    query_without_status = ''
 
     syntaxe_error = False
     for constraint in shlex.split(query):
 
         if constraint == '*':
+            status = '*'
             continue
 
         args = constraint.split(':')
@@ -238,12 +250,17 @@ def issue_list(request, project):
             continue
 
         elif key == 'is':
-            if value == 'open':
+            if status:
+                messages.error(request, "The keyword 'is' can appear only "
+                                        "one time.")
+                issues = None
+                break
+            elif value == 'open':
                 issues = issues.filter(closed=False)
-                is_open = ' active'
+                status = 'is:open'
             elif value == 'close':
                 issues = issues.filter(closed=True)
-                is_close = ' active'
+                status = 'is:close'
             else:
                 messages.error(request, "The keyword 'is' must be followed "
                                         "by 'open' or 'close'.")
@@ -290,35 +307,50 @@ def issue_list(request, project):
             break
 
         if key != 'is':
-            is_all_query += ' ' + constraint
+            query_without_status += ' ' + constraint
 
     if issues:
-        if sort and sort == 'newest':
+        if sort == 'newest':
             issues = issues.order_by('-opened_at')
-        elif sort and sort == 'oldest':
+        elif sort == 'oldest':
             issues = issues.order_by('opened_at')
-        elif sort and sort == 'least-recently-updated':
+        elif sort == 'least-recently-updated':
             issues = issues.annotate(last_activity=Max('events__date')).order_by('last_activity')
         else: # recently-updated
             issues = issues.annotate(last_activity=Max('events__date')).order_by('-last_activity')
+        page = request.GET.get('page')
+        paginator = Paginator(issues, settings.ITEMS_PER_PAGE)
+        try:
+            issues = paginator.page(page)
+        except PageNotAnInteger:
+            issues = paginator.page(1)
+        except EmptyPage:
+            issues = paginator.page(paginator.num_pages)
+    else:
+        paginator = None
 
-    if is_open == '' and is_close == '':
-        is_all = ' active'
-
-    if sort and sort != 'recently-updated':
-        sort = '&sort=' + sort
+    if not status:
+        status = 'is:open'
+    if not query:
+        query = status
+    if sort != sort_default_behaviour:
+        sort_url = '&sort=' + sort
+    else:
+        sort_url = ''
 
     c = {
         'project': project,
         'issues': issues,
-        'query': query,
-        'sort': sort,
-        'is_open': is_open,
-        'is_close': is_close,
-        'is_all': is_all,
-        'is_all_query': is_all_query[1:],
         'labels': labels,
         'milestones': milestones,
+        'paginator': paginator,
+        'status': status, # for active status tab
+        'status_values': STATUS_VALUES,
+        'query': query_without_status, # to generate url with other status
+        'full_query': query, # for query field
+        'sort': sort,
+        'sort_url': sort_url,
+        'sort_values': SORT_VALUES,
     }
 
     return render(request, 'tracker/issue_list.html', c)
@@ -424,6 +456,12 @@ def issue_comment_edit(request, project, issue, comment=None):
 
     issue = get_object_or_404(Issue, project=project, id=issue)
 
+    change_state = False
+    if 'change-state' in request.POST:
+        if not request.user.has_perm('manage_issue', project):
+            raise PermissionDenied()
+        change_state = True
+
     if comment:
         if not request.user.has_perm('modify_comment', project):
             raise PermissionDenied()
@@ -440,8 +478,10 @@ def issue_comment_edit(request, project, issue, comment=None):
 
     if request.method == 'POST' and form.is_valid():
 
+        redirect_to = 'issue'
         comment = form.cleaned_data['comment']
 
+        # modification of an existent comment
         if event:
 
             if event.additionnal_section != comment:
@@ -451,6 +491,7 @@ def issue_comment_edit(request, project, issue, comment=None):
             else:
                 messages.info(request, 'Comment not modified.')
 
+        # creation of a new comment
         else:
 
             event = Event(issue=issue, author=request.user,
@@ -458,9 +499,27 @@ def issue_comment_edit(request, project, issue, comment=None):
             event.save()
             issue.subscribers.add(request.user)
             notify_new_comment(event)
-            messages.success(request, 'Comment added successfully.')
+            if change_state:
+                issue.closed = not issue.closed
+                issue.save()
+                if issue.closed:
+                    event = Event(issue=issue, author=request.user, code=Event.CLOSE)
+                    event.save()
+                    notify_close_issue(event)
+                    messages.success(request, 'Comment added successfully and issue closed.')
+                    redirect_to = 'list'
+                else:
+                    event = Event(issue=issue, author=request.user, code=Event.REOPEN)
+                    event.save()
+                    notify_reopen_issue(event)
+                    messages.success(request, 'Issue reopened and omment added successfully.')
+            else:
+                messages.success(request, 'Comment added successfully.')
 
-        return redirect('show-issue', project.name, issue.id)
+        if redirect_to == 'issue':
+            return redirect('show-issue', project.name, issue.id)
+        else:
+            return redirect('list-issue', project.name)
 
     c = {
         'project': project,
@@ -498,6 +557,8 @@ def issue_close(request, project, issue):
 
     notify_close_issue(event)
 
+    messages.success(request, 'Issue closed.')
+
     return redirect('list-issue', project.name)
 
 
@@ -513,6 +574,8 @@ def issue_reopen(request, project, issue):
     event.save()
 
     notify_reopen_issue(event)
+
+    messages.success(request, 'Issue reopened.')
 
     return redirect('show-issue', project.name, issue.id)
 

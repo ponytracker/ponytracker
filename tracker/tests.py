@@ -250,6 +250,42 @@ class TestViews(TestCase):
         issue = Issue.objects.get(pk=issue.pk)
         self.assertEqual(issue.comments.count(), count + 1)
 
+    def test_issue_comment_add_and_close(self):
+        project = Project.objects.get(name='project-1')
+        issue = project.issues.get(title='Issue 1')
+        comments = issue.comments.count()
+        events = issue.events.count()
+        response = self.client.get(reverse('add-comment', args=[project.name, issue.id]))
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('add-comment', args=[project.name, issue.id]), {
+            'comment': 'New comment.',
+            'change-state': '',
+        })
+        self.assertRedirects(response, reverse('list-issue', args=[project.name]))
+        issue = Issue.objects.get(pk=issue.pk)
+        self.assertEqual(issue.comments.count(), comments + 1)
+        self.assertEqual(issue.events.count(), events + 2)
+        self.assertTrue(issue.closed)
+
+    def test_issue_comment_add_and_reopen(self):
+        project = Project.objects.get(name='project-1')
+        issue = project.issues.get(title='Issue 1')
+        issue.closed = True
+        issue.save()
+        comments = issue.comments.count()
+        events = issue.events.count()
+        response = self.client.get(reverse('add-comment', args=[project.name, issue.id]))
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('add-comment', args=[project.name, issue.id]), {
+            'comment': 'New comment.',
+            'change-state': '',
+        })
+        self.assertRedirects(response, reverse('show-issue', args=[project.name, issue.id]))
+        issue = Issue.objects.get(pk=issue.pk)
+        self.assertEqual(issue.comments.count(), comments + 1)
+        self.assertEqual(issue.events.count(), events + 2)
+        self.assertFalse(issue.closed)
+
     def test_issue_comment_edit(self):
         project = Project.objects.get(name='project-1')
         issue = project.issues.get(title='THE Issue 2')

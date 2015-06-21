@@ -13,7 +13,7 @@
 {% block tabcontent %}
 
 <ul class="list-group">
-  {% if not teams.exists %}
+  {% if not paginator.count %}
   <li class="list-group-item" style="line-height: 48px;">
     <em>There are no teams quite yet.</em>
   </li>
@@ -36,5 +36,9 @@
   </a>
   {% endfor %}
 </ul>
+
+<div style="text-align: center;">
+    {% bootstrap_pagination teams %}
+</div>
 
 {% endblock %}

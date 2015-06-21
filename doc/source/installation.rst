@@ -47,7 +47,7 @@ Create ``log`` and ``www`` directories::
 
 Clone the git repository and switch to the release branch::
 
-  $ git clone http://github.com/bouttier/ponytracker
+  $ git clone http://github.com/ponytracker/ponytracker
   $ cd ponytracker # we are now in /srv/www/ponytracker/ponytracker
   $ git checkout release
 
@@ -91,7 +91,7 @@ Create an account for the administrator::
 
 Collect static files in the ``STATIC_DIR``::
 
-  $ python manage.py collecstatic --settings=ponytracker.local_settings
+  $ python manage.py collectstatic --settings=ponytracker.local_settings
 
 Run django
 ==========
@@ -195,7 +195,6 @@ Apache
       DocumentRoot /srv/www/ponytracker/www
 
       SSLEngine on
-      SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
       SSLCertificateFile /etc/apache2/ssl/ponytracker.example.com.pem
       SSLCertificateKeyFile /etc/apache2/ssl/ponytracker.example.com-Key.pem
       SSLCACertificateFile /etc/apache2/ssl/ponytracker.example.com-CA.pem
