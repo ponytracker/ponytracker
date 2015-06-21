@@ -1,7 +1,12 @@
 PonyTracker changelog
 
+version 0.3 [2015.06.21]
+- bug fixes in issues filtering 
+- migrating from django 1.7 to django 1.8 (see branch django-1.7 if needed)
+- pagination
+- various improvements and small bug fixes
 
-version 0.2 [no released yet]
+version 0.2 [2014.12.03]
 - new design
 - new permission managment system
 - user/group/team managment
