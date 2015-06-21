@@ -21,6 +21,21 @@ import shlex
 from collections import OrderedDict
 
 
+STATUS_VALUES = OrderedDict([
+        ('is:open', 'Open'),
+        ('is:close', 'Closed'),
+        ('*', 'All'),
+    ])
+SORT_VALUES = OrderedDict([
+        ('recently-updated', 'Recentely updated'),
+        ('least-recently-updated', 'Least recently updated'),
+        ('newest', 'Newest'),
+        ('oldest', 'Oldest'),
+#        ('most-commented', 'Most commented'),
+#        ('least-commented', 'Least commented'),
+    ])
+
+
 ####################
 # Markdown preview #
 ####################
@@ -206,32 +221,19 @@ def issue_list(request, project):
 
     sort = request.GET.get('sort', '')
     sort_default_behaviour = 'recently-updated'
-    sort_values = OrderedDict([
-            ('recently-updated', 'Recentely updated'),
-            ('least-recently-updated', 'Least recently updated'),
-            ('newest', 'Newest'),
-            ('oldest', 'Oldest'),
-#            ('most-commented', 'Most commented'),
-#            ('least-commented', 'Least commented'),
-        ])
-    if sort == '' or sort not in sort_values.keys():
+    if sort == '' or sort not in SORT_VALUES.keys():
         sort = sort_default_behaviour
 
-    is_open = ''
-    is_close = ''
-    is_all = ''
-    is_all_query = ''
     status = None
 
     query = request.GET.get('q', '')
-
-    if query == '':
-        query = 'is:open'
+    query_without_status = ''
 
     syntaxe_error = False
     for constraint in shlex.split(query):
 
         if constraint == '*':
+            status = '*'
             continue
 
         args = constraint.split(':')
@@ -248,12 +250,17 @@ def issue_list(request, project):
             continue
 
         elif key == 'is':
-            if value == 'open':
+            if status:
+                messages.error(request, "The keyword 'is' can appear only "
+                                        "one time.")
+                issues = None
+                break
+            elif value == 'open':
                 issues = issues.filter(closed=False)
-                is_open = ' active'
+                status = 'is:open'
             elif value == 'close':
                 issues = issues.filter(closed=True)
-                is_close = ' active'
+                status = 'is:close'
             else:
                 messages.error(request, "The keyword 'is' must be followed "
                                         "by 'open' or 'close'.")
@@ -300,7 +307,7 @@ def issue_list(request, project):
             break
 
         if key != 'is':
-            is_all_query += ' ' + constraint
+            query_without_status += ' ' + constraint
 
     if issues:
         if sort == 'newest':
@@ -322,9 +329,10 @@ def issue_list(request, project):
     else:
         paginator = None
 
-    if is_open == '' and is_close == '':
-        is_all = ' active'
-
+    if not status:
+        status = 'is:open'
+    if not query:
+        query = status
     if sort != sort_default_behaviour:
         sort_url = '&sort=' + sort
     else:
@@ -333,17 +341,16 @@ def issue_list(request, project):
     c = {
         'project': project,
         'issues': issues,
-        'paginator': paginator,
-        'query': query,
-        'sort': sort,
-        'sort_url': sort_url,
-        'sort_values': sort_values,
-        'is_open': is_open,
-        'is_close': is_close,
-        'is_all': is_all,
-        'is_all_query': is_all_query[1:],
         'labels': labels,
         'milestones': milestones,
+        'paginator': paginator,
+        'status': status, # for active status tab
+        'status_values': STATUS_VALUES,
+        'query': query_without_status, # to generate url with other status
+        'full_query': query, # for query field
+        'sort': sort,
+        'sort_url': sort_url,
+        'sort_values': SORT_VALUES,
     }
 
     return render(request, 'tracker/issue_list.html', c)

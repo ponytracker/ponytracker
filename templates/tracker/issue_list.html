@@ -6,6 +6,14 @@
 
 {% block title %}{{ issue.name }} - {{ project }} - PonyTracker{% endblock %}
 
+{% block statustabs %}
+<div class="btn-group">
+  {% for new_status, new_status_name in status_values.items %}
+  <a href="{% url 'list-issue' project.name %}?q={{ new_status }}{{ query }}{{ sort_url }}" class="btn btn-default{% if new_status == status %} active{% endif %}">{{ new_status_name }}</a>
+  {% endfor %}
+</div>
+{% endblock %}
+
 {% block tabcontent %}
 
 <ul class="list-group">
@@ -18,7 +26,7 @@
               <div class="input-group-addon">
                 <a href="#" onclick="$('#filter-form').submit();"><span class="glyphicon glyphicon-search"></span></a>
               </div>
-              <input class="form-control" name="q" type="text" placeholder="filter" value="{{ query }}"/>
+              <input class="form-control" name="q" type="text" placeholder="filter" value="{{ full_query }}"/>
             </div>
           </div>
           <div class="form-group">
@@ -39,7 +47,7 @@
               <li role="presentation" class="dropdown-header">Filter by label</li>
               {% if labels.exists %}
               {% for label in labels %}
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }} label:{{ label.quotted_name }}{{ sort_url }}">{{ label }}</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ status }}{{ query }} label:{{ label.quotted_name }}{{ sort_url }}">{{ label }}</a></li>
               {% endfor %}
               {% else %}
               <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><em>No labels</em></a></li>
@@ -55,7 +63,7 @@
               <li role="presentation" class="dropdown-header">Filter by milestone</li>
               {% if milestones.exists %}
               {% for milestone in milestones %}
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ query }} milestone:{{ milestone }}{{ sort_url }}">{{ milestone }}</a></li>
+              <li role="presentation"><a role="menuitem" tabindex="-1" href="?q={{ status }}{{ query }} milestone:{{ milestone }}{{ sort_url }}">{{ milestone }}</a></li>
               {% endfor %}
               {% else %}
               <li role="presentation"><a role="menuitem" tabindex="-1" href="#"><em>No milestones</em></a></li>
@@ -70,7 +78,7 @@
             <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="issue-sort-menu">
               <li role="presentation" class="dropdown-header">Sort by</li>
               {% for key, value in sort_values.items %}
-              <li role="presentation"{% if sort == key %} class="disabled"{% endif%}><a role="menuitem" tabindex="-1" href="?q={{ query }}&sort={{ key }}">{{ value }}</a></li>
+              <li role="presentation"{% if sort == key %} class="disabled"{% endif%}><a role="menuitem" tabindex="-1" href="?q={{ status }}{{ query }}&sort={{ key }}">{{ value }}</a></li>
               {% endfor %}
             </ul>
           </div>
