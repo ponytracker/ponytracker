@@ -310,6 +310,8 @@ def issue_list(request, project):
             query_without_status += ' ' + constraint
 
     if issues:
+        if not status:
+            issues = issues.filter(closed=False)
         if sort == 'newest':
             issues = issues.order_by('-opened_at')
         elif sort == 'oldest':
