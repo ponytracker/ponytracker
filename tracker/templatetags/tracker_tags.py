@@ -8,6 +8,14 @@ register = template.Library()
 
 
 @register.simple_tag
+def user_badge(user):
+
+    html = '<b data-toggle="tooltip" data-placement="bottom" title="{fullname}">{pseudo}</b>'
+
+    return mark_safe(html.format(fullname=escape(user.fullname), pseudo=escape(user)))
+
+
+@register.simple_tag
 def label_style(label):
 
     if label.inverted:

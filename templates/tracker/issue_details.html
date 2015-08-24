@@ -20,7 +20,7 @@
   <span class="label label-success" style="font-size: 120%;">Open</span>
   {% endif %}
   &#160;
-  <a href="{% same_author issue.author %}"><b>{{ issue.author}}</b></a> opened this issue {{ issue.opened_at|naturaltime }}
+  <a href="{% same_author issue.author %}">{% user_badge issue.author %}</a> opened this issue {{ issue.opened_at|naturaltime }}
   - {{ issue.comments.count }} comment{{ issue.comments.count|pluralize }}
 </div>
 
@@ -34,7 +34,7 @@
       <div class="panel-heading">
         <span class="badge"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
         &#160;
-        <a href="{% same_author event.author %}"><b>{{ event.author}}</b></a> {{ event|safe }} {{ event.date|naturaltime }}
+        <a href="{% same_author event.author %}">{% user_badge event.author %}</a> {{ event|safe }} {{ event.date|naturaltime }}
         {% if event.code == event.DESCRIBE %}
         <div class="pull-right">
           {% if perm.delete_issue %}

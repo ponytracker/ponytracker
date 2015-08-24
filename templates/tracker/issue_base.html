@@ -10,3 +10,14 @@
   {% endif %}
 </div>
 {% endblock %}
+
+{% comment %}
+{% block js_end %}
+{{ block.super }}
+<script type="text/javascript">
+$(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock %}
+{% endcomment %}

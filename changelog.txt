@@ -1,5 +1,8 @@
 PonyTracker changelog
 
+version 0.4 [in progress]
+- tooltip with full username on username references
+
 version 0.3 [2015.06.21]
 - bug fixes in issues filtering 
 - migrating from django 1.7 to django 1.8 (see branch django-1.7 if needed)

@@ -1,4 +1,4 @@
 /* activate tooltips */
 $(function () {
-  $("[rel='tooltip']").tooltip();
+  $('[data-toggle="tooltip"]').tooltip();
 })

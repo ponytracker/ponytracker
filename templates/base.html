@@ -70,10 +70,10 @@
             <ul class="nav navbar-nav navbar-right">
               {% if request.user.is_authenticated %}
               {% if perm.manage_settings or perm.manage_accounts or perm.manage_global_permission %}
-              <li{% block admintab %}{% endblock %}><a href="{% url 'admin' %}" rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Administration"><span class="glyphicon glyphicon-cog"></span></a></li>
+              <li{% block admintab %}{% endblock %}><a href="{% url 'admin' %}" data-toggle="tooltip" data-placement="bottom" title="Administration"><span class="glyphicon glyphicon-cog"></span></a></li>
               {% endif %}
-              <li{% block profiletab %}{% endblock %}><a href="{% url 'profile' %}" rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Profile"><span class="glyphicon glyphicon-user"></span> {% firstof request.user.fullname request.user.username %}</a></li>
-              <li><a href="{% url 'logout' %}" rel="tooltip" data-toggle="tooltip" data-placement="bottom" title="Logout"><span class="glyphicon glyphicon-log-out"></span></a></li>
+              <li{% block profiletab %}{% endblock %}><a href="{% url 'profile' %}" data-toggle="tooltip" data-placement="bottom" title="Profile"><span class="glyphicon glyphicon-user"></span> {% firstof request.user.fullname request.user.username %}</a></li>
+              <li><a href="{% url 'logout' %}" data-toggle="tooltip" data-placement="bottom" title="Logout"><span class="glyphicon glyphicon-log-out"></span></a></li>
               {% else %}
               <li><a href="{% url 'login' %}?next={{ request.path }}&prev={{ request.path }}"><span class="glyphicon glyphicon-log-in"></span>&nbsp;Login</a></li>
               {% endif %}
