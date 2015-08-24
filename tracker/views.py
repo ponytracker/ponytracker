@@ -292,6 +292,17 @@ def issue_list(request, project):
                 issues = issues.filter(milestone=milestone)
                 milestones = milestones.exclude(pk=milestone.pk)
 
+        elif key == 'due':
+            if value == 'yes':
+                issues = issues.filter(due_date__isnull=False)
+            elif value == 'no':
+                issues = issues.filter(due_date__isnull=True)
+            else:
+                messages.error(request, "The keyword 'due' must be followed "
+                                        "by 'yes' or 'no'.")
+                issues = None
+                break
+
         elif key == 'author' or key == 'user':
             if User.objects.filter(username=value).exists():
                 issues = issues.filter(author__username=value)
