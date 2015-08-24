@@ -22,6 +22,8 @@ class ProjectForm(forms.ModelForm):
 
 class IssueForm(forms.Form):
     title = forms.CharField(max_length=128)
+    due_date = forms.DateTimeField(required=False,
+            widget=DateTimePicker(options=False))
     description = forms.CharField(widget=forms.Textarea, required=False)
 
 

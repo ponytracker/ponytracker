@@ -366,6 +366,7 @@ def issue_edit(request, project, issue=None):
             raise PermissionDenied()
         issue = get_object_or_404(Issue, project=project, id=issue)
         init_data = {'title': issue.title,
+                     'due_date': issue.due_date,
                      'description': issue.description}
     else:
         if not request.user.has_perm('create_issue', project):
@@ -378,6 +379,7 @@ def issue_edit(request, project, issue=None):
     if request.method == 'POST' and form.is_valid():
 
         title = form.cleaned_data['title']
+        due_date = form.cleaned_data['due_date']
         description = form.cleaned_data['description']
 
         if issue:
@@ -386,12 +388,16 @@ def issue_edit(request, project, issue=None):
 
             if issue.title != title:
                 old_title = issue.title
-                issue.title = title
-                issue.save()
                 event = Event(issue=issue, author=request.user,
                         code=Event.RENAME,
                         args={'old_title': old_title, 'new_title': title})
                 event.save()
+                issue.title = title
+                modified = True
+
+            if issue.due_date != due_date:
+                # TODO: create new event 'due date changed'
+                issue.due_date = due_date
                 modified = True
 
             if issue.description != description:
@@ -399,6 +405,7 @@ def issue_edit(request, project, issue=None):
                 modified = True
 
             if modified:
+                issue.save()
                 messages.success(request, 'Issue updated successfully.')
             else:
                 messages.info(request, 'Issue not modified.')

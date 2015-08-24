@@ -136,6 +136,8 @@ class Issue(models.Model):
 
     opened_at = models.DateTimeField(auto_now_add=True)
 
+    due_date = models.DateTimeField(blank=True, null=True)
+
     closed = models.BooleanField(default=False)
 
     labels = models.ManyToManyField(Label, blank=True,

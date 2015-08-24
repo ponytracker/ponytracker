@@ -21,7 +21,10 @@
   {% endif %}
   &#160;
   <a href="{% same_author issue.author %}">{% user_badge issue.author %}</a> opened this issue {{ issue.opened_at|naturaltime }}
-  - {{ issue.comments.count }} comment{{ issue.comments.count|pluralize }}
+  {% if issue.due_date %}
+  &#160;–&#160;&#160;due by {{ issue.due_date }}
+  {% endif %}
+  &#160;–&#160;&#160;{{ issue.comments.count }} comment{{ issue.comments.count|pluralize }}
 </div>
 
 <div class="row">

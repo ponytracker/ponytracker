@@ -100,6 +100,9 @@
     {% endfor %}
     <br />
     <small>#{{ issue.id }} opened by <a href="{% same_author issue.author %}">{% user_badge issue.author %}</a> {{ issue.opened_at|naturaltime }}</small>
+    {% if issue.due_date %}
+    &#160;–&#160;&#160;<small>due by {{ issue.due_date }}</small>
+    {% endif %}
     {% if issue.milestone %}
     &#160;–&#160;&#160;<span class="glyphicon glyphicon-road"></span> <a href="{% same_milestone issue.milestone %}"><b>{{ issue.milestone }}</b></a>
     {% endif %}
