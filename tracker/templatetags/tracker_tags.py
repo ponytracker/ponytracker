@@ -7,12 +7,9 @@ from django.utils.html import escape
 register = template.Library()
 
 
-@register.simple_tag
+@register.inclusion_tag('tracker/tags/user_badge.html')
 def user_badge(user):
-
-    html = '<b data-toggle="tooltip" data-placement="bottom" title="{fullname}">{pseudo}</b>'
-
-    return mark_safe(html.format(fullname=escape(user.fullname), pseudo=escape(user)))
+    return {'user': user}
 
 
 @register.simple_tag
