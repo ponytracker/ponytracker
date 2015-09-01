@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -69,7 +70,21 @@ def admin(request):
 
 @project_perm_required('manage_settings')
 def settings_list(request):
-    return render(request, 'tracker/settings.html')
+
+    form = SettingsForm(request.POST or None, instance=get_current_site(request).settings)
+
+    if request.method == 'POST' and form.is_valid():
+
+        form.save()
+        messages.success(request, 'Settings successfully updated.')
+
+        return redirect('settings')
+
+    c = {
+        'form': form,
+    }
+
+    return render(request, 'tracker/settings.html', c)
 
 
 ############
@@ -332,7 +347,8 @@ def issue_list(request, project):
         else: # recently-updated
             issues = issues.annotate(last_activity=Max('events__date')).order_by('-last_activity')
         page = request.GET.get('page')
-        paginator = Paginator(issues, settings.ITEMS_PER_PAGE)
+        paginator = Paginator(issues,
+                get_current_site(request).settings.items_per_page)
         try:
             issues = paginator.page(page)
         except PageNotAnInteger:

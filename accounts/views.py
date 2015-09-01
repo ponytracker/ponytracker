@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AdminPasswordChangeForm
+from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.db.models import Q
@@ -63,7 +64,8 @@ def profile(request):
 
 @project_perm_required('manage_accounts')
 def user_list(request):
-    paginator = Paginator(User.objects.all(), settings.ITEMS_PER_PAGE)
+    paginator = Paginator(User.objects.all(),
+            get_current_site(request).settings.items_per_page)
     page = request.GET.get('page')
     try:
         users = paginator.page(page)
@@ -291,7 +293,8 @@ def user_remove_team(request, user, team):
 
 @project_perm_required('manage_accounts')
 def group_list(request):
-    paginator = Paginator(Group.objects.all(), settings.ITEMS_PER_PAGE)
+    paginator = Paginator(Group.objects.all(),
+            get_current_site(request).settings.items_per_page)
     page = request.GET.get('page')
     try:
         groups = paginator.page(page)
@@ -410,7 +413,8 @@ def group_remove_user(request, group, user):
 
 @project_perm_required('manage_accounts')
 def team_list(request):
-    paginator = Paginator(Team.objects.all(), settings.ITEMS_PER_PAGE)
+    paginator = Paginator(Team.objects.all(),
+            get_current_site(request).settings.items_per_page)
     page = request.GET.get('page')
     try:
         teams = paginator.page(page)

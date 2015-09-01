@@ -4,6 +4,8 @@ from django.utils.safestring import mark_safe
 from django.utils.html import escape, format_html
 from django.utils.encoding import python_2_unicode_compatible
 from django import VERSION
+from django.contrib.sites.models import Site
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from colorful.fields import RGBColorField
 
@@ -16,6 +18,17 @@ from tracker.templatetags.tracker_tags import *
 
 __all__ = ['Project', 'Issue', 'Label', 'Milestone', 'Event']
 
+
+class Settings(models.Model):
+
+    site = models.OneToOneField(Site, editable=False,
+            related_name='settings')
+    items_per_page = models.IntegerField(default=25,
+            verbose_name="Items per page",
+            validators=[
+                MinValueValidator(1),
+                MaxValueValidator(500)
+            ])
 
 @python_2_unicode_compatible
 class Project(models.Model):

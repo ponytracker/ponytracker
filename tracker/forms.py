@@ -3,12 +3,18 @@ from django import forms
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from tracker.models import *
+from tracker.models import Settings
 
 
 __all__ = [
-    'ProjectForm', 'LabelForm', 'IssueForm', 'MilestoneForm', 'CommentForm'
+    'SettingsForm', 'ProjectForm', 'LabelForm', 'IssueForm', 'MilestoneForm', 'CommentForm'
 ]
 
+
+class SettingsForm(forms.ModelForm):
+    class Meta:
+        model = Settings
+        exclude = ('Site',)
 
 class ProjectForm(forms.ModelForm):
     class Meta:
