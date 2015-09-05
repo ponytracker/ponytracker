@@ -10,13 +10,9 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.conf import settings
 from django.contrib.auth.forms import PasswordChangeForm
 from django.forms.models import modelform_factory
-from django import VERSION
 
 from django.http import Http404, HttpResponse
-if VERSION >= (1, 7):
-    from django.http import JsonResponse
-else:
-    import json
+from django.http import JsonResponse
 
 from permissions.decorators import project_perm_required
 
@@ -211,10 +207,7 @@ def user_add_group(request, user):
         c = {
             'suggestions': response,
         }
-        if VERSION >= (1, 7):
-            return JsonResponse(c, safe=False)
-        else:
-            return HttpResponse(json.dumps(c), content_type="application/json")
+        return JsonResponse(c, safe=False)
 
 
 @project_perm_required('manage_accounts')
@@ -268,10 +261,7 @@ def user_add_team(request, user):
         c = {
             'suggestions': response,
         }
-        if VERSION >= (1, 7):
-            return JsonResponse(c, safe=False)
-        else:
-            return HttpResponse(json.dumps(c), content_type="application/json")
+        return JsonResponse(c, safe=False)
 
 
 @project_perm_required('manage_accounts')
@@ -390,10 +380,7 @@ def group_add_user(request, group):
         c = {
             'suggestions': response,
         }
-        if VERSION >= (1, 7):
-            return JsonResponse(c, safe=False)
-        else:
-            return HttpResponse(json.dumps(c), content_type="application/json")
+        return JsonResponse(c, safe=False)
 
 
 @project_perm_required('manage_accounts')
@@ -511,10 +498,7 @@ def team_add_user(request, team):
         c = {
             'suggestions': response,
         }
-        if VERSION >= (1, 7):
-            return JsonResponse(c, safe=False)
-        else:
-            return HttpResponse(json.dumps(c), content_type="application/json")
+        return JsonResponse(c, safe=False)
 
 
 @project_perm_required('manage_accounts')
@@ -564,10 +548,7 @@ def team_add_group(request, team):
         c = {
             'suggestions': response,
         }
-        if VERSION >= (1, 7):
-            return JsonResponse(c, safe=False)
-        else:
-            return HttpResponse(json.dumps(c), content_type="application/json")
+        return JsonResponse(c, safe=False)
 
 
 @project_perm_required('manage_accounts')

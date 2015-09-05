@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
-from django import VERSION
 
 from tracker.models import Project
 from accounts.models import *
@@ -204,7 +203,3 @@ class ProjectPermission(PermissionModel):
     def __str__(self):
         return self.grantee.__str__() + "'s permissions on " \
             + self.project.name + " project"
-
-
-if VERSION < (1, 7):
-    import tracker.signals

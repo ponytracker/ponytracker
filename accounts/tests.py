@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from django import VERSION
 
 import json
 
@@ -48,11 +47,7 @@ class TestViews(TestCase):
             'new_password1': 'newpassword',
             'new_password2': 'newpassword',
         }, follow=True)
-        if VERSION >= (1, 7):
-            # since django 1.7, session are  invalid after a password change
-            self.assertRedirects(response, reverse('login')+'?next='+reverse('profile'))
-        else:
-            self.assertRedirects(response, reverse('profile'))
+        self.assertRedirects(response, reverse('login')+'?next='+reverse('profile'))
         self.assertContains(response, 'Password updated successfully')
         user = User.objects.get(username='admin')
         self.assertTrue(user.check_password('newpassword'))

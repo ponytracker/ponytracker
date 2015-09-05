@@ -3,7 +3,6 @@ from django.core.validators import RegexValidator
 from django.utils.safestring import mark_safe
 from django.utils.html import escape, format_html
 from django.utils.encoding import python_2_unicode_compatible
-from django import VERSION
 from django.contrib.sites.models import Site
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -376,7 +375,3 @@ class Event(models.Model):
             return None
 
         return description
-
-
-if VERSION < (1, 7):
-    import tracker.signals
