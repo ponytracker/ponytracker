@@ -2,7 +2,7 @@ PonyTracker
 ===========
 
 [![Build Status](https://travis-ci.org/bouttier/ponytracker.svg?branch=master)](https://travis-ci.org/bouttier/ponytracker)
-[![Coverage Status](https://coveralls.io/repos/ponytracker/ponytracker/badge.svg?branch=master)](https://coveralls.io/r/ponytracker/ponytracker?branch=master)
+[![Coverage Status](https://coveralls.io/repos/ponytracker/ponytracker/badge.svg?branch=master&service=github)](https://coveralls.io/github/ponytracker/ponytracker?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/ponytracker/badge/?version=latest)](https://readthedocs.org/projects/ponytracker/?badge=latest)
 
 PonyTracker is a small and easy-to-use github-like issue tracker.
