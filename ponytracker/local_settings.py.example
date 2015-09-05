@@ -8,6 +8,9 @@ from ponytracker.settings import *
 # import djcelery
 # djcelery.setup_loader()
 
+EMAIL_HOST = 'smtp'
+FROM_ADDR = 'ponytracker@example.com'
+
 SECRET_KEY = 'CHANGE ME'
 
 DEBUG = False

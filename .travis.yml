@@ -6,6 +6,7 @@ python:
 
 env:
   - DJANGO='1.8'
+  - DJANGO_SETTINGS_MODULE='ponytracker.test_settings'
 
 install:
   - pip install -r requirements.txt

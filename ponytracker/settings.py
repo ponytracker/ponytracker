@@ -131,8 +131,6 @@ SITE_ID = 1
 
 EMAIL_HOST = 'smtp'
 
-#FROM_ADDR = 'ponytracker@example.com'
-
 BASE_URL = 'http://localhost:8000'
 
 BOOTSTRAP3 = {
