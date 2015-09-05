@@ -11,3 +11,4 @@
 /htmlcov/
 /doc/build/
 /uwsgi.ini
+/.coveralls.yml
