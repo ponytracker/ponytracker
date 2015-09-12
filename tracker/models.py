@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.html import escape, format_html
 from django.utils.encoding import python_2_unicode_compatible
@@ -176,6 +177,14 @@ class Issue(models.Model):
     def comments(self):
 
         return self.events.filter(code=Event.COMMENT)
+
+    @property
+    def overdue(self):
+
+        if self.due_date:
+            return self.due_date < timezone.now()
+        else:
+            return False
 
     def getdesc(self):
         desc = self.events.filter(code=Event.DESCRIBE)

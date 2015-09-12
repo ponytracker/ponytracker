@@ -10,3 +10,7 @@ body {
 a .remove-label {
   color: #CCC;
 }
+
+span.passed-due-date {
+  color: #FF0000;
+}
