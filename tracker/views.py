@@ -439,7 +439,7 @@ def issue_edit(request, project, issue=None):
 
         else:
 
-            issue = Issue(title=title, author=request.user,
+            issue = Issue(title=title, due_date=due_date, author=request.user,
                     project=project, id=Issue.next_id(project))
             issue.save()
             issue.subscribers.add(request.user)
