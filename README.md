@@ -8,7 +8,9 @@ PonyTracker
 PonyTracker is a small and easy-to-use github-like issue tracker.
 It is an open source software released under license CeCILL-C.
 
+
 Official website: https://ponytracker.eu.org
+
 Demonstration: https://demo.ponytracker.eu.org
 
 
