@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
-from django.db.models import Max
+from django.db.models import Max, Count
 
 from tracker.utils import markdown_to_html
 from tracker.forms import *
@@ -32,6 +32,8 @@ SORT_VALUES = OrderedDict([
         ('least-recently-updated', 'Least recently updated'),
         ('newest', 'Newest'),
         ('oldest', 'Oldest'),
+        ('most-urgent', 'Most urgent'),
+        ('least-urgent', 'Least urgent'),
 #        ('most-commented', 'Most commented'),
 #        ('least-commented', 'Least commented'),
     ])
@@ -342,6 +344,10 @@ def issue_list(request, project):
             issues = issues.order_by('-opened_at')
         elif sort == 'oldest':
             issues = issues.order_by('opened_at')
+        elif sort == 'most-urgent':
+            issues = issues.annotate(null_due_date=Count('due_date')).order_by('-null_due_date', 'due_date', 'opened_at')
+        elif sort == 'least-urgent':
+            issues = issues.order_by('-due_date', '-opened_at')
         elif sort == 'least-recently-updated':
             issues = issues.annotate(last_activity=Max('events__date')).order_by('last_activity')
         else: # recently-updated
