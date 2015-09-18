@@ -7,8 +7,8 @@ from permissions.models import *
 
 """
 As permissions objects do not use a foreign key but instead an integer field
-on the foreign object id, we can rely on database cascade deletion to delete
-outaded permissions and we have to do it our-self.
+on the foreign object id, we can not rely on database cascade deletion to
+delete outaded permissions and we have to do it our-self.
 """
 
 
