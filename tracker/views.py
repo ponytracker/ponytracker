@@ -371,6 +371,14 @@ def issue_list(request, project):
         sort_url = '&sort=' + sort
     else:
         sort_url = ''
+    if query and sort_url:
+        get_parameters = 'q=%s%s' % (query, sort_url)
+    elif query:
+        get_parameters = 'q=%s' % query
+    elif sort_url:
+        get_parameters = 'sort=' + sort
+    else:
+        get_parameters = ''
 
     c = {
         'project': project,
@@ -385,6 +393,7 @@ def issue_list(request, project):
         'sort': sort,
         'sort_url': sort_url,
         'sort_values': SORT_VALUES,
+        'get_parameters': get_parameters,
     }
 
     return render(request, 'tracker/issue_list.html', c)

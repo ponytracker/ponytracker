@@ -116,7 +116,7 @@
 
 {% if issues %}
 <div style="text-align: center;">
-    {% bootstrap_pagination issues %}
+    {% bootstrap_pagination issues extra=get_parameters %}
 </div>
 {% endif %}
 
