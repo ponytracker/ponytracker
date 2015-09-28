@@ -3,6 +3,9 @@ from django.db.models import Q
 
 from markdown import markdown
 
+import shlex
+from sys import version_info as python_version
+
 from tracker.models import Project
 from permissions.models import GlobalPermission
 from permissions.models import PermissionModel as PermModel
@@ -51,3 +54,16 @@ def granted_projects(user):
 def markdown_to_html(value):
     # set extensions here if needed
     return mark_safe(markdown(value, safe_mode='escape'))
+
+
+def shell_split(cmd):
+
+   if python_version < (3,):
+       cmd = cmd.encode('utf-8')
+   
+   args = shlex.split(cmd)
+   
+   if python_version < (3,):
+       args = [ arg.decode('utf-8') for arg in args ] 
+
+   return args

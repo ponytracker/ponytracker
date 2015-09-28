@@ -10,7 +10,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 from django.db.models import Max, Count
 
-from tracker.utils import markdown_to_html
+from tracker.utils import markdown_to_html, shell_split
 from tracker.forms import *
 from tracker.models import *
 from tracker.notifications import *
@@ -18,7 +18,6 @@ from accounts.models import User
 from permissions.models import ProjectPermission
 from permissions.decorators import project_perm_required
 
-import shlex
 from collections import OrderedDict
 
 
@@ -247,7 +246,7 @@ def issue_list(request, project):
     query_without_status = ''
 
     syntaxe_error = False
-    for constraint in shlex.split(query):
+    for constraint in shell_split(query):
 
         if constraint == '*':
             status = '*'
