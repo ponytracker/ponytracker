@@ -1,10 +1,13 @@
 from django.utils.safestring import mark_safe
 from django.db.models import Q
+from django.conf import settings
+from django.contrib.sites.models import Site
 
 from markdown import markdown
 
 import shlex
 from sys import version_info as python_version
+import hashlib
 
 from tracker.models import Project
 from permissions.models import GlobalPermission
@@ -64,6 +67,20 @@ def shell_split(cmd):
    args = shlex.split(cmd)
    
    if python_version < (3,):
-       args = [ arg.decode('utf-8') for arg in args ] 
+       args = [ arg.decode('utf-8') for arg in args ]
 
    return args
+
+
+def generate_message_id(mid):
+
+    return '<%s.%s.%s>' % (mid, hexdigest_sha256(mid, settings.FROM_ADDR), settings.FROM_ADDR)
+
+
+def hexdigest_sha256(*args):
+
+    r = hashlib.sha256()
+    for arg in args:
+        r.update(str(arg).encode('utf-8'))
+
+    return r.hexdigest()

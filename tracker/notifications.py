@@ -3,13 +3,14 @@ from __future__ import unicode_literals
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core import mail
+from django.core.mail import EmailMessage
 
 if 'djcelery' in settings.INSTALLED_APPS:
-    from tracker.tasks import send_mass_mail
-else:
-    from django.core.mail import send_mass_mail
+    from tracker.tasks import send_mail
 
 from accounts.models import User
+from tracker.utils import generate_message_id
 
 
 __all__ = [
@@ -32,7 +33,9 @@ def notify_new_issue(issue):
             args=[project.name, issue.id]),
     }
 
-    notify_by_email(data, 'new_issue', subject, sender, dests)
+    mid = '%s.issue-%d' % (project.name, issue.id)
+
+    notify_by_email(data, 'new_issue', subject, sender, dests, mid)
 
 def notify_new_comment(event):
     notify_event(event, 'new_comment')
@@ -64,10 +67,13 @@ def notify_event(event, template):
             args=[project.name, issue.id]),
     }
 
-    notify_by_email(data, template, subject, sender, dests)
+    ref = '%s.issue-%d' % (project.name, issue.id)
+    mid = ref + '.' + str(event.pk)
+
+    notify_by_email(data, template, subject, sender, dests, mid, ref)
 
 
-def notify_by_email(data, template, subject, sender, dests):
+def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
 
     message = render_to_string('emails/%s.html' % template, data)
 
@@ -78,7 +84,17 @@ def notify_by_email(data, template, subject, sender, dests):
 
     from_addr = '%s <%s>' % (sender.fullname or sender.username, from_addr)
 
-    mails = []
+    # Generating headers
+    headers = {
+        'Message-ID': generate_message_id(mid),
+    }
+    if ref:
+        # This email reference a previous one
+        headers.update({
+            'References': generate_message_id(ref),
+        })
+
+    messages = []
 
     for dest in dests:
 
@@ -91,9 +107,12 @@ def notify_by_email(data, template, subject, sender, dests):
         if not dest_addr:
             continue
 
-        mails += [(subject, message, from_addr, [dest_addr])]
 
-    if 'djcelery' in settings.INSTALLED_APPS:
-        send_mass_mail.delay(tuple(mails))
-    else:
-        send_mass_mail(tuple(mails))
+        if 'djcelery' in settings.INSTALLED_APPS:
+            send_mail.delay(subject, message, from_addr, [dest_addr], headers)
+        else:
+            messages += [EmailMessage(subject, message, from_addr, [dest_addr], headers=headers)]
+
+    if 'djcelery' not in settings.INSTALLED_APPS:
+        with mail.get_connection() as connection:
+            connection.send_messages(messages)

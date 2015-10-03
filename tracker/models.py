@@ -30,6 +30,7 @@ class Settings(models.Model):
                 MaxValueValidator(500)
             ])
 
+
 @python_2_unicode_compatible
 class Project(models.Model):
 

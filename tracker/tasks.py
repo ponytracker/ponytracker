@@ -1,8 +1,9 @@
-from django.core.mail import send_mass_mail as django_send_mass_mail
-
 from celery import shared_task
+
+from django.core.mail import EmailMessage
 
 
 @shared_task
-def send_mass_mail(datatuple):
-    django_send_mass_mail(datatuple)
+def send_mail(subject, message, from_addr, dests, headers={}):
+    mail = EmailMessage(subject, message, from_addr, dests, headers=headers)
+    mail.send()
