@@ -7,7 +7,7 @@ from django.core import mail
 from django.core.mail import EmailMessage
 
 if 'djcelery' in settings.INSTALLED_APPS:
-    from tracker.tasks import send_mail
+    from tracker.tasks import send_mails
 
 from accounts.models import User
 from tracker.utils import generate_message_id
@@ -94,7 +94,7 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
             'References': generate_message_id(ref),
         })
 
-    messages = []
+    mails = []
 
     for dest in dests:
 
@@ -107,12 +107,13 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
         if not dest_addr:
             continue
 
+        mails += [(subject, message, from_addr, [dest_addr], headers)]
 
-        if 'djcelery' in settings.INSTALLED_APPS:
-            send_mail.delay(subject, message, from_addr, [dest_addr], headers)
-        else:
-            messages += [EmailMessage(subject, message, from_addr, [dest_addr], headers=headers)]
-
-    if 'djcelery' not in settings.INSTALLED_APPS:
+    if 'djcelery' in settings.INSTALLED_APPS:
+        send_mails.delay(mails)
+    else:
+        messages = []
+        for subject, message, from_addr, dests, headers in mails:
+            messages += [EmailMessage(subject, message, from_addr, dests, headers=headers)]
         with mail.get_connection() as connection:
             connection.send_messages(messages)
