@@ -25,6 +25,7 @@ Main features
 * Per user/group/team permissions
 * Public read-only project
 * Email notifications
+* Comment by return email
 * Good integration with LDAP directory
 
 
