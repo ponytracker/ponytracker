@@ -12,7 +12,7 @@ Commands starting with ``$`` must be run as ``ponytracker`` user.
 Requirements
 ************
 
-You need python. Version 2.7, 3.2 or 3.4 (and probably others) are fine.
+You need python. Versions 2.7, 3.2 or 3.4 (and probably others) are fine.
 
 This installation guide install PonyTracker in a virtualenv.
 The corresponding packages names are ``python-virtualenv`` for python 2
@@ -41,7 +41,7 @@ The following commands are executed as ``ponytracker`` user::
   # su ponytracker
   $ cd /srv/www/ponytracker
 
-Create ``log`` and ``www`` directories::
+Create the ``log`` and ``www`` directories::
 
   $ mkdir log www
 
@@ -64,7 +64,7 @@ If you want email notifications, set ``BASE_URL``, ``EMAIL_HOST`` (smtp relay)
 and ``FROM_ADDR``.
 
 If you want to use another database than the default one (SQLite), set ``DATABASES``.
-You can found the syntax in the `django documentation`_.
+You can find the syntax in the `django documentation`_.
 
 .. _django documentation: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-DATABASES
 
@@ -121,7 +121,7 @@ default settings::
 
   os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ponytracker.local_settings")
 
-In order to do not have conflict during an update, you can tell `git` to ignore
+In order not to have conflicts during an update, you can tell `git` to ignore
 this modification::
 
   $ git update-index --assume-unchanged ponytracker/wsgi.py
@@ -224,11 +224,11 @@ Send email asynchronously with the celery worker
 
 By default, email notifications are sent during processing of pages.
 This behaviour can slow down the user experience.
-It is recommanded to use a seperated thread to asynchronously send the emails.
+It is recommended to use a separated thread to asynchronously send the emails.
 
 PonyTracker is designed to use celery as a worker to send emails.
 In order to get celery working, you need a broker.
-This guide use the ``redis`` broker but you can find how to install an other
+This guide uses the ``redis`` broker but you can find how to install another
 broker in the `celery documentation`_.
 
 .. _celery documentation: http://celery.readthedocs.org/en/latest/getting-started/brokers/
@@ -245,12 +245,12 @@ Enter in the virtualenv and install python requirements::
   $ pip install celery[redis]
   $ pip install django-celery
 
-Add ``djcelery`` to yours enabled applications in your
+Add ``djcelery`` to your enabled applications in your
 local settings (``ponytracker/local_settings.py``)::
 
   INSTALLED_APPS += ('djcelery',)
 
-Enable celery specific commands for the manage.py script by adding theses lines
+Enable celery specific commands for the manage.py script by adding these lines
 in your local settings::
 
   import djcelery
@@ -271,7 +271,7 @@ Use LDAP authentication
 ***********************
 
 The python package providing LDAP support need to be compiled.
-Don't worry, ``pip`` do it him self, but you need to install
+Don't worry, ``pip`` does it itself, but you need to install
 some requirements::
 
   # apt-get install python-dev libldap2-dev libsasl2-dev libssl-dev
@@ -286,16 +286,16 @@ Enter in the virtualenv and install needed packages::
   $ source env/bin/activate
   $ pip install python-ldap django-auth-ldap
 
-Add ``django_auth_ldap.backend.LDAPBackend`` to your authentication backends
+Add ``django_auth_ldap.backend.LDAPBackend`` to your authentication back-ends
 in ``ponytracker/local_settings.py``::
 
   AUTHENTICATION_BACKENDS += (
       'django_auth_ldap.backend.LDAPBackend',
   )
 
-Configure the backend by adding required variables in your local settings.
+Configure the back-end by adding required variables in your local settings.
 You can find the documentation on the `official website`_.
-An `sample file`_ is provided.
+A `sample file`_ is provided.
 
 .. _official website: http://pythonhosted.org/django-auth-ldap/
 .. _sample file: http://pythonhosted.org/django-auth-ldap/example.html
@@ -303,6 +303,6 @@ An `sample file`_ is provided.
 If you use ``posixGroup``, import ``PosixGroupType`` instead of
 ``GroupOfNamesType`` and update the ``AUTH_LDAP_GROUP_TYPE`` variable.
 
-Add the following line to synchronize yours LDAP groups with django ones::
+Add the following line to synchronize your LDAP groups with django ones::
 
   AUTH_LDAP_MIRROR_GROUPS = True

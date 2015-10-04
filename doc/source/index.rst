@@ -8,7 +8,7 @@ Welcome to PonyTracker's documentation!
 
 PonyTracker is a small and easy-to-use github-like issue tracker.
 
-It is reallized in Python using the Django framework.
+It is made in Python using the Django framework.
 
 Contents:
 

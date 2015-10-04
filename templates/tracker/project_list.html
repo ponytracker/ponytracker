@@ -31,11 +31,11 @@
 {% endfor %}
 {% elif user.is_authenticated %}
 <div class="well">
-  Sorry, you have no access to any project.
+  Sorry, you don't have access to any project.
 </div>
 {% else %}
 <div class="well">
-  There is not any public project. You should probably <a href="{% url 'login' %}">login</a>.
+  There are no public projects. You should probably <a href="{% url 'login' %}">login</a>.
 </div>
 {% endif %}
 
