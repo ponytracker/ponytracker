@@ -10,7 +10,7 @@ if 'djcelery' in settings.INSTALLED_APPS:
     from tracker.tasks import send_mails
 
 from accounts.models import User
-from tracker.utils import generate_message_id
+from tracker.utils import get_message_id, get_reply_addr
 
 
 __all__ = [
@@ -86,12 +86,12 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
 
     # Generating headers
     headers = {
-        'Message-ID': generate_message_id(mid),
+        'Message-ID': get_message_id(mid),
     }
     if ref:
         # This email reference a previous one
         headers.update({
-            'References': generate_message_id(ref),
+            'References': get_message_id(ref),
         })
 
     mails = []
@@ -107,13 +107,15 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
         if not dest_addr:
             continue
 
-        mails += [(subject, message, from_addr, [dest_addr], headers)]
+        reply_to = get_reply_addr(mid, dest)
+
+        mails += [(subject, message, from_addr, [dest_addr], [reply_to], headers)]
 
     if 'djcelery' in settings.INSTALLED_APPS:
         send_mails.delay(mails)
     else:
         messages = []
-        for subject, message, from_addr, dests, headers in mails:
-            messages += [EmailMessage(subject, message, from_addr, dests, headers=headers)]
+        for subject, message, from_addr, dests, reply_to, headers in mails:
+            messages += [EmailMessage(subject, message, from_addr, dests, reply_to=reply_to, headers=headers)]
         with mail.get_connection() as connection:
             connection.send_messages(messages)

@@ -3,6 +3,8 @@ from django.conf.urls import url, include
 
 urlpatterns = [
     url(r'^markdown/$', 'tracker.views.markdown_preview', name='markdown'),
+    # API
+    url(r'^api/email/recv/$', 'tracker.api.email_recv', name='recv-email'),
     # Administration: redirect on first available admin page
     url(r'^admin/$', 'tracker.views.admin', name='admin'),
     # Settings

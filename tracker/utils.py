@@ -72,9 +72,20 @@ def shell_split(cmd):
    return args
 
 
-def generate_message_id(mid):
+def get_message_id(mid):
 
     return '<%s.%s.%s>' % (mid, hexdigest_sha256(mid, settings.FROM_ADDR), settings.FROM_ADDR)
+
+
+def get_reply_addr(mid, dest):
+
+    addr = getattr(settings, 'REPLY_ADDR', settings.FROM_ADDR)
+    pos = addr.find('@')
+    name = addr[:pos]
+    domain = addr[pos:]
+    token = hexdigest_sha256(settings.SECRET_KEY, mid, dest.pk)
+
+    return '%s+%s.%d.%s%s' % (name, mid, dest.pk, token, domain)
 
 
 def hexdigest_sha256(*args):
