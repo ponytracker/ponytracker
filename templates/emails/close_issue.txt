@@ -1,0 +1,4 @@
+Issue closed.
+
+--
+Reply to this email directly or view it on PonyTracker: {{ uri }}

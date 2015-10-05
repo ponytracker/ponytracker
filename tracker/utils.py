@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.contrib.sites.models import Site
 
+import bleach
 from markdown import markdown
 
 import shlex
@@ -56,7 +57,7 @@ def granted_projects(user):
 
 def markdown_to_html(value):
     # set extensions here if needed
-    return mark_safe(markdown(value, safe_mode='escape'))
+    return mark_safe(markdown(bleach.clean(value)))
 
 
 def shell_split(cmd):

@@ -1,0 +1,8 @@
+{% if description %}
+{{ description|safe }}
+{% else %}
+  No description.
+{% endif %}
+
+--
+Reply to this email directly or view it on PonyTracker: {{ uri }}

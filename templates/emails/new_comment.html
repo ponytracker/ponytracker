@@ -1,4 +1,4 @@
-{{ comment|safe }}
+{% load tracker_filters %}{{ comment|markdown }}
 
---
-Respond on PonyTracker: {{ uri }}
+<hr>
+Reply to this email directly or <a href="{{ uri }}">view it on PonyTracker</a>.

@@ -1,8 +1,8 @@
-{% if description %}
-{{ description|safe }}
+{% load tracker_filters %}{% if description %}
+{{ description|markdown }}
 {% else %}
   No description.
 {% endif %}
 
---
-Comment on PonyTracker: {{ uri }}
+<hr>
+Reply to this email directly or <a href="{{ uri }}">view it on PonyTracker</a>.

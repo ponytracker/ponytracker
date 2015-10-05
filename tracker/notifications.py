@@ -4,13 +4,14 @@ from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.core import mail
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 
 if 'djcelery' in settings.INSTALLED_APPS:
     from tracker.tasks import send_mails
 
 from accounts.models import User
 from tracker.utils import get_message_id, get_reply_addr
+from tracker.templatetags.tracker_filters import markdown
 
 
 __all__ = [
@@ -75,7 +76,8 @@ def notify_event(event, template):
 
 def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
 
-    message = render_to_string('emails/%s.html' % template, data)
+    text_message = render_to_string('emails/%s.txt' % template, data)
+    html_message = render_to_string('emails/%s.html' % template, data)
 
     if hasattr(settings, 'FROM_ADDR'):
         from_addr = settings.FROM_ADDR
@@ -109,13 +111,16 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
 
         reply_to = get_reply_addr(mid, dest)
 
-        mails += [(subject, message, from_addr, [dest_addr], [reply_to], headers)]
+        mails += [(subject, (text_message, html_message), from_addr, [dest_addr], [reply_to], headers)]
 
     if 'djcelery' in settings.INSTALLED_APPS:
         send_mails.delay(mails)
     else:
         messages = []
         for subject, message, from_addr, dests, reply_to, headers in mails:
-            messages += [EmailMessage(subject, message, from_addr, dests, reply_to=reply_to, headers=headers)]
+            text_message, html_message = message
+            msg = EmailMultiAlternatives(subject, text_message, from_addr, dests, reply_to=reply_to, headers=headers)
+            msg.attach_alternative(html_message, 'text/html')
+            messages += [msg]
         with mail.get_connection() as connection:
             connection.send_messages(messages)
