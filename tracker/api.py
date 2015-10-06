@@ -23,7 +23,10 @@ def email_recv(request):
     if key != settings.EMAIL_KEY:
         raise PermissionDenied
 
-    msg = request.POST.get('email')
+    if 'email' not in request.FILES:
+        raise Http404
+    msg = request.FILES['email']
+    msg = msg.read()
     msg = email.message_from_string(msg)
 
     mfrom = msg.get('From')
