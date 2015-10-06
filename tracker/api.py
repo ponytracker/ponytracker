@@ -4,6 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.http import Http404
 
 from accounts.models import User
 from tracker.utils import hexdigest_sha256
