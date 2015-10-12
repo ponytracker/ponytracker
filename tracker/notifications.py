@@ -79,12 +79,9 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
     text_message = render_to_string('emails/%s.txt' % template, data)
     html_message = render_to_string('emails/%s.html' % template, data)
 
-    if hasattr(settings, 'FROM_ADDR'):
-        from_addr = settings.FROM_ADDR
-    else:
-        return
-
-    from_addr = '%s <%s>' % (sender.fullname or sender.username, from_addr)
+    from_email = '{name} <{email}>'.format(
+            name=sender.fullname or sender.username
+            email=settings.DEFAULT_FROM_EMAIL)
 
     # Generating headers
     headers = {
@@ -111,15 +108,15 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
 
         reply_to = get_reply_addr(mid, dest)
 
-        mails += [(subject, (text_message, html_message), from_addr, [dest_addr], [reply_to], headers)]
+        mails += [(subject, (text_message, html_message), from_email, [dest_addr], [reply_to], headers)]
 
     if 'djcelery' in settings.INSTALLED_APPS:
         send_mails.delay(mails)
     else:
         messages = []
-        for subject, message, from_addr, dests, reply_to, headers in mails:
+        for subject, message, from_email, dests, reply_to, headers in mails:
             text_message, html_message = message
-            msg = EmailMultiAlternatives(subject, text_message, from_addr, dests, reply_to=reply_to, headers=headers)
+            msg = EmailMultiAlternatives(subject, text_message, from_email, dests, reply_to=reply_to, headers=headers)
             msg.attach_alternative(html_message, 'text/html')
             messages += [msg]
         with mail.get_connection() as connection:

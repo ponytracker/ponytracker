@@ -75,7 +75,9 @@ def shell_split(cmd):
 
 def get_message_id(mid):
 
-    return '<%s.%s.%s>' % (mid, hexdigest_sha256(mid, settings.FROM_ADDR), settings.FROM_ADDR)
+    from_email = settings.DEFAULT_FROM_EMAIL
+
+    return '<%s.%s.%s>' % (mid, hexdigest_sha256(mid, from_email), from_email)
 
 
 def get_reply_addr(mid, dest):

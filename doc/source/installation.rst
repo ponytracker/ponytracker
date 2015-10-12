@@ -61,7 +61,7 @@ You can generate a secret key with ``openssl``::
   $ openssl rand -base64 32
 
 If you want email notifications, set ``BASE_URL``, ``EMAIL_HOST`` (smtp relay)
-and ``FROM_ADDR``.
+and ``DEFAULT_FROM_EMAIL``.
 
 If you want to use another database than the default one (SQLite), set ``DATABASES``.
 You can find the syntax in the `django documentation`_.

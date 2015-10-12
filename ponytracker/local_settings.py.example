@@ -9,7 +9,8 @@ from ponytracker.settings import *
 # djcelery.setup_loader()
 
 EMAIL_HOST = 'smtp'
-FROM_ADDR = 'ponytracker@example.com'
+SERVER_EMAIL = 'admin@ponytracker.example.com'
+DEFAULT_FROM_EMAIL = 'noreply@ponytracker.example.com'
 
 SECRET_KEY = 'CHANGE ME'
 
