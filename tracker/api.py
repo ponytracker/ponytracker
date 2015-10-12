@@ -19,12 +19,17 @@ import re
 @require_http_methods(["POST"])
 def email_recv(request):
 
+    if not hasattr(settings, 'REPLY_EMAIL') \
+            or not hasattr(settings, 'EMAIL_KEY'):
+        return HttpResponse(status=501) # Not Implemented
+
     key = request.POST.get('key')
     if key != settings.EMAIL_KEY:
         raise PermissionDenied
 
     if 'email' not in request.FILES:
-        raise Http404
+        raise HttpResponse(status=400) # Bad Request
+
     msg = request.FILES['email']
     msg = msg.read()
     msg = email.message_from_string(msg)
@@ -36,7 +41,7 @@ def email_recv(request):
     if msg.is_multipart():
         content = content[0].get_payload(decode=True)
 
-    addr = getattr(settings, 'REPLY_ADDR', settings.FROM_ADDR)
+    addr = settings.REPLY_EMAIL
     pos = addr.find('@')
     name = addr[:pos]
     domain = addr[pos:]
@@ -69,4 +74,4 @@ def email_recv(request):
     notify_new_comment(event)
     issue.save()
 
-    return HttpResponse('')
+    return HttpResponse()

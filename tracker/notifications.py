@@ -108,7 +108,7 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
 
         reply_to = get_reply_addr(mid, dest)
 
-        mails += [(subject, (text_message, html_message), from_email, [dest_addr], [reply_to], headers)]
+        mails += [(subject, (text_message, html_message), from_email, [dest_addr], reply_to, headers)]
 
     if 'djcelery' in settings.INSTALLED_APPS:
         send_mails.delay(mails)

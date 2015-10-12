@@ -82,13 +82,16 @@ def get_message_id(mid):
 
 def get_reply_addr(mid, dest):
 
-    addr = getattr(settings, 'REPLY_ADDR', settings.FROM_ADDR)
+    if not hasattr(settings, 'REPLY_EMAIL'):
+        return []
+
+    addr = settings.REPLY_EMAIL
     pos = addr.find('@')
     name = addr[:pos]
     domain = addr[pos:]
     token = hexdigest_sha256(settings.SECRET_KEY, mid, dest.pk)
 
-    return '%s+%s.%d.%s%s' % (name, mid, dest.pk, token, domain)
+    return ['%s+%s.%d.%s%s' % (name, mid, dest.pk, token, domain)]
 
 
 def hexdigest_sha256(*args):
