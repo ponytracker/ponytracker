@@ -306,3 +306,38 @@ If you use ``posixGroup``, import ``PosixGroupType`` instead of
 Add the following line to synchronize your LDAP groups with django ones::
 
   AUTH_LDAP_MIRROR_GROUPS = True
+
+Setup emails answering
+**********************
+
+PonyTracker allow users to directly answer email in order to
+add a new comment to an issue.
+To enable this feature, add these two parameters in your configuration file::
+
+  REPLY_EMAIL = 'reply@ponytracker.example.com'
+  EMAIL_KEY = 'CHANGE ME'
+
+Then, you need to handle all emails received on ``REPLY_EMAIL`` and do a post
+request on `http://ponytracker.example.com/api/email/recv/`` with them.
+The post request should contain the key ``key`` containing ``EMAIL_KEY`` value
+and the email as a Multipart-Encoded file named `email`.
+
+For that, you can use a sieve filter with the filter plugin.
+
+To activate the filter with dovecot,
+copy the file ``tools/ponytracker-sieve-filter``
+to ``/usr/lib/dovecot/sieve-filter/ponytracker``.
+Be sure to activate the ``vnd.devocot.filter`` in dovecot configuration,
+usually in ``/etc/dovecot/conf.d/90-sieve.conf``::
+
+  sieve_extensions = +vnd.dovecot.execute
+
+Then, you can use a similar sieve script::
+
+  require ["fileinto", "imap4flags", "vnd.dovecot.filter"];
+
+  if address :matches "To" "reply*@ponytracker.example.com" {
+    filter "ponytracker" "EMAIL_KEY@http://ponytracker.example.com/api/email/recv/";
+    addflag "\\Seen";
+    fileinto "Trash";
+  }
