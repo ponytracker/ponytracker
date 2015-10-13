@@ -80,7 +80,7 @@ def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
     html_message = render_to_string('emails/%s.html' % template, data)
 
     from_email = '{name} <{email}>'.format(
-            name=sender.fullname or sender.username
+            name=sender.fullname or sender.username,
             email=settings.DEFAULT_FROM_EMAIL)
 
     # Generating headers
