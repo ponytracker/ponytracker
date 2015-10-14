@@ -103,11 +103,11 @@
               <a href="{% url 'close-issue' project.name issue.id %}" class="btn btn-default" id="normal-button"><span class="glyphicon glyphicon-ok-circle"></span> Close this issue</a>
               <button type="submit" class="btn btn-default" style="display: none;" id="comment-button" name="change-state"><span class="glyphicon glyphicon-ok-circle"></span> Comment and close</button>
               {% endif %}
+              {% endif %}
               <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-pencil"></span> Add a comment</button>
             </div>
           </div>
         </form>
-        {% endif %}
         {% elif request.user.is_authenticated %}
         Sorry, you are not allowed to comment this issue.
         {% else %}
