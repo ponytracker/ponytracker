@@ -2,9 +2,8 @@
 
 {% load bootstrap3 %}
 
-{% block moretabs %}
-<a href="{% url 'edit-project' project.name %}" class="btn btn-primary">Project settings</a>
-{% endblock %}
+{% block settingdropdownclass %} active{% endblock %}
+{% block settingdropdown %}Modify{% endblock %}
 
 {% block tabcontent %}
 

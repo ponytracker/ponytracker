@@ -3,9 +3,8 @@
 {% load permissions_filters %}
 {% load staticfiles %}
 
-{% block moretabs %}
-  <a href="{% url 'list-project-permission' project.name %}" class="btn btn-primary">Permissions</a>
-{% endblock %}
+{% block settingdropdownclass %} active{% endblock %}
+{% block settingdropdown %}Permissions{% endblock %}
 
 {% block righttabs %}
   <a href="{% url 'add-project-permission' project.name %}" class="btn btn-success">Add permission</a>
