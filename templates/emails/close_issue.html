@@ -1,4 +1,8 @@
 Issue closed.
 
 <hr>
+{% if answering %}
 Reply to this email directly or <a href="{{ uri }}">view it on PonyTracker</a>.
+{% else %}
+<a href="{{ uri }}">Reply on PonyTracker</a>.
+{% endif %}

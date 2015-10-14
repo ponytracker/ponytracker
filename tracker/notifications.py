@@ -76,6 +76,9 @@ def notify_event(event, template):
 
 def notify_by_email(data, template, subject, sender, dests, mid, ref=None):
 
+    if hasattr(settings, 'REPLY_ADDR') and hasattr(settings, 'EMAIL_KEY'):
+        data.update({'answering': True})
+
     text_message = render_to_string('emails/%s.txt' % template, data)
     html_message = render_to_string('emails/%s.html' % template, data)
 
