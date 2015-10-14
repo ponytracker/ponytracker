@@ -6,23 +6,32 @@
 
 {% block content %}
 
-<ul class="nav nav-tabs" role="tablist">
-  {% if perm.manage_settings %}
-  <li{% block settingtab %}{% endblock %}><a href="{% url 'settings' %}"><b>Settings</b></a></li>
-  {% endif %}
-  {% if perm.manage_accounts %}
-  <li{% block usertab %}{% endblock %}><a href="{% url 'list-user' %}"><b>User</b></a></li>
-  <li{% block grouptab %}{% endblock %}><a href="{% url 'list-group' %}"><b>Group</b></a></li>
-  <li{% block teamtab %}{% endblock %}><a href="{% url 'list-team' %}"><b>Team</b></a></li>
-  {% endif %}
-  {% if perm.manage_global_permission %}
-  <li{% block permtab %}{% endblock %}><a href="{% url 'list-global-permission' %}"><b>Permissions</b></a></li>
-  {% endif %}
-  {% block moretabs %}{% endblock %}
-</ul>
-<br />
+<div class="btn-group" role="group">
 
-{% block tabcontent %}{% endblock %}
+  {% if perm.manage_settings %}
+  <a href="{% url 'settings' %}" class="btn btn-{% block settingtab %}default{% endblock %}">Settings</a>
+  {% endif %}
+
+  {% if perm.manage_accounts %}
+  <a href="{% url 'list-user' %}" class="btn btn-{% block usertab %}default{% endblock %}">User</a>
+  <a href="{% url 'list-group' %}" class="btn btn-{% block grouptab %}default{% endblock %}">Group</a>
+  <a href="{% url 'list-team' %}" class="btn btn-{% block teamtab %}default{% endblock %}">Team</a>
+  {% endif %}
+
+  {% if perm.manage_global_permission %}
+  <a href="{% url 'list-global-permission' %}" class="btn btn-{% block permtab %}default{% endblock %}">Permissions</a>
+  {% endif %}
+</div>
+
+<div class="btn-group pull-right" role="group">
+  {% block moretabs %}{% endblock %}
+</div>
+
+<div class="row" style="margin-top: 20px;">
+  <div class="col-md-12">
+    {% block tabcontent %}{% endblock %}
+  </div>
+</div>
 
 {% delete_modal %}
 

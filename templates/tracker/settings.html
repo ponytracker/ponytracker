@@ -2,21 +2,17 @@
 
 {% load bootstrap3 %}
 
-{% block settingtab %} class="active"{% endblock %}
+{% block settingtab %}primary{% endblock %}
 
 {% block tabcontent %}
 
-<div class="row">
-  <div class="col-md-offset-2 col-md-8">
-    <form action="" method="post" role="form">
-      {% bootstrap_form form %}
-      {% csrf_token %}
-      {% buttons %}
-        <button type="submit" class="btn btn-primary">Update settings</button>
-      {% endbuttons %}
-    </form>
-  </div>
-</div>
+<form action="" method="post" role="form">
+  {% bootstrap_form form %}
+  {% csrf_token %}
+  {% buttons %}
+    <button type="submit" class="btn btn-primary">Update settings</button>
+  {% endbuttons %}
+</form>
 
 {% endblock %}
 

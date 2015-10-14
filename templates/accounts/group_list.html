@@ -4,10 +4,10 @@
 {% load humanize %}
 {% load bootstrap3 %}
 
-{% block grouptab %} class="active"{% endblock %}
+{% block grouptab %}primary{% endblock %}
 
 {% block moretabs %}
-<a href="{% url 'add-group' %}" class="pull-right btn btn-success">Add group</a>
+<a href="{% url 'add-group' %}" class="btn btn-success">Add group</a>
 {% endblock %}
 
 {% block tabcontent %}

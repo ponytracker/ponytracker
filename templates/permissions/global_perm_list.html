@@ -3,10 +3,10 @@
 {% load permissions_filters %}
 {% load staticfiles %}
 
-{% block permtab %} class="active"{% endblock %}
+{% block permtab %}primary{% endblock %}
 
 {% block moretabs %}
-<a href="{% url 'add-global-permission' %}" class="pull-right btn btn-success">Add permission</a>
+<a href="{% url 'add-global-permission' %}" class="btn btn-success">Add permission</a>
 {% endblock %}
 
 {% block tabcontent %}

@@ -4,11 +4,11 @@
 {% load bootstrap3 %}
 {% load staticfiles %}
 
-{% block permtab %} class="active"{% endblock %}
+{% block permtab %}primary{% endblock %}
 
 {% block moretabs %}
 {% if permission %}
-<a href="{% url 'add-global-permission' %}" class="pull-right btn btn-success">Add permission</a>
+<a href="{% url 'add-global-permission' %}" class="btn btn-success">Add permission</a>
 {% endif %}
 {% endblock %}
 

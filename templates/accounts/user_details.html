@@ -8,10 +8,10 @@
 <link rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
 {% endblock %}
 
-{% block usertab %} class="active"{% endblock %}
+{% block usertab %}primary{% endblock %}
 
 {% block moretabs %}
-<a href="{% url 'add-user' %}" class="pull-right btn btn-success">Add user</a>
+<a href="{% url 'add-user' %}" class="btn btn-success">Add user</a>
 {% endblock %}
 
 {% block tabcontent %}
