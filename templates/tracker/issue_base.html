@@ -2,13 +2,10 @@
 
 {% block title %}{{ issue }} - {{ project }} - PonyTracker{% endblock %}
 
-{% block issuetab %} class="active"{% endblock %}
+{% block issuetab %}primary active{% endblock %}
 
-{% block moretabs %}
-<div class="pull-right">
-  {% block statustabs %}{% endblock %}
+{% block righttabs %}
   {% if perm.create_issue %}
   <a href="{% url 'add-issue' project.name %}?prev={{ request.get_full_path }}" class="btn btn-success">New issue</a>
   {% endif %}
-</div>
 {% endblock %}

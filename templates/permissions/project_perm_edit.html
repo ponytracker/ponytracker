@@ -5,9 +5,12 @@
 {% load staticfiles %}
 
 {% block moretabs %}
-  <li class="active"><a href="{% url 'list-project-permission' project.name %}"><b>Permissions</b></a></li>
+  <a href="{% url 'list-project-permission' project.name %}" class="btn btn-primary">Permissions</a>
+{% endblock %}
+
+{% block righttabs %}
   {% if permission %}
-  <a href="{% url 'add-project-permission' project.name %}" class="pull-right btn btn-success">Add permission</a>
+  <a href="{% url 'add-project-permission' project.name %}" class="btn btn-success">Add permission</a>
   {% endif %}
 {% endblock %}
 

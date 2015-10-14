@@ -2,12 +2,12 @@
 
 {% load bootstrap3 %}
 
-{% block labeltab %} class="active"{% endblock %}
+{% block labeltab %}primary active{% endblock %}
 
-{% block moretabs %}
-{% if label %}
-<a href="{% url 'add-label' project.name %}" class="pull-right btn btn-success">New label</a>
-{% endif %}
+{% block righttabs %}
+  {% if label %}
+  <a href="{% url 'add-label' project.name %}" class="btn btn-success">New label</a>
+  {% endif %}
 {% endblock %}
 
 {% block tabcontent %}

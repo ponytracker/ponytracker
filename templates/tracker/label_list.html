@@ -2,12 +2,12 @@
 
 {% load tracker_tags %}
 
-{% block labeltab %} class="active"{% endblock %}
+{% block labeltab %}primary active{% endblock %}
 
 {% if perm.manage_tags %}
-{% block moretabs %}
-<a href="{% url 'add-label' project.name %}" class="pull-right btn btn-success">New label</a>
-{% endblock %}
+  {% block righttabs %}
+  <a href="{% url 'add-label' project.name %}" class="btn btn-success">New label</a>
+  {% endblock %}
 {% endif %}
 
 {% block tabcontent %}

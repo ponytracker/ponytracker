@@ -48,15 +48,26 @@
 {% endblock %}
 
 {% block content %}
-<ul class="nav nav-tabs" role="tablist">
-  <li{% block issuetab %}{% endblock %}><a href="{% url 'list-issue' project.name %}"><b>Issues</b></a></li>
-  <li{% block labeltab %}{% endblock %}><a href="{% url 'list-label' project.name %}"><b>Labels</b></a></li>
-  <li{% block milestonetab %}{% endblock %}><a href="{% url 'list-milestone' project.name %}"><b>Milestones</b></a></li>
-  {% block moretabs %}{% endblock %}
-</ul>
-<br />
 
-{% block tabcontent %}{% endblock %}
+<div class="btn-group" role="group">
+  <a href="{% url 'list-issue' project.name %}" class="btn btn-{% block issuetab %}default{% endblock %}">Issues</a>
+  <a href="{% url 'list-label' project.name %}" class="btn btn-{% block labeltab %}default{% endblock %}">Labels</a>
+  <a href="{% url 'list-milestone' project.name %}" class="btn btn-{% block milestonetab %}default{% endblock %}">Milestones</a>
+  {% block moretabs %}{% endblock %}
+</div>
+
+<div class="pull-right">
+  {% block rightbar %}{% endblock %}
+  <div class="btn-group" role="group">
+    {% block righttabs %}{% endblock %}
+  </div>
+</div>
+
+<div class="row" style="margin-top: 20px;">
+  <div class="col-md-12">
+    {% block tabcontent %}{% endblock %}
+  </div>
+</div>
 
 {% delete_modal %}
 
