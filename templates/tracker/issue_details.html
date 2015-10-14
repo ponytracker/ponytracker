@@ -86,15 +86,15 @@
             <li><a href="https://daringfireball.net/projects/markdown/syntax" target="blank" role="tab">Syntaxe</a></li>
           </ul>
           <div class="tab-content">
-            <div class="tab-pane active" id="editor" style="max-height: 220px;">
+            <div class="tab-pane active" id="editor" style="height: 200px">
               <div class="form-group">
-                <textarea style="width: 100%; height: 220px;" id="markdown-content" name="comment" required></textarea>
+                <textarea class="form-control" style="width: 100%; height: 200px;" id="markdown-content" name="comment" required></textarea>
               </div>
             </div>
-            <div class="tab-pane well" id="preview" style="min-height: 200px; magin: 0;">
-              <div id="preview-content"></div>
+            <div class="tab-pane" id="preview" style="height: 200px;">
+              <div class="well" id="preview-content" style="height: 100%;"></div>
             </div>
-            <div class="text-center">
+            <div class="text-center" style="margin-top: 20px;">
               {% if perm.manage_issue %}
               {% if issue.closed %}
               <a href="{% url 'reopen-issue' project.name issue.id %}" class="btn btn-default" id="normal-button"><span class="glyphicon glyphicon-refresh"></span> Reopen this issue</a>
