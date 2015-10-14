@@ -17,16 +17,14 @@
 {% if projects.exists %}
 {% for project in projects %}
 <div class="list-group">
-  <a class="list-group-item disabled" href="{% url 'list-issue' project.name %}">
+  <a class="list-group-item" href="{% url 'list-issue' project.name %}">
     <h4>{{ project }}</h4>
-  </a>
-  <div class="list-group-item">
     {% if project.description %}
     {{ project.description|linebreaksbr }}
     {% else %}
     <em>No description provided.</em>
     {% endif %}
-  </div>
+  </a>
 </div>
 {% endfor %}
 {% elif user.is_authenticated %}
