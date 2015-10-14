@@ -8,12 +8,6 @@
   <a href="{% url 'list-project-permission' project.name %}" class="btn btn-primary">Permissions</a>
 {% endblock %}
 
-{% block righttabs %}
-  {% if permission %}
-  <a href="{% url 'add-project-permission' project.name %}" class="btn btn-success">Add permission</a>
-  {% endif %}
-{% endblock %}
-
 {% block tabcontent %}
 
 <div class="row">

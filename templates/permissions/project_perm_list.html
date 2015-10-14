@@ -8,9 +8,7 @@
 {% endblock %}
 
 {% block righttabs %}
-  {% if permission %}
   <a href="{% url 'add-project-permission' project.name %}" class="btn btn-success">Add permission</a>
-  {% endif %}
 {% endblock %}
 
 {% block tabcontent %}
