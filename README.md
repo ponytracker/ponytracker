@@ -1,7 +1,7 @@
 PonyTracker
 ===========
 
-[![Build Status](https://travis-ci.org/bouttier/ponytracker.svg?branch=master)](https://travis-ci.org/bouttier/ponytracker)
+[![Build Status](https://travis-ci.org/ponytracker/ponytracker.svg?branch=master)](https://travis-ci.org/ponytracker/ponytracker)
 [![Coverage Status](https://coveralls.io/repos/ponytracker/ponytracker/badge.svg?branch=master&service=github)](https://coveralls.io/github/ponytracker/ponytracker?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/ponytracker/badge/?version=latest)](https://readthedocs.org/projects/ponytracker/?badge=latest)
 
