@@ -11,7 +11,6 @@ if 'djcelery' in settings.INSTALLED_APPS:
 
 from accounts.models import User
 from tracker.utils import get_message_id, get_reply_addr
-from tracker.templatetags.tracker_filters import markdown
 
 
 __all__ = [
@@ -30,6 +29,7 @@ def notify_new_issue(issue):
 
     data = {
         'description': issue.description,
+        'project': project,
         'uri': settings.BASE_URL + reverse('show-issue',
             args=[project.name, issue.id]),
     }
@@ -64,6 +64,7 @@ def notify_event(event, template):
 
     data = {
         'comment': event.additionnal_section,
+        'project': project,
         'uri': settings.BASE_URL + reverse('show-issue',
             args=[project.name, issue.id]),
     }

@@ -2,7 +2,7 @@
 
 {% load humanize %}
 {% load tracker_tags %}
-{% load tracker_filters %}
+{% load tracker_markdown %}
 {% load staticfiles %}
 
 {% block css %}
@@ -61,7 +61,7 @@
 
       {% if event.additionnal_section %}
       <div class="panel-body">
-        {{ event.additionnal_section|markdown }}
+        {% markdown event.additionnal_section %}
       </div>
       {% elif event.code == event.DESCRIBE %}
       <div class="panel-body">

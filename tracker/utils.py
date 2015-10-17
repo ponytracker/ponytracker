@@ -2,6 +2,7 @@ from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.core.urlresolvers import reverse
 
 import bleach
 from markdown import markdown
@@ -57,9 +58,14 @@ def granted_projects(user):
         return Project.objects.filter(access=Project.ACCESS_PUBLIC)
 
 
-def markdown_to_html(value):
+def markdown_to_html(value, project=None):
     # set extensions here if needed
-    mdx_issue = IssueExtension(base_url='../{issue_id}/')
+    if project:
+        base_url = settings.BASE_URL \
+                + reverse('list-issue', args=[project.name]) + '{issue_id}/'
+    else:
+        base_url = '../{issue_id}/'
+    mdx_issue = IssueExtension(base_url=base_url)
     value = bleach.clean(value)
     return mark_safe(markdown(value, extensions=[mdx_issue]))
 

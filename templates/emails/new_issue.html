@@ -1,5 +1,5 @@
-{% load tracker_filters %}{% if description %}
-{{ description|markdown }}
+{% load tracker_markdown %}{% if description %}
+{% markdown description %}
 {% else %}
   No description.
 {% endif %}

@@ -1,4 +1,4 @@
-{% load tracker_filters %}{{ comment|markdown }}
+{% load tracker_markdown %}{% markdown comment %}
 
 <hr>
 {% if answering %}
