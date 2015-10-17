@@ -35,7 +35,7 @@ ISSUE_RE = r'#([0-9]+)'
 class IssuePattern(Pattern):
 
     def __init__(self, base_url='{issue_id}'):
-        super().__init__(ISSUE_RE)
+        super(IssuePattern, self).__init__(ISSUE_RE)
         self.base_url = base_url
 
     def handleMatch(self, m):
@@ -50,7 +50,7 @@ class IssueExtension(markdown.extensions.Extension):
 
     def __init__(self, **kwargs):
         self.config = {'base_url': ['/project/issue/{issue_id}/', 'URL format']}
-        super().__init__(**kwargs)
+        super(IssueExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
         md.inlinePatterns.add('issue', IssuePattern(self.getConfig('base_url')), '<not_strong')
