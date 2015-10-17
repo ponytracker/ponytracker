@@ -11,6 +11,7 @@ from sys import version_info as python_version
 import hashlib
 
 from tracker.models import Project
+from tracker.mdx.mdx_issue import IssueExtension
 from permissions.models import GlobalPermission
 from permissions.models import PermissionModel as PermModel
 
@@ -55,9 +56,12 @@ def granted_projects(user):
         # only public projects
         return Project.objects.filter(access=Project.ACCESS_PUBLIC)
 
+
 def markdown_to_html(value):
     # set extensions here if needed
-    return mark_safe(markdown(bleach.clean(value)))
+    mdx_issue = IssueExtension(base_url='../{issue_id}/')
+    value = bleach.clean(value)
+    return mark_safe(markdown(value, extensions=[mdx_issue]))
 
 
 def shell_split(cmd):
