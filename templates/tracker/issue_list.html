@@ -7,11 +7,12 @@
 {% block title %}{{ project }} - PonyTracker{% endblock %}
 
 {% block rightbar %}
-<div class="btn-group" role="group">
-  {% for new_status, new_status_name in status_values.items %}
-  <a href="{% url 'list-issue' project.name %}?q={{ new_status }}{{ query }}{{ sort_url }}" class="btn btn-default{% if new_status == status %} active{% endif %}">{{ new_status_name }}</a>
-  {% endfor %}
-</div>
+  <div class="btn-group" role="group">
+    {% for new_status, new_status_name in status_values.items %}
+    <a href="{% url 'list-issue' project.name %}?q={{ new_status }}{{ query }}{{ sort_url }}" class="btn btn-default{% if new_status == status %} active{% endif %}">{{ new_status_name }}</a>
+    {% endfor %}
+  </div>
+  {{ block.super }}
 {% endblock %}
 
 {% block tabcontent %}

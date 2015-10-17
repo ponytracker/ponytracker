@@ -4,7 +4,7 @@
 
 {% block issuetab %}primary{% endblock %}
 
-{% block righttabs %}
+{% block rightbar %}
   {% if perm.create_issue %}
   <a href="{% url 'add-issue' project.name %}?prev={{ request.get_full_path }}" class="btn btn-success">New issue</a>
   {% endif %}

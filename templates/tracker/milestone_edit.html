@@ -10,18 +10,14 @@
 {% endblock %}
 
 {% block rightbar %}
-  <div class="btn-group">
+  <div class="btn-group" role="group">
     <a href="{% url 'list-milestone' project.name %}?show=open" class="btn btn-default{% if show == 'open' %} active{% endif %}">Open</a>
     <a href="{% url 'list-milestone' project.name %}?show=close" class="btn btn-default{% if show == 'close' %} active{% endif %}">Closed</a>
     <a href="{% url 'list-milestone' project.name %}?show=all" class="btn btn-default{% if show == 'all' %} active{% endif %}">All</a>
   </div>
-{% endblock %}
-
-{% block righttabs %}
   {% if perm.manage_tags %}
   <a href="{% url 'add-milestone' project.name %}" class="btn btn-success">New milestone</a>
   {% endif %}
-</div>
 {% endblock %}
 
 {% block tabcontent %}

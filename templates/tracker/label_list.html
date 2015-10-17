@@ -4,7 +4,7 @@
 
 {% block labeltab %}primary{% endblock %}
 
-{% block righttabs %}
+{% block rightbar %}
   {% if perm.manage_tags %}
   <a href="{% url 'add-label' project.name %}" class="btn btn-success">New label</a>
   {% endif %}

@@ -49,25 +49,21 @@
 
 {% block content %}
 
-<div class="btn-group" role="group">
-  <a href="{% url 'list-issue' project.name %}" class="btn btn-{% block issuetab %}default{% endblock %}">Issues</a>
-  <a href="{% url 'list-label' project.name %}" class="btn btn-{% block labeltab %}default{% endblock %}">Labels</a>
-  <a href="{% url 'list-milestone' project.name %}" class="btn btn-{% block milestonetab %}default{% endblock %}">Milestones</a>
-  {% block moretabs %}{% endblock %}
-</div>
-
-<div class="pull-right">
-  {% block rightbar %}{% endblock %}
-  <div class="btn-group" role="group">
-    {% block righttabs %}{% endblock %}
+<div class="navbar">
+  <div class="navbar-left">
+    <div class="btn-group" role="group">
+      <a href="{% url 'list-issue' project.name %}" class="btn btn-{% block issuetab %}default{% endblock %}">Issues</a>
+      <a href="{% url 'list-label' project.name %}" class="btn btn-{% block labeltab %}default{% endblock %}">Labels</a>
+      <a href="{% url 'list-milestone' project.name %}" class="btn btn-{% block milestonetab %}default{% endblock %}">Milestones</a>
+      {% block moretabs %}{% endblock %}
+    </div>
+  </div>
+  <div class="navbar-right">
+    {% block rightbar %}{% endblock %}
   </div>
 </div>
 
-<div class="row" style="margin-top: 20px;">
-  <div class="col-md-12">
-    {% block tabcontent %}{% endblock %}
-  </div>
-</div>
+{% block tabcontent %}{% endblock %}
 
 {% delete_modal %}
 
