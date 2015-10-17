@@ -30,8 +30,8 @@
             </div>
           </div>
           <div class="form-group">
-              {% if is_all_query %}
-              <a href="{% url 'list-issue' project.name %}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-remove"> Reset filter</span></a>
+              {% if query %}
+              <a href="{% url 'list-issue' project.name %}?q={{ status }}{{ sort_url }}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-remove"> Reset filter</span></a>
               {% endif %}
           </div>
         </form>
