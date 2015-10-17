@@ -99,7 +99,7 @@
     <a href="{% same_label label %}" class="label" style="{% label_style label %}">{{ label }}</a>
     {% endfor %}
     <br />
-    <small>#{{ issue.id }} opened by <a href="{% same_author issue.author %}">{% user_badge issue.author %}</a> {{ issue.opened_at|naturaltime }}</small>
+    <small>#{{ issue.id }} opened by <a href="{% same_author issue.author %}{{ sort_url }}">{% user_badge issue.author %}</a> {{ issue.opened_at|naturaltime }}</small>
     {% if issue.due_date %}
     &#160;–&#160;&#160;<small>due by <span{% if issue.overdue %} class="passed-due-date"{% endif %}>{{ issue.due_date }}</span></small>
     {% endif %}
