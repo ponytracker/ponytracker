@@ -107,7 +107,7 @@
     {% if issue.milestone %}
     &#160;–&#160;&#160;<span class="glyphicon glyphicon-road"></span> <a href="{% same_milestone issue.milestone %}"><b>{{ issue.milestone }}</b></a>
     {% endif %}
-    &#160;–&#160;&#160;<span><span class="badge">{{ issue.comments.count }}</span></span>
+    &#160;–&#160;&#160;<span><span class="badge"><span class="glyphicon glyphicon-comment"></span>&#160;{{ issue.comments.count }}</span></span>
   </li>
   {% endfor %}
   {% else %}
