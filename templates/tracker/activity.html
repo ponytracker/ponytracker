@@ -1,0 +1,38 @@
+{% extends 'base_project.html' %}
+
+{% load humanize %}
+{% load bootstrap3 %}
+{% load tracker_tags %}
+
+{% block activitytab %}primary{% endblock %}
+
+{% block tabcontent %}
+
+{% if paginator.count %}
+{% for event in events %}
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <span class="badge"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
+    &#160;
+    <a href="{% same_author event.author %}">{% user_badge event.author %}</a>
+    {{ event.activity|safe }}
+    <a href="{% url 'show-issue' project.name event.issue.id %}"><b data-original-title="" data-toggle="tooltip" data-placement="bottom" title="#{{ event.issue.id }}">{{ event.issue }}</b></a>
+    {{ event.date|naturaltime }}
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<ul class="list-group">
+  <li class="list-group-item">
+    <em>There aren't any events for this project quite yet.</em>
+  </li>
+</ul>
+{% endif %}
+
+{% if events %}
+<div style="text-align: center;">
+    {% bootstrap_pagination events %}
+</div>
+{% endif %}
+
+{% endblock %}

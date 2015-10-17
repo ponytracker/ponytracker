@@ -938,3 +938,32 @@ def milestone_delete(request, project, name):
     messages.success(request, "Label deleted successfully.")
 
     return redirect('list-milestone', project.name)
+
+
+############
+# Activity #
+############
+
+
+def activity(request, project):
+
+    events = Event.objects.filter(issue__project=project).order_by('-date')
+
+    if events:
+        page = request.GET.get('page')
+        paginator = Paginator(events,
+                get_current_site(request).settings.items_per_page)
+        try:
+            events = paginator.page(page)
+        except PageNotAnInteger:
+            events = paginator.page(1)
+        except EmptyPage:
+            events = paginator.page(paginator.num_pages)
+    else:
+        paginator = None
+
+    return render(request, 'tracker/activity.html', {
+        'project': project,
+        'events': events,
+        'paginator': paginator,
+    })

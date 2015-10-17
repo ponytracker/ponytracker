@@ -55,6 +55,7 @@
       <a href="{% url 'list-issue' project.name %}" class="btn btn-{% block issuetab %}default{% endblock %}">Issues</a>
       <a href="{% url 'list-label' project.name %}" class="btn btn-{% block labeltab %}default{% endblock %}">Labels</a>
       <a href="{% url 'list-milestone' project.name %}" class="btn btn-{% block milestonetab %}default{% endblock %}">Milestones</a>
+      <a href="{% url 'show-activity' project.name %}" class="btn btn-{% block activitytab %}default{% endblock %}">Activity</a>
       {% block moretabs %}{% endblock %}
     </div>
   </div>

@@ -331,6 +331,61 @@ class Event(models.Model):
         else:
             return "cog"
 
+    def activity(self):
+
+        args = {k: escape(v) for k, v in self.args.items()}
+
+        if self.code == Event.DESCRIBE:
+            description = "created issue"
+        elif self.code == Event.COMMENT:
+            description = "commented on issue"
+        elif self.code == Event.CLOSE:
+            description = "closed issue"
+        elif self.code == Event.REOPEN:
+            description = "reopened issue"
+        elif self.code == Event.RENAME:
+            description = "changed the title of issue"
+        elif self.code == Event.ADD_LABEL or self.code == Event.DEL_LABEL:
+            label = Label.objects.get(id=args['label'])
+            if self.code == Event.ADD_LABEL:
+                action = 'added'
+            else:
+                action = 'removed'
+            description = '%s the <a href="%s" class="label" ' \
+                          'style="%s">%s</a> label to issue' \
+                          % (action, same_label(label),
+                             label_style(label), label)
+        elif self.code == Event.SET_MILESTONE \
+                or self.code == Event.UNSET_MILESTONE:
+            milestone = Milestone(name=args['milestone'],
+                    project=self.issue.project)
+            if self.code == Event.SET_MILESTONE:
+                action = 'added to'
+            else:
+                action = 'removed from'
+            description = '%s the <span class="glyphicon ' \
+                          'glyphicon-road"></span> <a href="%s">' \
+                          '<b>%s</b></a> milestone the issue' \
+                          % (action, same_milestone(milestone), milestone)
+        elif self.code == Event.CHANGE_MILESTONE:
+            old_ms = Milestone(name=args['old_milestone'],
+                    project=self.issue.project)
+            new_ms = Milestone(name=args['new_milestone'],
+                    project=self.issue.project)
+            description = 'moved from the <span class="glyphicon ' \
+                          'glyphicon-road"></span> <a href="%s">' \
+                          '<b>%s</b></a> milestone ' \
+                          'to the <span class="glyphicon ' \
+                          'glyphicon-road"></span> <a href="%s">' \
+                          '<b>%s</b></a> milestone the issue' \
+                          % (same_milestone(old_ms), old_ms, same_milestone(new_ms), new_ms)
+        elif self.code == Event.REFERENCE:
+            description = "referenced the issue"
+        else:
+            return None
+
+        return description
+
     def __str__(self):
 
         args = {k: escape(v) for k, v in self.args.items()}
