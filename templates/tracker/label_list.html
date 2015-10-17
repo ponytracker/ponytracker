@@ -4,11 +4,11 @@
 
 {% block labeltab %}primary{% endblock %}
 
-{% if perm.manage_tags %}
-  {% block righttabs %}
+{% block righttabs %}
+  {% if perm.manage_tags %}
   <a href="{% url 'add-label' project.name %}" class="btn btn-success">New label</a>
-  {% endblock %}
-{% endif %}
+  {% endif %}
+{% endblock %}
 
 {% block tabcontent %}
 
