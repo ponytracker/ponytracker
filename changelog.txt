@@ -1,6 +1,7 @@
 PonyTracker changelog
 
 version 0.4 [in progress]
+- several improvements in user interface
 - possibility to add comments by answering emails
 - tooltip with full username on username references
 
