@@ -22,7 +22,7 @@
   &#160;
   <a href="{% same_author issue.author %}">{% user_badge issue.author %}</a> opened this issue {{ issue.opened_at|naturaltime }}
   {% if issue.due_date %}
-  &#160;–&#160;&#160;due by {{ issue.due_date }}
+  &#160;–&#160;&#160;due by <span{% if issue.overdue %} class="passed-due-date"{% endif %}>{{ issue.due_date }}</span>
   {% endif %}
   &#160;–&#160;&#160;{{ issue.comments.count }} comment{{ issue.comments.count|pluralize }}
 </div>
