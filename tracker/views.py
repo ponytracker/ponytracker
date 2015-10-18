@@ -947,7 +947,7 @@ def milestone_delete(request, project, name):
 
 def activity(request, project):
 
-    events = Event.objects.filter(issue__project=project).order_by('-date')
+    events = Event.objects.filter(issue__project=project).order_by('-pk')
 
     if events:
         page = request.GET.get('page')
