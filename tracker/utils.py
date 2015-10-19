@@ -66,8 +66,9 @@ def markdown_to_html(value, project=None):
     else:
         base_url = '../{issue_id}/'
     mdx_issue = IssueExtension(base_url=base_url)
-    value = bleach.clean(value)
-    return mark_safe(markdown(value, extensions=[mdx_issue]))
+    value = markdown(value, extensions=[mdx_issue])
+    value = bleach.clean(value, tags=bleach.ALLOWED_TAGS + ['p'])
+    return mark_safe(value)
 
 
 def shell_split(cmd):
