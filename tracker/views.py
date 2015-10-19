@@ -245,7 +245,6 @@ def issue_list(request, project):
     query = request.GET.get('q', '')
     query_without_status = ''
 
-    syntaxe_error = False
     for constraint in shell_split(query):
 
         if constraint == '*':
@@ -255,7 +254,7 @@ def issue_list(request, project):
         args = constraint.split(':')
 
         if len(args) != 2:
-            messages.error(request, 'There is a syntaxe error in your filter.')
+            messages.error(request, 'There is a syntax error in your filter.')
             issues = None
             break
 
@@ -268,7 +267,7 @@ def issue_list(request, project):
         elif key == 'is':
             if status:
                 messages.error(request, "The keyword 'is' can appear only "
-                                        "one time.")
+                                        "once.")
                 issues = None
                 break
             elif value == 'open':
@@ -329,7 +328,7 @@ def issue_list(request, project):
                 break
 
         else:
-            messages.error(request, "Unknow '%s' filtering criterion." % key)
+            messages.error(request, "Unknown '%s' filtering criterion." % key)
             issues = None
             break
 
@@ -562,7 +561,7 @@ def issue_comment_edit(request, project, issue, comment=None):
                     event = Event(issue=issue, author=request.user, code=Event.REOPEN)
                     event.save()
                     notify_reopen_issue(event)
-                    messages.success(request, 'Issue reopened and omment added successfully.')
+                    messages.success(request, 'Issue reopened and comment added successfully.')
             else:
                 messages.success(request, 'Comment added successfully.')
 
