@@ -6,8 +6,8 @@
 {% block settingdropdownclass %} active{% endblock %}
 {% block settingdropdown %}Permissions{% endblock %}
 
-{% block righttabs %}
-  <a href="{% url 'add-project-permission' project.name %}" class="btn btn-success">Add permission</a>
+{% block rightbar %}
+<a href="{% url 'add-project-permission' project.name %}" class="btn btn-success">Add permission</a>
 {% endblock %}
 
 {% block tabcontent %}
