@@ -16,7 +16,7 @@
   {% if labels.count %}
   {% for label in labels %}
   <li class="list-group-item">
-      <a href="{% same_label label %}" class="btn" style="{{ label.style }}"><span class="glyphicon glyphicon-tag" style="font-size: 100%;"></span> {{ label }}</a>
+      <a href="{{ label.url }}" class="btn" style="{{ label.style }}"><span class="glyphicon glyphicon-tag" style="font-size: 100%;"></span> {{ label }}</a>
       {% if perm.manage_tags or perm.delete_tags %}
       <div class="pull-right">
         {% if perm.manage_tags %}

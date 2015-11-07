@@ -97,7 +97,7 @@
     {% endif %}
     <a href="{% url 'show-issue' project.name issue.id %}"><b>{{ issue }}</b></a>
     {% for label in issue.labels.all %}
-    <a href="{% same_label label %}" class="label" style="{{ label.style }}">{{ label }}</a>
+    <a href="{{ label.url }}" class="label" style="{{ label.style }}">{{ label }}</a>
     {% endfor %}
     <br />
     <small>#{{ issue.id }} opened by <a href="{% same_author issue.author %}{{ sort_url }}">{% user_badge issue.author %}</a> {{ issue.opened_at|naturaltime }}</small>
@@ -105,7 +105,7 @@
     &#160;–&#160;&#160;<small>due by <span{% if issue.overdue %} class="passed-due-date"{% endif %}>{{ issue.due_date }}</span></small>
     {% endif %}
     {% if issue.milestone %}
-    &#160;–&#160;&#160;<span class="glyphicon glyphicon-road"></span> <a href="{% same_milestone issue.milestone %}"><b>{{ issue.milestone }}</b></a>
+    &#160;–&#160;&#160;<span class="glyphicon glyphicon-road"></span> <a href="{{ issue.milestone.url }}"><b>{{ issue.milestone }}</b></a>
     {% endif %}
     &#160;–&#160;&#160;<span><span class="badge"><span class="glyphicon glyphicon-comment"></span>&#160;{{ issue.comments.count }}</span></span>
   </li>

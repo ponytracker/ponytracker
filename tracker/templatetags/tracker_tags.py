@@ -22,24 +22,6 @@ def labeled(label):
     return mark_safe(html.format(style=label.style, name=escape(label.name)))
 
 
-@register.simple_tag
-def same_label(label):
-
-    url = reverse('list-issue', kwargs={'project': label.project.name})
-    url += '?q=is:open%20label:' + label.quotted_name
-
-    return mark_safe(url)
-
-
-@register.simple_tag
-def same_milestone(milestone):
-
-    url = reverse('list-issue', kwargs={'project': milestone.project.name})
-    url += '?q=is:open%20milestone:' + milestone.name
-
-    return mark_safe(url)
-
-
 @register.simple_tag(takes_context=True)
 def same_author(context, author):
 

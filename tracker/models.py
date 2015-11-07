@@ -6,14 +6,13 @@ from django.utils.html import escape, format_html
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.sites.models import Site
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.urlresolvers import reverse
 
 from colorful.fields import RGBColorField
 
 import json
 
 from accounts.models import User
-
-from tracker.templatetags.tracker_tags import same_milestone, same_label
 
 
 __all__ = ['Project', 'Issue', 'Label', 'Milestone', 'Event']
@@ -80,6 +79,14 @@ class Label(models.Model):
             verbose_name="Inverse text color")
 
     @property
+    def url(self):
+
+        url = reverse('list-issue', kwargs={'project': self.project.name})
+        url += '?q=is:open%20label:' + self.quotted_name
+
+        return mark_safe(url)
+
+    @property
     def style(self):
 
         if self.inverted:
@@ -139,6 +146,14 @@ class Milestone(models.Model):
             return int(100 * closed / total)
         else:
             return 0
+
+    @property
+    def url(self):
+
+        url = reverse('list-issue', kwargs={'project': self.project.name})
+        url += '?q=is:open%20milestone:' + self.name
+
+        return mark_safe(url)
 
     def __str__(self):
         return self.name
@@ -365,8 +380,7 @@ class Event(models.Model):
                 action = 'removed'
             description = '%s the <a href="%s" class="label" ' \
                           'style="%s">%s</a> label to issue' \
-                          % (action, same_label(label),
-                             label.style, label)
+                          % (action, label.url, label.style, label)
         elif self.code == Event.SET_MILESTONE \
                 or self.code == Event.UNSET_MILESTONE:
             milestone = Milestone(name=args['milestone'],
@@ -420,8 +434,7 @@ class Event(models.Model):
                 action = 'removed'
             description = '%s the <a href="%s" class="label" ' \
                           'style="%s">%s</a> label' \
-                          % (action, same_label(label),
-                             label.style, label)
+                          % (action, label.url, label.style, label)
         elif self.code == Event.SET_MILESTONE \
                 or self.code == Event.UNSET_MILESTONE:
             milestone = Milestone(name=args['milestone'],
@@ -433,7 +446,7 @@ class Event(models.Model):
             description = '%s this to the <span class="glyphicon ' \
                           'glyphicon-road"></span> <a href="%s">' \
                           '<b>%s</b></a> milestone' \
-                          % (action, same_milestone(milestone), milestone)
+                          % (action, milestone.url, milestone)
         elif self.code == Event.CHANGE_MILESTONE:
             old_ms = Milestone(name=args['old_milestone'],
                     project=self.issue.project)
@@ -445,7 +458,7 @@ class Event(models.Model):
                           'to the <span class="glyphicon ' \
                           'glyphicon-road"></span> <a href="%s">' \
                           '<b>%s</b></a> milestone' \
-                          % (same_milestone(old_ms), old_ms, same_milestone(new_ms), new_ms)
+                          % (old_ms.url, old_ms, new_ms.url, new_ms)
         elif self.code == Event.REFERENCE:
             description = "referenced this issue"
         else:
