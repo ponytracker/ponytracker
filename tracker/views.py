@@ -745,7 +745,7 @@ def label_list(request, project):
 def label_edit(request, project, id=None):
 
     if id:
-        label = get_object_or_404(Label, project=project, id=id)
+        label = get_object_or_404(Label, project=project, deleted=False, id=id)
     else:
         label = None
     issue = request.GET.get('issue')
@@ -756,8 +756,8 @@ def label_edit(request, project, id=None):
 
     if request.method == 'POST' and form.is_valid():
 
-        similar = Label.objects.filter(project=project,
-                name=form.cleaned_data['name'], deleted=False)
+        similar = Label.objects.filter(project=project, deleted=False,
+                                       name=form.cleaned_data['name'])
 
         if label:
             similar = similar.exclude(pk=label.pk)
