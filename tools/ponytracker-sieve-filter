@@ -10,8 +10,8 @@ if len(sys.argv) != 2:
 
 key, url = sys.argv[1].split('@')
 
-email = sys.stdin.read()
-print(email) # DO NOT REMOVE
+email = sys.stdin.buffer.raw.read()
+sys.stdout.buffer.write(email) # DO NOT REMOVE
 
 requests.post(
     url,
