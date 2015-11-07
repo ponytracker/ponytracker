@@ -1,11 +1,16 @@
-{% extends 'base_project.html' %}
+{% extends 'admin.html' %}
 
 {% load permissions_filters %}
 {% load bootstrap3 %}
 {% load staticfiles %}
 
-{% block settingdropdownclass %} active{% endblock %}
-{% block settingdropdown %}Permissions{% endblock %}
+{% block permtab %}primary{% endblock %}
+
+{% block moretabs %}
+{% if permission %}
+<a href="{% url 'add-global-permission' %}" class="btn btn-success">Add permission</a>
+{% endif %}
+{% endblock %}
 
 {% block tabcontent %}
 
@@ -26,7 +31,6 @@
     <form method="post" role="form">
       {% csrf_token %}
       {% bootstrap_form_errors form %}
-      {% bootstrap_field form.project %}
       {% bootstrap_field form.grantee_type %}
       {% bootstrap_field form.grantee_id %}
       <div class="form-group">
@@ -35,7 +39,7 @@
       </div>
       <div class="form-group text-center">
         <button type="submit" class="btn btn-primary">Submit</button>
-        <a href="{% url 'list-project-permission' project.name %}" class="btn btn-default">Cancel</a>
+        <a href="{% url 'list-global-permission' %}" class="btn btn-default">Cancel</a>
       </div>
     </form>
 

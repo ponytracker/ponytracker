@@ -1,14 +1,14 @@
-{% extends 'base_admin.html' %}
+{% extends 'admin.html' %}
 
 {% load staticfiles %}
 {% load humanize %}
 {% load bootstrap3 %}
 
-{% block usertab %}primary{% endblock %}
+{% block grouptab %}primary{% endblock %}
 
 {% block moretabs %}
-{% if user %}
-<a href="{% url 'add-user' %}" class="btn btn-success">Add user</a>
+{% if group %}
+<a href="{% url 'add-group' %}" class="btn btn-success">Add group</a>
 {% endif %}
 {% endblock %}
 
@@ -20,10 +20,10 @@
 
     <div class="page-header">
       <h1>
-        {% if user %}
-        Edit user
+        {% if group %}
+        Edit group
         {% else %}
-        New user
+        New group
         {% endif %}
       </h1>
     </div>
@@ -33,7 +33,11 @@
       {% bootstrap_form form %}
       {% buttons %}
         <button type="submit" class="btn btn-primary">Submit</button>
-        <a href="{% url 'list-user' %}" class="btn btn-default">Cancel</a>
+        {% if group %}
+        <a href="{% url 'show-group' group.id %}" class="btn btn-default">Cancel</a>
+        {% else %}
+        <a href="{% url 'list-group' %}" class="btn btn-default">Cancel</a>
+        {% endif %}
       {% endbuttons %}
     </form>
 

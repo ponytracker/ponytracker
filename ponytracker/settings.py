@@ -25,12 +25,6 @@ SECRET_KEY = 'z(j%f+2sh%v1y!f0r5^eo0)nf)z7r!vm+$6y3d!mtb20y5*s0!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
-
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
@@ -54,12 +48,13 @@ INSTALLED_APPS = (
     'bootstrap3_datetime',
     'bootstrap3',
     'colorful',
+
+    'ponytracker',
     'accounts',
     'permissions',
     'tracker',
 )
 
-from django import VERSION
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -70,6 +65,28 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'tracker.middleware.ProjectMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'permissions.backends.Backend',
+)
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.messages.context_processors.messages',
+                'django.contrib.auth.context_processors.auth',
+                'django.core.context_processors.request',
+                'tracker.context_processors.projects',
+                'permissions.context_processors.perm',
+            ],
+        },
+    },
+]
 
 ROOT_URLCONF = 'ponytracker.urls'
 
@@ -108,19 +125,6 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/login'
 
 LOGIN_REDIRECT_URL = '/'
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.messages.context_processors.messages',
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
-    'tracker.context_processors.projects',
-    'permissions.context_processors.perm',
-)
-
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'permissions.backends.Backend',
-)
 
 SITE_ID = 1
 
