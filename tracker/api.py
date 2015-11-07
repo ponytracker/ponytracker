@@ -13,6 +13,7 @@ from tracker.notifications import notify_new_comment
 
 import email
 import re
+from sys import version_info as python_version
 
 
 @csrf_exempt
@@ -31,15 +32,25 @@ def email_recv(request):
         raise HttpResponse(status=400) # Bad Request
 
     msg = request.FILES['email']
-    msg = msg.read()
-    msg = email.message_from_string(msg)
+    msg = email.message_from_file(msg)
 
     mfrom = msg.get('From')
     mto = msg.get('To')
     subject = msg.get('Subject')
-    content = msg.get_payload()
+
     if msg.is_multipart():
-        content = content[0].get_payload(decode=True)
+        msgs = msg.get_payload()
+        for m in msgs:
+            if m.get_content_type == 'text/plain':
+                content = m.get_payload()
+                break
+        else:
+            content = msgs[0].get_payload()
+    else:
+        content = msg.get_payload()
+
+    if python_version < (3,):
+        content = content.decode('utf-8')
 
     addr = settings.REPLY_EMAIL
     pos = addr.find('@')
