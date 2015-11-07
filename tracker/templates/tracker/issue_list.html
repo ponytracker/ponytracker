@@ -97,7 +97,7 @@
     {% endif %}
     <a href="{% url 'show-issue' project.name issue.id %}"><b>{{ issue }}</b></a>
     {% for label in issue.labels.all %}
-    <a href="{% same_label label %}" class="label" style="{% label_style label %}">{{ label }}</a>
+    <a href="{% same_label label %}" class="label" style="{{ label.style }}">{{ label }}</a>
     {% endfor %}
     <br />
     <small>#{{ issue.id }} opened by <a href="{% same_author issue.author %}{{ sort_url }}">{% user_badge issue.author %}</a> {{ issue.opened_at|naturaltime }}</small>

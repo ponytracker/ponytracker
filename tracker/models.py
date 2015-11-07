@@ -13,7 +13,7 @@ import json
 
 from accounts.models import User
 
-from tracker.templatetags.tracker_tags import *
+from tracker.templatetags.tracker_tags import same_milestone, same_label
 
 
 __all__ = ['Project', 'Issue', 'Label', 'Milestone', 'Event']
@@ -78,6 +78,18 @@ class Label(models.Model):
 
     inverted = models.BooleanField(default=True,
             verbose_name="Inverse text color")
+
+    @property
+    def style(self):
+
+        if self.inverted:
+            fg = '#fff'
+        else:
+            fg = '#000'
+
+        style = "background-color: {bg}; color: {fg}; vertical-align: middle;"
+
+        return style.format(bg=self.color, fg=fg)
 
     @property
     def quotted_name(self):
@@ -354,7 +366,7 @@ class Event(models.Model):
             description = '%s the <a href="%s" class="label" ' \
                           'style="%s">%s</a> label to issue' \
                           % (action, same_label(label),
-                             label_style(label), label)
+                             label.style, label)
         elif self.code == Event.SET_MILESTONE \
                 or self.code == Event.UNSET_MILESTONE:
             milestone = Milestone(name=args['milestone'],
@@ -409,7 +421,7 @@ class Event(models.Model):
             description = '%s the <a href="%s" class="label" ' \
                           'style="%s">%s</a> label' \
                           % (action, same_label(label),
-                             label_style(label), label)
+                             label.style, label)
         elif self.code == Event.SET_MILESTONE \
                 or self.code == Event.UNSET_MILESTONE:
             milestone = Milestone(name=args['milestone'],

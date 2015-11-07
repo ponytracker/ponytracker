@@ -15,25 +15,11 @@ def user_badge(user):
 
 
 @register.simple_tag
-def label_style(label):
-
-    if label.inverted:
-        fg = '#fff'
-    else:
-        fg = '#000'
-
-    style = "background-color: {bg}; color: {fg}; vertical-align: middle;"
-
-    return style.format(bg=label.color, fg=fg)
-
-
-@register.simple_tag
 def labeled(label):
 
     html = '<span class="label" style="{style}">{name}</span>'
 
-    return mark_safe(html.format(style=label_style(label),
-        name=escape(label.name)))
+    return mark_safe(html.format(style=label.style, name=escape(label.name)))
 
 
 @register.simple_tag
