@@ -59,6 +59,14 @@ class Project(models.Model):
     subscribers = models.ManyToManyField(User, blank=True,
             related_name='subscribed_projects')
 
+    @property
+    def labels(self):
+        return Label.objects.filter(project=self, deleted=False)
+
+    @property
+    def milestones(self):
+        return Milestone.objects.filter(project=self, deleted=False)
+
     def __str__(self):
         return self.display_name
 
@@ -66,7 +74,7 @@ class Project(models.Model):
 @python_2_unicode_compatible
 class Label(models.Model):
 
-    project = models.ForeignKey(Project, related_name='labels')
+    project = models.ForeignKey(Project, related_name='+')
 
     name = models.CharField(max_length=32)
 
@@ -121,13 +129,15 @@ class Milestone(models.Model):
             message="Please enter only lowercase characters, number, "
                     "dot, underscores or hyphens.")
 
-    project = models.ForeignKey(Project, related_name='milestones')
+    project = models.ForeignKey(Project, related_name='+')
 
     name = models.CharField(max_length=32, validators=[name_validator])
 
     due_date = models.DateTimeField(blank=True, null=True)
 
     closed = models.BooleanField(default=False)
+
+    deleted = models.BooleanField(default=False)
 
     def closed_issues(self):
 

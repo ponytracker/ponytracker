@@ -455,16 +455,18 @@ class TestViews(TestCase):
         self.assertEqual(label.name, 'new-label-name')
 
     def test_label_delete(self):
-        count_active = Label.objects.filter(deleted=False).count()
-        count_deleted = Label.objects.filter(deleted=True).count()
-        label = Label.objects.first()
-        project = label.project
+        project = Project.objects.get(name='project-1')
+        count_active = Label.objects.filter(project=project, deleted=False).count()
+        count_deleted = Label.objects.filter(project=project, deleted=True).count()
+        self.assertEqual(project.labels.count(), count_active)
+        label = project.labels.first()
         response = self.client.get(reverse('delete-label', args=[project.name, label.id]))
         self.assertEqual(response.status_code, 405) # get method forbidden
         response = self.client.post(reverse('delete-label', args=[project.name, label.id]))
         self.assertRedirects(response, reverse('list-label', args=[project.name]))
-        self.assertEqual(Label.objects.filter(deleted=False).count(), count_active - 1)
-        self.assertEqual(Label.objects.filter(deleted=True).count(), count_deleted + 1)
+        self.assertEqual(Label.objects.filter(project=project, deleted=False).count(), count_active - 1)
+        self.assertEqual(Label.objects.filter(project=project, deleted=True).count(), count_deleted + 1)
+        self.assertEqual(project.labels.count(), count_active - 1)
 
 
     # Milestones
@@ -515,11 +517,16 @@ class TestViews(TestCase):
         self.assertFalse(milestone.closed)
 
     def test_milestone_delete(self):
-        count = Milestone.objects.count()
         project = Project.objects.get(name='project-1')
+        count_active = Milestone.objects.filter(project=project, deleted=False).count()
+        count_deleted = Milestone.objects.filter(project=project, deleted=True).count()
+        self.assertEqual(project.milestones.count(), count_active)
         milestone = project.milestones.first()
         response = self.client.get(reverse('delete-milestone', args=[project.name, milestone.name]))
         self.assertEqual(response.status_code, 405) # get method forbidden
         response = self.client.post(reverse('delete-milestone', args=[project.name, milestone.name]))
         self.assertRedirects(response, reverse('list-milestone', args=[project.name]))
-        self.assertEqual(Milestone.objects.count(), count - 1)
+        self.assertEqual(Milestone.objects.count(), count_active + count_deleted)
+        self.assertEqual(Milestone.objects.filter(project=project, deleted=False).count(), count_active - 1)
+        self.assertEqual(Milestone.objects.filter(project=project, deleted=True).count(), count_deleted + 1)
+        self.assertEqual(project.milestones.count(), count_active - 1)

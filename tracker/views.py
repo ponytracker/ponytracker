@@ -756,8 +756,7 @@ def label_edit(request, project, id=None):
 
     if request.method == 'POST' and form.is_valid():
 
-        similar = Label.objects.filter(project=project, deleted=False,
-                                       name=form.cleaned_data['name'])
+        similar = project.labels.filter(name=form.cleaned_data['name'])
 
         if label:
             similar = similar.exclude(pk=label.pk)
@@ -802,7 +801,7 @@ def label_edit(request, project, id=None):
 @project_perm_required('delete_tags')
 def label_delete(request, project, id):
 
-    label = get_object_or_404(Label, project=project, id=id)
+    label = get_object_or_404(Label, project=project, deleted=False, id=id)
 
     for issue in label.issues.all():
         issue.remove_label(request.user, label)
@@ -843,7 +842,7 @@ def milestone_list(request, project):
 def milestone_edit(request, project, name=None):
 
     if name:
-        milestone = get_object_or_404(Milestone, project=project, name=name)
+        milestone = get_object_or_404(Milestone, project=project, deleted=False, name=name)
     else:
         milestone = None
     issue = request.GET.get('issue')
@@ -854,8 +853,7 @@ def milestone_edit(request, project, name=None):
 
     if request.method == 'POST' and form.is_valid():
 
-        similar = Milestone.objects.filter(project=project,
-                name=form.cleaned_data['name'])
+        similar = project.milestones.filter(name=form.cleaned_data['name'])
 
         if milestone:
             similar = similar.exclude(pk=milestone.pk)
@@ -931,11 +929,12 @@ def milestone_reopen(request, project, name):
 @project_perm_required('delete_tags')
 def milestone_delete(request, project, name):
 
-    milestone = get_object_or_404(Milestone, project=project, name=name)
+    milestone = get_object_or_404(Milestone, project=project, deleted=False, name=name)
 
     for issue in milestone.issues.all():
         issue.remove_milestone(request.user, milestone)
-    milestone.delete()
+    milestone.deleted = True
+    milestone.save()
 
     messages.success(request, "Label deleted successfully.")
 

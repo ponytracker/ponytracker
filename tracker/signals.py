@@ -14,7 +14,7 @@ def create_default_settings(sender, **kwargs):
 def create_default_project_labels(sender, instance, created, **kwargs):
     if not created:
         return
-    if not instance.labels.exists():
+    if not Label.objects.filter(project=instance).exists():
         Label(project=instance, name='bug', color='#FF0000').save()
         Label(project=instance, name='feature', color='#00A000').save()
         Label(project=instance, name='documentation', color='#1D3DBE').save()
