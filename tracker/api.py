@@ -42,12 +42,12 @@ def email_recv(request):
         msgs = msg.get_payload()
         for m in msgs:
             if m.get_content_type == 'text/plain':
-                content = m.get_payload()
+                content = m.get_payload(decode=True)
                 break
         else:
-            content = msgs[0].get_payload()
+            content = msgs[0].get_payload(decode=True)
     else:
-        content = msg.get_payload()
+        content = msg.get_payload(decode=True)
 
     if python_version < (3,):
         content = content.decode('utf-8')
