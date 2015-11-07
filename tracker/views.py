@@ -343,13 +343,16 @@ def issue_list(request, project):
         elif sort == 'oldest':
             issues = issues.order_by('opened_at')
         elif sort == 'most-urgent':
-            issues = issues.annotate(null_due_date=Count('due_date')).order_by('-null_due_date', 'due_date', 'opened_at')
+            issues = issues.annotate(null_due_date=Count('due_date'))\
+                    .order_by('-null_due_date', 'due_date', 'opened_at')
         elif sort == 'least-urgent':
             issues = issues.order_by('-due_date', '-opened_at')
         elif sort == 'least-recently-updated':
-            issues = issues.annotate(last_activity=Max('events__date')).order_by('last_activity')
+            issues = issues.annotate(last_activity=Max('events__date'))\
+                    .order_by('last_activity')
         else: # recently-updated
-            issues = issues.annotate(last_activity=Max('events__date')).order_by('-last_activity')
+            issues = issues.annotate(last_activity=Max('events__date'))\
+                    .order_by('-last_activity')
         page = request.GET.get('page')
         paginator = Paginator(issues,
                 get_current_site(request).settings.items_per_page)
