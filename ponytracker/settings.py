@@ -143,6 +143,7 @@ BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
 
 BOWER_INSTALLED_APPS = (
     'jquery',
+    'jquery-cookie',
 )
 
 BOOTSTRAP3 = {
