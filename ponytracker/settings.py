@@ -53,7 +53,6 @@ INSTALLED_APPS = (
 
     'djangobower',
     'bootstrap3',
-    'bootstrap3_datetime',
     'colorful',
 
     'ponytracker',
