@@ -89,6 +89,10 @@ Create an account for the administrator::
 
   $ python manage.py createsuperuser
 
+Install javascript libraries with bower::
+
+  $ python manage.py bower install
+
 Collect static files in the ``STATIC_DIR``::
 
   $ python manage.py collectstatic --settings=ponytracker.local_settings

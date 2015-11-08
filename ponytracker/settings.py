@@ -29,6 +29,12 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
+)
+
 ALLOWED_HOSTS = []
 
 
@@ -45,8 +51,9 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.sites',
 
-    'bootstrap3_datetime',
+    'djangobower',
     'bootstrap3',
+    'bootstrap3_datetime',
     'colorful',
 
     'ponytracker',
@@ -132,11 +139,17 @@ EMAIL_HOST = 'smtp'
 
 BASE_URL = 'http://localhost:8000'
 
+BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
+
+BOWER_INSTALLED_APPS = (
+    'jquery',
+)
+
 BOOTSTRAP3 = {
 
     # The URL to the jQuery JavaScript file
     #'jquery_url': '//code.jquery.com/jquery.min.js',
-    'jquery_url': STATIC_URL + 'js/jquery.min.js',
+    'jquery_url': STATIC_URL + 'jquery/dist/jquery.js',
 
     # The Bootstrap base URL
     #'base_url': '//netdna.bootstrapcdn.com/bootstrap/3.2.0/',
