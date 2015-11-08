@@ -217,7 +217,7 @@ class IssueManager:
                 url += 'q='
             filter = ' ' + status
             if not reset:
-                constraints = self._constraints.copy()
+                constraints = list(self._constraints)
                 for key, value in kwargs.items():
                     value = str(value)
                     if (key, value) in constraints:
