@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Max, Count
 from django.db.models import Q
@@ -41,6 +43,20 @@ def shell_split(cmd):
        args = [ arg.decode('utf-8') for arg in args ]
 
    return args
+
+
+def get_filter_value(key, value):
+
+    if key == 'author':
+        return value.username
+    elif key == 'label':
+        return value.quotted_name
+    elif key == 'milestone':
+        return value.name
+    elif python_version < (3,):
+        return unicode(value)
+    else:
+        return str(value)
 
 
 class IssueManager:
@@ -219,7 +235,7 @@ class IssueManager:
             if not reset:
                 constraints = list(self._constraints)
                 for key, value in kwargs.items():
-                    value = str(value)
+                    value = get_filter_value(key, value)
                     if (key, value) in constraints:
                         # this criterions is already present
                         continue
