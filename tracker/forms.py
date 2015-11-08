@@ -1,7 +1,5 @@
 from django import forms
 
-from bootstrap3_datetime.widgets import DateTimePicker
-
 from tracker.models import *
 from tracker.models import Settings
 
