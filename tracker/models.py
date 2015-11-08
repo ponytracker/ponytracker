@@ -373,7 +373,7 @@ class Event(models.Model):
             return "user"
         elif self.code == Event.SET_DUE_DATE \
                 or self.code == Event.CHANGE_DUE_DATE \
-                or self.code == Evente.UNSET_DUE_DATE:
+                or self.code == Event.UNSET_DUE_DATE:
             return "calendar"
         else:
             return "cog"
@@ -437,7 +437,7 @@ class Event(models.Model):
             description = 'changed the due date from <em>%s</em> to ' \
                           '<em>%s</em> of issue' \
                           % (old_due_date, new_due_date)
-        elif self.code == Evente.UNSET_DUE_DATE:
+        elif self.code == Event.UNSET_DUE_DATE:
             description = 'removed the due date of issue'
         else:
             return None
@@ -504,7 +504,7 @@ class Event(models.Model):
             new_due_date = datetime.fromtimestamp(float(args['new_due_date']))
             description = 'changed the due date from <em>%s</em> to <em>%s</em>' \
                           % (old_due_date, new_due_date)
-        elif self.code == Evente.UNSET_DUE_DATE:
+        elif self.code == Event.UNSET_DUE_DATE:
             description = 'removed the due date'
         else:
             return None
