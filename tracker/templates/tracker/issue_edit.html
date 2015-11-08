@@ -19,7 +19,14 @@
     <form method="post" role="form">
       {% csrf_token %}
       {% bootstrap_field form.title %}
-      {% bootstrap_field form.due_date %}
+      <div class="form-group has-success"><label class="control-label" for="id_due_date">Due date</label>
+        <div class="input-group date" id="id_due_date_picker">
+          <input class="form-control" id="id_due_date" name="due_date" placeholder="Due date" title="" type="text" value="{{ issue.due_date|date:'Y-m-d H:i' }}" />
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+      </div>
       <ul class="nav nav-tabs" role="tablist">
         <li class="active"><a href="#editor" role="tab" data-toggle="tab">Editor</a></li>
         <li><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
@@ -34,14 +41,14 @@
         <div class="tab-pane well" id="preview" style="min-height: 200px; magin: 0;">
           <div id="preview-content"></div>
         </div>
-        <div class="form-group">
+        {% buttons %}
           <button type="submit" class="btn btn-primary">Submit</button>
           {% if issue %}
           <a href="{% url 'show-issue' project.name issue.id %}" class="btn btn-default">Cancel</a>
           {% else %}
           <a href="{% if request.GET.prev %}{{ request.GET.prev }}{% else %}{% url 'list-issue' project.name %}{% endif %}" class="btn btn-default">Cancel</a>
           {% endif %}
-        </div>
+        {% endbuttons %}
       </div>
     </form>
   </div>
@@ -49,13 +56,26 @@
 
 {% endblock %}
 
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" />
+{% endblock %}
+
 {% block js_end %}
 {{ block.super }}
-{{ form.media.js }}
+<script src="{% static 'moment/min/moment.min.js' %}"></script>
+<script src="{% static 'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
 <script type="text/javascript">
 var markdown_preview_url = "{% url 'markdown' %}";
 $(function() {
-    $("#id_due_date_picker").datetimepicker({"format": "YYYY-MM-DD HH:mm", "language": "en-us"});
+    $("#id_due_date_picker").datetimepicker({
+        "format": "YYYY-MM-DD HH:mm",
+        "widgetPositioning": {
+            "horizontal": "right",
+            "vertical": "auto"
+        },
+        "showClear": true
+    });
 });
 </script>
 <script src="{% static 'jquery.cookie/jquery.cookie.js' %}"></script>

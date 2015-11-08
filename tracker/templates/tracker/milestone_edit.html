@@ -1,13 +1,9 @@
 {% extends 'tracker/project_base.html' %}
 
 {% load bootstrap3 %}
+{% load staticfiles %}
 
 {% block milestonetab %}primary{% endblock %}
-
-{% block css %}
-{{ block.super }}
-{{ form.media.css }}
-{% endblock %}
 
 {% block rightbar %}
   <div class="btn-group" role="group">
@@ -36,8 +32,16 @@
     </div>
 
     <form action="" method="post" role="form">
-      {% bootstrap_form form %}
       {% csrf_token %}
+      {% bootstrap_field form.name %}
+      <div class="form-group has-success"><label class="control-label" for="id_due_date">Due date</label>
+        <div class="input-group date" id="id_due_date_picker">
+          <input class="form-control" id="id_due_date" name="due_date" placeholder="Due date" title="" type="text" value="{{ milestone.due_date|date:'Y-m-d H:i' }}" />
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+      </div>
       {% buttons %}
         <button type="submit" class="btn btn-primary">Submit</button>
         <a href="{{ cancel }}" class="btn btn-default">Cancel</a>
@@ -49,12 +53,25 @@
 
 {% endblock %}
 
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css' %}" />
+{% endblock %}
+
 {% block js_end %}
 {{ block.super }}
-{{ form.media.js }}
+<script src="{% static 'moment/min/moment.min.js' %}"></script>
+<script src="{% static 'eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js' %}"></script>
 <script>
 $(function() {
-    $("#id_due_date_picker").datetimepicker({"format": "YYYY-MM-DD HH:mm", "language": "en-us"});
+    $("#id_due_date_picker").datetimepicker({
+        "format": "YYYY-MM-DD HH:mm",
+        "widgetPositioning": {
+            "horizontal": "right",
+            "vertical": "auto"
+        },
+        "showClear": true
+    });
 });
 </script>
 {% endblock %}

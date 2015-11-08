@@ -1,6 +1,5 @@
 django<1.9
 django-colorful
 django-bootstrap3
-django-bootstrap3-datetimepicker
 markdown
 bleach

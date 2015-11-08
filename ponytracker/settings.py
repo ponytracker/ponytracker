@@ -145,6 +145,7 @@ BOWER_INSTALLED_APPS = (
     'bootstrap',
     'jquery',
     'jquery-cookie',
+    'eonasdan-bootstrap-datetimepicker',
 )
 
 BOOTSTRAP3 = {

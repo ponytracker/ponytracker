@@ -26,10 +26,10 @@ class ProjectForm(forms.ModelForm):
         }
 
 
-class IssueForm(forms.Form):
-    title = forms.CharField(max_length=128)
-    due_date = forms.DateTimeField(required=False,
-            widget=DateTimePicker(options=False))
+class IssueForm(forms.ModelForm):
+    class Meta:
+        model = Issue
+        fields = ['title', 'due_date']
     description = forms.CharField(widget=forms.Textarea, required=False)
 
 
@@ -47,6 +47,3 @@ class MilestoneForm(forms.ModelForm):
     class Meta:
         model = Milestone
         fields = ['name', 'due_date']
-        widgets = {
-            'due_date': DateTimePicker(options=False),
-        }
