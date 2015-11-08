@@ -142,6 +142,7 @@ BASE_URL = 'http://localhost:8000'
 BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
 
 BOWER_INSTALLED_APPS = (
+    'bootstrap',
     'jquery',
     'jquery-cookie',
 )
@@ -154,7 +155,7 @@ BOOTSTRAP3 = {
 
     # The Bootstrap base URL
     #'base_url': '//netdna.bootstrapcdn.com/bootstrap/3.2.0/',
-    'base_url': STATIC_URL,
+    'base_url': STATIC_URL + 'bootstrap/dist/',
 
     # The complete URL to the Bootstrap CSS file
     # (None means derive it from base_url)
