@@ -289,7 +289,25 @@ def issue_edit(request, project, issue=None):
                 modified = True
 
             if issue.due_date != due_date:
-                # TODO: create new event 'due date changed'
+                if issue.due_date and due_date: # change due date
+                    event = Event(issue=issue, author=request.user,
+                            code=Event.CHANGE_DUE_DATE, args={
+                                'old_due_date': issue.due_date.timestamp(),
+                                'new_due_date': due_date.timestamp(),
+                            })
+                    event.save()
+                elif issue.due_date: # unset due date
+                    event = Event(issue=issue, author=request.user,
+                            code=Event.UNSET_DUE_DATE, args={
+                                'due_date': issue.due_date.timestamp(),
+                            })
+                    event.save()
+                else: # set due date
+                    event = Event(issue=issue, author=request.user,
+                            code=Event.SET_DUE_DATE, args={
+                                'due_date': due_date.timestamp(),
+                            })
+                    event.save()
                 issue.due_date = due_date
                 modified = True
 

@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from colorful.fields import RGBColorField
 
 import json
+from datetime import datetime
 
 from accounts.models import User
 
@@ -316,6 +317,9 @@ class Event(models.Model):
     DESCRIBE = 11
     ASSIGN = 12
     UNASSIGN = 13
+    SET_DUE_DATE = 14
+    CHANGE_DUE_DATE = 15
+    UNSET_DUE_DATE = 16
 
     issue = models.ForeignKey(Issue, related_name="%(class)ss")
 
@@ -367,6 +371,10 @@ class Event(models.Model):
         elif self.code == Event.ASSIGN \
                 or self.code == Event.UNASSIGN:
             return "user"
+        elif self.code == Event.SET_DUE_DATE \
+                or self.code == Event.CHANGE_DUE_DATE \
+                or self.code == Evente.UNSET_DUE_DATE:
+            return "calendar"
         else:
             return "cog"
 
@@ -419,6 +427,18 @@ class Event(models.Model):
                           % (old_ms.url, old_ms, new_ms.url, new_ms)
         elif self.code == Event.REFERENCE:
             description = "referenced the issue"
+        elif self.code == Event.SET_DUE_DATE:
+            due_date = datetime.fromtimestamp(float(args['due_date']))
+            description = 'set the due date to <em>%s</em> of issue' \
+                          % due_date
+        elif self.code == Event.CHANGE_DUE_DATE:
+            old_due_date = datetime.fromtimestamp(float(args['old_due_date']))
+            new_due_date = datetime.fromtimestamp(float(args['new_due_date']))
+            description = 'changed the due date from <em>%s</em> to ' \
+                          '<em>%s</em> of issue' \
+                          % (old_due_date, new_due_date)
+        elif self.code == Evente.UNSET_DUE_DATE:
+            description = 'removed the due date of issue'
         else:
             return None
 
@@ -473,6 +493,19 @@ class Event(models.Model):
                           % (old_ms.url, old_ms, new_ms.url, new_ms)
         elif self.code == Event.REFERENCE:
             description = "referenced this issue"
+        elif self.code == Event.REFERENCE:
+            description = "referenced the issue"
+        elif self.code == Event.SET_DUE_DATE:
+            due_date = datetime.fromtimestamp(float(args['due_date']))
+            description = 'set the due date to <em>%s</em>' \
+                          % due_date
+        elif self.code == Event.CHANGE_DUE_DATE:
+            old_due_date = datetime.fromtimestamp(float(args['old_due_date']))
+            new_due_date = datetime.fromtimestamp(float(args['new_due_date']))
+            description = 'changed the due date from <em>%s</em> to <em>%s</em>' \
+                          % (old_due_date, new_due_date)
+        elif self.code == Evente.UNSET_DUE_DATE:
+            description = 'removed the due date'
         else:
             return None
 
