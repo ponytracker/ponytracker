@@ -3,6 +3,8 @@ from django.db.models import Q
 from django.contrib.auth.models import AbstractUser
 from django.contrib import auth
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 
 
 __all__ = ['User', 'Group', 'Team']
@@ -49,6 +51,11 @@ class User(AbstractUser):
                 fullname += ' '
             fullname += self.last_name
         return fullname
+
+    def url(self, project):
+        url = reverse('list-issue', kwargs={'project': project.name})
+        url += '?q=is:open%20author:' + self.username
+        return mark_safe(url)
 
     def __str__(self):
         return self.username

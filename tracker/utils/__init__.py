@@ -7,14 +7,19 @@ from django.core.urlresolvers import reverse
 import bleach
 from markdown import markdown
 
-import shlex
-from sys import version_info as python_version
 import hashlib
 
 from tracker.models import Project
 from tracker.mdx.mdx_issue import IssueExtension
 from permissions.models import GlobalPermission
 from permissions.models import PermissionModel as PermModel
+
+
+from .issue_manager import IssueManager
+
+
+__all__ = ['granted_project', 'markdown_to_html', 'get_message_id'
+           'get_reply_addr', 'hexdigest_sha256', 'IssueFilter']
 
 
 def granted_projects(user):
@@ -69,19 +74,6 @@ def markdown_to_html(value, project=None):
     value = markdown(value, extensions=[mdx_issue])
     value = bleach.clean(value, tags=bleach.ALLOWED_TAGS + ['p'])
     return mark_safe(value)
-
-
-def shell_split(cmd):
-
-   if python_version < (3,):
-       cmd = cmd.encode('utf-8')
-   
-   args = shlex.split(cmd)
-   
-   if python_version < (3,):
-       args = [ arg.decode('utf-8') for arg in args ]
-
-   return args
 
 
 def get_message_id(mid):

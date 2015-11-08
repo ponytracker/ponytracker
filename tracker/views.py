@@ -10,32 +10,14 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 from django.db.models import Max, Count
 
-from tracker.utils import markdown_to_html, shell_split
+from tracker.utils import markdown_to_html, IssueManager
+from tracker.utils.issue_manager import STATUS_VALUES, SORT_VALUES
 from tracker.forms import *
 from tracker.models import *
 from tracker.notifications import *
 from accounts.models import User
 from permissions.models import ProjectPermission
 from permissions.decorators import project_perm_required
-
-from collections import OrderedDict
-
-
-STATUS_VALUES = OrderedDict([
-        ('is:open', 'Open'),
-        ('is:close', 'Closed'),
-        ('*', 'All'),
-    ])
-SORT_VALUES = OrderedDict([
-        ('recently-updated', 'Recentely updated'),
-        ('least-recently-updated', 'Least recently updated'),
-        ('newest', 'Newest'),
-        ('oldest', 'Oldest'),
-        ('most-urgent', 'Most urgent'),
-        ('least-urgent', 'Least urgent'),
-#        ('most-commented', 'Most commented'),
-#        ('least-commented', 'Least commented'),
-    ])
 
 
 ####################
@@ -230,129 +212,19 @@ def project_unsubscribe(request, project):
 
 def issue_list(request, project):
 
-    issues = project.issues
-
     labels = Label.objects.filter(project=project)
     milestones = Milestone.objects.filter(project=project)
 
-    sort = request.GET.get('sort', '')
-    sort_default_behaviour = 'recently-updated'
-    if sort == '' or sort not in SORT_VALUES.keys():
-        sort = sort_default_behaviour
+    issuemanager = IssueManager(project,
+                                filter=request.GET.get('q'),
+                                sort=request.GET.get('sort'))
 
-    status = None
+    issues = issuemanager.issues
 
-    query = request.GET.get('q', '')
-    query_without_status = ''
-
-    for constraint in shell_split(query):
-
-        if constraint == '*':
-            status = '*'
-            continue
-
-        args = constraint.split(':')
-
-        if len(args) != 2:
-            messages.error(request, 'There is a syntax error in your filter.')
-            issues = None
-            break
-
-        key = args[0]
-        value = args[1]
-
-        if key == '':
-            continue
-
-        elif key == 'is':
-            if status:
-                messages.error(request, "The keyword 'is' can appear only "
-                                        "once.")
-                issues = None
-                break
-            elif value == 'open':
-                issues = issues.filter(closed=False)
-                status = 'is:open'
-            elif value == 'close':
-                issues = issues.filter(closed=True)
-                status = 'is:close'
-            else:
-                messages.error(request, "The keyword 'is' must be followed "
-                                        "by 'open' or 'close'.")
-                issues = None
-                break
-
-        elif key == 'label':
-            try:
-                label = Label.objects.get(project=project,
-                        name=value, deleted=False)
-            except ObjectDoesNotExist:
-                messages.error(request, "The label '%s' does not exist "
-                                        "or has been deleted." % value)
-                issues = None
-                break
-            else:
-                issues = issues.filter(labels=label)
-                labels = labels.exclude(pk=label.pk)
-
-        elif key == 'milestone':
-            try:
-                milestone = Milestone.objects.get(project=project, name=value)
-            except ObjectDoesNotExist:
-                messages.error(request, "The milestone '%s' does not exist."
-                        % value)
-                issues = None
-                break
-            else:
-                issues = issues.filter(milestone=milestone)
-                milestones = milestones.exclude(pk=milestone.pk)
-
-        elif key == 'due':
-            if value == 'yes':
-                issues = issues.filter(due_date__isnull=False)
-            elif value == 'no':
-                issues = issues.filter(due_date__isnull=True)
-            else:
-                messages.error(request, "The keyword 'due' must be followed "
-                                        "by 'yes' or 'no'.")
-                issues = None
-                break
-
-        elif key == 'author' or key == 'user':
-            if User.objects.filter(username=value).exists():
-                issues = issues.filter(author__username=value)
-            else:
-                messages.error(request, "The user '%s' does not exist."
-                        % value)
-                issues = None
-                break
-
-        else:
-            messages.error(request, "Unknown '%s' filtering criterion." % key)
-            issues = None
-            break
-
-        if key != 'is':
-            query_without_status += ' ' + constraint
+    if issuemanager.error:
+        messages.error(request, issuemanager.error)
 
     if issues:
-        if not status:
-            issues = issues.filter(closed=False)
-        if sort == 'newest':
-            issues = issues.order_by('-opened_at')
-        elif sort == 'oldest':
-            issues = issues.order_by('opened_at')
-        elif sort == 'most-urgent':
-            issues = issues.annotate(null_due_date=Count('due_date'))\
-                    .order_by('-null_due_date', 'due_date', 'opened_at')
-        elif sort == 'least-urgent':
-            issues = issues.order_by('-due_date', '-opened_at')
-        elif sort == 'least-recently-updated':
-            issues = issues.annotate(last_activity=Max('events__date'))\
-                    .order_by('last_activity')
-        else: # recently-updated
-            issues = issues.annotate(last_activity=Max('events__date'))\
-                    .order_by('-last_activity')
         page = request.GET.get('page')
         paginator = Paginator(issues,
                 get_current_site(request).settings.items_per_page)
@@ -365,37 +237,15 @@ def issue_list(request, project):
     else:
         paginator = None
 
-    if not status:
-        status = 'is:open'
-    if not query:
-        query = status
-    if sort != sort_default_behaviour:
-        sort_url = '&sort=' + sort
-    else:
-        sort_url = ''
-    if query and sort_url:
-        get_parameters = 'q=%s%s' % (query, sort_url)
-    elif query:
-        get_parameters = 'q=%s' % query
-    elif sort_url:
-        get_parameters = 'sort=' + sort
-    else:
-        get_parameters = ''
-
     c = {
         'project': project,
         'issues': issues,
-        'labels': labels,
-        'milestones': milestones,
         'paginator': paginator,
-        'status': status, # for active status tab
+        'manager': issuemanager,
+        'status': issuemanager.status,
         'status_values': STATUS_VALUES,
-        'query': query_without_status, # to generate url with other status
-        'full_query': query, # for query field
-        'sort': sort,
-        'sort_url': sort_url,
+        'sort': issuemanager.sort,
         'sort_values': SORT_VALUES,
-        'get_parameters': get_parameters,
     }
 
     return render(request, 'tracker/issue_list.html', c)
