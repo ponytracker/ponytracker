@@ -402,7 +402,7 @@ class Event(models.Model):
             description = '%s the <span class="glyphicon ' \
                           'glyphicon-road"></span> <a href="%s">' \
                           '<b>%s</b></a> milestone the issue' \
-                          % (action, same_milestone(milestone), milestone)
+                          % (action, milestone.url, milestone)
         elif self.code == Event.CHANGE_MILESTONE:
             old_ms = Milestone(name=args['old_milestone'],
                     project=self.issue.project)
@@ -414,7 +414,7 @@ class Event(models.Model):
                           'to the <span class="glyphicon ' \
                           'glyphicon-road"></span> <a href="%s">' \
                           '<b>%s</b></a> milestone the issue' \
-                          % (same_milestone(old_ms), old_ms, same_milestone(new_ms), new_ms)
+                          % (old_ms.url, old_ms, new_ms.url, new_ms)
         elif self.code == Event.REFERENCE:
             description = "referenced the issue"
         else:
