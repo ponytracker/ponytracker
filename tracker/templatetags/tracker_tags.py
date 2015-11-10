@@ -24,4 +24,4 @@ def labeled(label):
 @register.simple_tag(takes_context=True)
 def same_author(context, author):
     project = context['project']
-    return author.url(project)
+    return author.url(project.name)

@@ -11,6 +11,7 @@ import hashlib
 
 from tracker.models import Project
 from tracker.mdx.mdx_issue import IssueExtension
+from tracker.mdx.mdx_login import LoginExtension
 from permissions.models import GlobalPermission
 from permissions.models import PermissionModel as PermModel
 
@@ -63,16 +64,17 @@ def granted_projects(user):
         return Project.objects.filter(access=Project.ACCESS_PUBLIC)
 
 
-def markdown_to_html(value, project=None):
+def markdown_to_html(text, project, absolute_url=False):
     # set extensions here if needed
-    if project:
-        base_url = settings.BASE_URL \
-                + reverse('list-issue', args=[project.name]) + '{issue_id}/'
-    else:
-        base_url = '../{issue_id}/'
-    mdx_issue = IssueExtension(base_url=base_url)
-    value = markdown(value, extensions=[mdx_issue])
-    value = bleach.clean(value, tags=bleach.ALLOWED_TAGS + ['p', 'pre'])
+    mdx_issue = IssueExtension(project_name=project.name, absolute_url=absolute_url)
+    mdx_login = LoginExtension(project_name=project.name, absolute_url=absolute_url)
+    value = markdown(text, extensions=[mdx_issue, mdx_login])
+    allowed_tags = bleach.ALLOWED_TAGS + ['p', 'pre', 'span']
+    allowed_attributes = bleach.ALLOWED_ATTRIBUTES
+    allowed_attributes.update({
+        'b': ['data-toggle', 'data-placement', 'title'],
+    })
+    value = bleach.clean(value, tags=allowed_tags, attributes=allowed_attributes)
     return mark_safe(value)
 
 

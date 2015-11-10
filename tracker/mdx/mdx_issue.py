@@ -12,9 +12,12 @@ Usage
 
     >>> import markdown
     >>> src = 'Please see issue #1234.'
-    >>> html = markdown.markdown(src, ['issue'])
+    >>> html = markdown.markdown(src, ['tracker.mdx.mdx_issue'])
     >>> print(html)
-    <p>Please see issue <a href="/project/issue/1234/">#1234</a>.</p>
+    <p>Please see issue <a href="/project/issues/1234/">#1234</a>.</p>
+    >>> html = markdown.markdown(src, ['tracker.mdx.mdx_issue'], {'tracker.mdx.mdx_issue': {'absolute_url': True}})
+    >>> print(html)
+    <p>Please see issue <a href="http://localhost:8000/project/issues/1234/">#1234</a>.</p>
 
 Dependencies
 ------------
@@ -28,20 +31,27 @@ from markdown.inlinepatterns import SubstituteTagPattern
 from markdown.inlinepatterns import Pattern
 from markdown.util import etree
 
+from django.core.urlresolvers import reverse
+from django.conf import settings
+
 
 ISSUE_RE = r'#([0-9]+)'
 
 
 class IssuePattern(Pattern):
 
-    def __init__(self, base_url='{issue_id}'):
+    def __init__(self, project_name, absolute_url=False):
         super(IssuePattern, self).__init__(ISSUE_RE)
-        self.base_url = base_url
+        self.project_name = project_name
+        self.absolute_url = absolute_url
 
     def handleMatch(self, m):
         el = etree.Element('a')
         issue_id = m.group(2)
-        el.set('href', self.base_url.format(issue_id=issue_id))
+        url = reverse('show-issue', args=[self.project_name, issue_id])
+        if self.absolute_url:
+            url = settings.BASE_URL + url
+        el.set('href', url)
         el.text = '#{issue_id}'.format(issue_id=issue_id)
         return el
 
@@ -49,17 +59,16 @@ class IssuePattern(Pattern):
 class IssueExtension(markdown.extensions.Extension):
 
     def __init__(self, **kwargs):
-        self.config = {'base_url': ['/project/issue/{issue_id}/', 'URL format']}
+        self.config = {
+            'project_name': ['project', 'Project name'],
+            'absolute_url': [False, 'Use absolute URL'],
+        }
         super(IssueExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
-        md.inlinePatterns.add('issue', IssuePattern(self.getConfig('base_url')), '<not_strong')
+        pattern = IssuePattern(self.getConfig('project_name'), self.getConfig('absolute_url'))
+        md.inlinePatterns.add('issue', pattern, '<not_strong')
 
 
-def makeExtension(configs={}):
-    return IssueExtension(configs=dict(configs))
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+def makeExtension(**configs):
+    return IssueExtension(configs=configs)

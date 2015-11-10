@@ -25,7 +25,7 @@
       <div class="tab-content">
         <div class="tab-pane active" id="editor" style="max-height: 220px;">
           <div class="form-group">
-            <textarea style="width: 100%; height: 220px;" id="markdown-content" name="comment" required>{{ form.comment.value|default_if_none:"" }}</textarea>
+            <textarea style="width: 100%; height: 220px;" id="markdown-content" data-project="{{ project.name }}" name="comment" required>{{ form.comment.value|default_if_none:"" }}</textarea>
           </div>
         </div>
         <div class="tab-pane well" id="preview" style="min-height: 200px; magin: 0;">

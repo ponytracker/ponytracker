@@ -53,7 +53,7 @@ class User(AbstractUser):
         return fullname
 
     def url(self, project):
-        url = reverse('list-issue', kwargs={'project': project.name})
+        url = reverse('list-issue', kwargs={'project': project})
         url += '?q=is:open%20author:' + self.username
         return mark_safe(url)
 

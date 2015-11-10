@@ -14,8 +14,9 @@ $.ajaxSetup({
 
 $('a[href="#preview"]').on("show.bs.tab", function (e) {
   $('#preview-content').html('Loading preview...');
+  var project = $('#markdown-content').data('project');
   var comment = $('#markdown-content').val();
-  $.post(markdown_preview_url, {'data': comment})
+  $.post(markdown_preview_url, {'project': project, 'data': comment})
     .done(function(data, textStatus) {
       $('#preview-content').html(data);
     })

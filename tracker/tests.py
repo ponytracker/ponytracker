@@ -17,10 +17,12 @@ class TestViews(TestCase):
         response = self.client.get(reverse('markdown'))
         self.assertEqual(response.status_code, 405) # get method not allowed
         response = self.client.post(reverse('markdown'), {
+            'project': 'project-1',
             'data': '**bold**',
         })
         self.assertContains(response, '<strong>bold</strong>')
         response = self.client.post(reverse('markdown'), {
+            'project': 'project-1',
             'data': '<script></script>',
         })
         self.assertNotContains(response, '<script>')

@@ -28,7 +28,9 @@ from permissions.decorators import project_perm_required
 @require_http_methods(["POST"])
 def markdown_preview(request):
     content = request.POST.get('data', '')
-    return HttpResponse(markdown_to_html(content))
+    project = request.POST.get('project', '')
+    project = get_object_or_404(Project, name=project)
+    return HttpResponse(markdown_to_html(content, project))
 
 
 #########

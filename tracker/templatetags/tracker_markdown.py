@@ -9,6 +9,6 @@ register = template.Library()
 
 
 @register.simple_tag(takes_context=True)
-def markdown(context, value, include_domain=False):
+def markdown(context, value, absolute_url=False):
     project = context['project']
-    return markdown_to_html(value, project)
+    return markdown_to_html(value, project, absolute_url)
