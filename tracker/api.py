@@ -58,8 +58,12 @@ def email_recv(request):
     domain = addr[pos:]
 
     p = re.compile('^%s\+(?P<project>[-\w]+)\.issue-(?P<issue>[0-9]+)(\.(?P<event>[0-9]+))?\.(?P<user>[0-9]+)\.(?P<token>[a-z0-9]+)%s$' % (name, domain))
-    m = p.match(mto)
-    if not m:
+    m = None
+    for _mto in map(lambda x: x.strip(), mto.split(',')):
+        m = p.match(_mto)
+        if m:
+            break
+    if not m: # no one matches
         raise Http404
 
     project = get_object_or_404(Project, name=m.group('project'))
