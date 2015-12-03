@@ -72,7 +72,7 @@ def markdown_to_html(value, project=None):
         base_url = '../{issue_id}/'
     mdx_issue = IssueExtension(base_url=base_url)
     value = markdown(value, extensions=[mdx_issue])
-    value = bleach.clean(value, tags=bleach.ALLOWED_TAGS + ['p'])
+    value = bleach.clean(value, tags=bleach.ALLOWED_TAGS + ['p', 'pre'])
     return mark_safe(value)
 
 
