@@ -11,11 +11,14 @@ urlpatterns = [
     url(r'^admin/settings/$', 'tracker.views.settings_list', name='settings'),
     # Projects
     url(r'^$', 'tracker.views.project_list', name='list-project'),
+    url(r'^archived/$', 'tracker.views.project_list', {'archived': True}, name='list-archived-project'),
     url(r'^add/$', 'tracker.views.project_add', name='add-project'),
     url(r'^(?P<project>[-\w]+)/edit/$', 'tracker.views.project_edit', name='edit-project'),
     url(r'^(?P<project>[-\w]+)/delete/$', 'tracker.views.project_delete', name='delete-project'),
     url(r'^(?P<project>[-\w]+)/subscribe/$', 'tracker.views.project_subscribe', name='subscribe-project'),
     url(r'^(?P<project>[-\w]+)/unsubscribe/$', 'tracker.views.project_unsubscribe', name='unsubscribe-project'),
+    url(r'^(?P<project>[-\w]+)/archive/$', 'tracker.views.project_archive', {'archive': True}, name='archive-project'),
+    url(r'^(?P<project>[-\w]+)/unarchive/$', 'tracker.views.project_archive', {'archive': False}, name='unarchive-project'),
     # Issues
     url(r'^(?P<project>[-\w]+)/issues/$', 'tracker.views.issue_list', name='list-issue'),
     url(r'^(?P<project>[-\w]+)/issues/add/$', 'tracker.views.issue_edit', name='add-issue'),

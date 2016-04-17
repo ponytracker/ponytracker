@@ -43,26 +43,29 @@
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            {% if projects.exists %}
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% block project %}Project <span class="caret"></span>{% endblock %}</a>
+                {% if projects.exists %}
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% block project %}<em>Project</em> <span class="caret"></span>{% endblock %}</a>
+                {% else %}
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><em>No project</em> <span class="caret"></span></a>
+                {% endif %}
                 <ul class="dropdown-menu" role="menu">
                   {% for project in projects %}
                   <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-issue' project.name %}">{{ project }}</a></li>
                   {% endfor %}
-                  {% if perm.create_project %}
+                  {% if projects.exists %}
                   <li class="divider"></li>
+                  {% endif %}
+                  {% if archived %}
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-project' %}"><span class="glyphicon glyphicon-list"></span> Active projects</a></li>
+                  {% else %}
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'list-archived-project' %}"><span class="glyphicon glyphicon-list"></span> Archived projects</a></li>
+                  {% endif %}
+                  {% if perm.create_project %}
                   <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'add-project' %}"><span class="glyphicon glyphicon-plus"></span> New project…</a></li>
                   {% endif %}
                 </ul>
               </li>
-            {% else %}
-              {% if perm.create_project %}
-              <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'add-project' %}">Create new project</a></li>
-              {% else %}
-              <li role="presentation"><a role="munitem" tabindex="-1" href="#"><em>No project</em></a></li>
-              {% endif %}
-            {% endif %}
             {% block navbar-left %}{% endblock %}
           </ul>
           <ul class="nav navbar-nav navbar-right">

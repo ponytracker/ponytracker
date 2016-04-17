@@ -25,7 +25,15 @@ class ProjectMiddleware:
                 " 'django.contrib.auth.middleware.AuthenticationMiddleware'"
                 " before the ProjectMiddleware class.")
 
-        request.projects = granted_projects(request.user)
+        all_projects = granted_projects(request.user)
+
+        # filtering archived / not archived projects
+        if 'archived' in view_kwargs:
+            request.archived = view_kwargs['archived']
+            request.projects = all_projects.filter(archived=request.archived)
+        else:
+            request.archived = False
+            request.projects = all_projects.filter(archived=request.archived)
 
         # project
         if view.__module__ not in modules:
@@ -34,7 +42,7 @@ class ProjectMiddleware:
         if not project:
             return
         try:
-            project = request.projects.get(name=project)
+            project = all_projects.get(name=project)
         except ObjectDoesNotExist:
             if request.user.is_authenticated():
                 raise PermissionDenied()
@@ -42,3 +50,5 @@ class ProjectMiddleware:
                 return login_required(view)(request, *view_args, **view_kwargs)
         view_kwargs['project'] = project
         request.project = project
+        request.archived = project.archived
+        request.projects = all_projects.filter(archived=request.archived)

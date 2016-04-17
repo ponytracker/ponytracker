@@ -3,7 +3,11 @@ from tracker.models import Project
 
 def projects(request):
 
+    c = {}
+
+    if hasattr(request, 'archived'):
+        c['archived'] = request.archived
     if hasattr(request, 'projects'):
-        return {'projects': request.projects}
-    else:
-        return {}
+        c['projects'] = request.projects
+
+    return c

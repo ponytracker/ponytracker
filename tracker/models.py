@@ -62,6 +62,8 @@ class Project(models.Model):
     subscribers = models.ManyToManyField(User, blank=True,
             related_name='subscribed_projects')
 
+    archived = models.BooleanField(default=False)
+
     @property
     def labels(self):
         return Label.objects.filter(project=self, deleted=False)

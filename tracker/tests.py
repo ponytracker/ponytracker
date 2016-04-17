@@ -167,6 +167,22 @@ class TestViews(TestCase):
         response = self.client.get(reverse('unsubscribe-project', args=[project.name])+'?next='+reverse('profile'))
         self.assertRedirects(response, reverse('profile'))
 
+    def test_achive(self):
+        project = Project.objects.get(name='project-1')
+        self.assertFalse(project.archived)
+        response = self.client.get(reverse('unarchive-project', args=['project-1']))
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get(reverse('archive-project', args=['project-1']))
+        self.assertRedirects(response, reverse('list-issue', args=['project-1']))
+        project = Project.objects.get(name='project-1')
+        self.assertTrue(project.archived)
+        response = self.client.get(reverse('archive-project', args=['project-1']))
+        self.assertEqual(response.status_code, 404)
+        response = self.client.get(reverse('unarchive-project', args=['project-1']))
+        self.assertRedirects(response, reverse('list-issue', args=['project-1']))
+        project = Project.objects.get(name='project-1')
+        self.assertFalse(project.archived)
+
     # Issue
 
     def test_issue_list(self):

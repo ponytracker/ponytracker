@@ -7,7 +7,7 @@ from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.db.models import Max, Count
 
 from tracker.utils import markdown_to_html, IssueManager
@@ -74,15 +74,19 @@ def settings_list(request):
 # Projects #
 ############
 
-def project_list(request):
+def project_list(request, archived=False):
 
-    if not request.projects.exists():
+    if not archived and not request.projects.exists():
 
         if request.user.has_perm('create_project'):
             messages.info(request, 'Start by creating a project.')
             return redirect('add-project')
 
-    return render(request, 'tracker/project_list.html')
+    c = {
+        'archived': archived,
+    }
+
+    return render(request, 'tracker/project_list.html', c)
 
 
 def project_redirect(request, project):
@@ -204,6 +208,22 @@ def project_unsubscribe(request, project):
         return redirect(next)
     else:
         return redirect('list-issue', project.name)
+
+
+@project_perm_required('modify_project')
+def project_archive(request, project, archive):
+
+    if project.archived == archive:
+        raise Http404()
+
+    project.archived = archive
+    project.save()
+    if archive:
+        messages.success(request, 'Project archived.')
+    else:
+        messages.success(request, 'Project un-archived.')
+
+    return redirect('list-issue', project.name)
 
 
 ##########

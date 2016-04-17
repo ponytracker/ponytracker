@@ -36,6 +36,11 @@
     {% endif %}
     {% if perm.modify_project %}
     <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'edit-project' project.name %}"><span class="glyphicon glyphicon-wrench"></span> Modify this project</a></li>
+    {% if project.archived %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'unarchive-project' project.name %}"><span class="glyphicon glyphicon-folder-open"></span> Un-archive this project</a></li>
+    {% else %}
+    <li role="presentation"><a role="menuitem" tabindex="-1" href="{% url 'archive-project' project.name %}"><span class="glyphicon glyphicon-folder-close"></span> Archive this project</a></li>
+    {% endif %}
     {% endif %}
     {% if perm.delete_project %}
     <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data-item="project" data-action="{% url 'delete-project' project.name %}" data-toggle="modal" data-target="#confirm-delete"><span class="glyphicon glyphicon-trash"></span> Delete this project</a></li>
