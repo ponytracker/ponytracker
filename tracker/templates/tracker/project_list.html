@@ -5,7 +5,11 @@
 
 <div class="page-header">
   <h1>
+    {% if archived %}
+    Archived projects
+    {% else %}
     Welcome on PonyTracker!
+    {% endif %}
     {% if perm.create_project %}
     <div class="pull-right">
       <a href="{% url 'add-project' %}" class="btn btn-success">Create new project</a>
