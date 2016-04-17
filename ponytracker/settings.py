@@ -86,7 +86,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.contrib.messages.context_processors.messages',
                 'django.contrib.auth.context_processors.auth',
-                'django.core.context_processors.request',
+                'django.template.context_processors.request',
                 'tracker.context_processors.projects',
                 'permissions.context_processors.perm',
             ],
