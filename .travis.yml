@@ -3,6 +3,7 @@ python:
   - 2.7
   - 3.2
   - 3.4
+  - 3.5
 
 env:
   - DJANGO='1.8'
@@ -10,14 +11,14 @@ env:
 
 install:
   - pip install -r requirements.txt
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install coveralls mock; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then pip install coveralls mock; fi
 
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then coverage run --branch --source=accounts,permissions,tracker --omit=accounts/migrations/*.py,permissions/migrations/*.py,tracker/migrations/*.py,tracker/tasks.py manage.py test; fi
-  - if [[ $TRAVIS_PYTHON_VERSION != 3.4 ]]; then python manage.py test; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then coverage run --branch --source=accounts,permissions,tracker --omit=accounts/migrations/*.py,permissions/migrations/*.py,tracker/migrations/*.py,tracker/tasks.py manage.py test; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.5 ]]; then python manage.py test; fi
 
 after_success:
-  if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then coveralls; fi
+  if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then coveralls; fi
 
 notifications:
   irc:
