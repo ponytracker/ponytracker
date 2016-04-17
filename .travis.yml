@@ -1,7 +1,6 @@
 language: python
 python:
   - 2.7
-  - 3.2
   - 3.4
   - 3.5
 
@@ -11,7 +10,6 @@ env:
 
 install:
   - pip install -r requirements.txt
-  - if [[ $TRAVIS_PYTHON_VERSION != 3.4 && $TRAVIS_PYTHON_VERSION != 3.5 ]]; then pip install mock; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then pip install coveralls; fi
 
 script:
