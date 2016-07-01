@@ -115,7 +115,7 @@ class IssueManager:
                 self._constraints += [(key, value)]
 
         if not self.status:
-            self.status = STATUS_DEFAULT
+            self.handle_is(STATUS_DEFAULT.split(':')[1])
 
     def handle_is(self, value):
 
