@@ -29,7 +29,7 @@ Main features
 * Good integration with LDAP directory
 
 
-Planed features
+Planned features
 ---------------
 * API
 * Jabber notifications
