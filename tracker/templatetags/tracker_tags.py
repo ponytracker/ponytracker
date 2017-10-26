@@ -25,3 +25,8 @@ def labeled(label):
 def same_author(context, author):
     project = context['project']
     return author.url(project.name)
+
+@register.simple_tag(takes_context=True)
+def can_edit(context, event):
+    request = context['request']
+    return event.editable_by(request)

@@ -9,11 +9,12 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.sites.models import Site
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.urlresolvers import reverse
+from django.contrib.sites.shortcuts import get_current_site
 
 from colorful.fields import RGBColorField
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from accounts.models import User
 
@@ -23,6 +24,15 @@ __all__ = ['Project', 'Issue', 'Label', 'Milestone', 'Event']
 
 class Settings(models.Model):
 
+    EDIT_NOTIMEOUT = 0
+    EDIT_TIMEOUT = 1
+    EDIT_NOMORECOMMENT = 2
+    EDIT_TYPE = (
+        (EDIT_NOTIMEOUT, 'No timeout'),
+        (EDIT_TIMEOUT, 'Timeout'),
+        (EDIT_NOMORECOMMENT, 'As long no next comment'),
+    )
+
     site = models.OneToOneField(Site, editable=False,
             related_name='settings')
     items_per_page = models.IntegerField(default=25,
@@ -31,6 +41,16 @@ class Settings(models.Model):
                 MinValueValidator(1),
                 MaxValueValidator(500)
             ])
+    edit_policy = models.IntegerField(choices=EDIT_TYPE,
+            default=EDIT_NOTIMEOUT,
+            verbose_name="Policy for \"Modify his comment\" permission")
+    edit_policy_timeout = models.IntegerField(default=30,
+            verbose_name="Timeout for \"Modify his comment\" permission (in min)",
+            validators=[
+                MinValueValidator(1),
+            ])
+
+
 
 
 @python_2_unicode_compatible
@@ -348,6 +368,24 @@ class Event(models.Model):
     def editable(self):
 
         return self.code == Event.COMMENT or self.code == Event.DESCRIBE
+
+
+    def editable_by(self, request):
+        if not self.editable():
+            return False
+
+        if request.user.has_perm('modify_comment', self.issue.project):
+            return True
+        elif not request.user.has_perm('modify_his_comment', self.issue.project) or \
+                not self.author == request.user:
+            return False
+
+        policy = get_current_site(request).settings.edit_policy
+        if policy == Settings.EDIT_TIMEOUT:
+            return self.date + timedelta(minutes=get_current_site(request).settings.edit_policy_timeout) > timezone.now()
+        elif policy == Settings.EDIT_NOMORECOMMENT:
+            return not self.issue.events.filter(code=Event.COMMENT, date__gt=self.date).exists()
+        return True
 
     def glyphicon(self):
 

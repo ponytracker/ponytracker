@@ -407,8 +407,7 @@ def issue_comment_edit(request, project, issue, comment=None):
     if comment:
         event = get_object_or_404(Event, code=Event.COMMENT,
                 issue=issue, id=comment)
-        if not (request.user.has_perm('modify_comment', project) or \
-             ( event.author == request.user and request.user.has_perm('modify_his_comment', project)) ):
+        if not event.editable_by(request):
             raise PermissionDenied()
         init_data = {'comment': event.additionnal_section}
     else:

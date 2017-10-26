@@ -52,7 +52,8 @@
           {% if perm.delete_comment %}
           <a href="#" data-item="comment" data-action="{% url 'delete-comment' project.name issue.id event.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
           {% endif %}
-          {% if perm.modify_comment or perm.modify_his_comment and event.author == user %}
+          {% can_edit event as perm_edit %}
+          {% if perm_edit %}
           <a href="{% url 'edit-comment' project.name issue.id event.id %}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
           {% endif %}
         </div>
