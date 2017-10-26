@@ -405,10 +405,11 @@ def issue_comment_edit(request, project, issue, comment=None):
         change_state = True
 
     if comment:
-        if not request.user.has_perm('modify_comment', project):
-            raise PermissionDenied()
         event = get_object_or_404(Event, code=Event.COMMENT,
                 issue=issue, id=comment)
+        if not (request.user.has_perm('modify_comment', project) or \
+             ( event.author == request.user and request.user.has_perm('modify_his_comment', project)) ):
+            raise PermissionDenied()
         init_data = {'comment': event.additionnal_section}
     else:
         if not request.user.has_perm('create_comment', project):
