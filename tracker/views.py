@@ -211,6 +211,17 @@ def project_unsubscribe(request, project):
     else:
         return redirect('list-issue', project.name)
 
+@login_required
+def project_mark_as_read(request, project):
+
+    for issue in project.issues.all():
+        issue.mark_as_read(request.user)
+
+    next = request.GET.get('next')
+    if next:
+        return redirect(next)
+    else:
+        return redirect('list-issue', project.name)
 
 @project_perm_required('modify_project')
 def project_archive(request, project, archive):
@@ -239,7 +250,8 @@ def issue_list(request, project):
 
     issuemanager = IssueManager(project,
                                 filter=request.GET.get('q'),
-                                sort=request.GET.get('sort'))
+                                sort=request.GET.get('sort'),
+                                user=request.user)
 
     issues = issuemanager.issues
 
@@ -388,6 +400,7 @@ def issue_details(request, project, issue):
         'issue': issue,
         'events': events,
         'form': form,
+        'lastread' : issue.mark_as_read(request.user),
     }
 
     return render(request, 'tracker/issue_details.html', c)

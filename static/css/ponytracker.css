@@ -5,3 +5,7 @@ a .remove-label {
 span.passed-due-date {
   color: #FF0000;
 }
+
+.badge-unread {
+    background-color: #337ab7 !important;
+}

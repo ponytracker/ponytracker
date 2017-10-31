@@ -35,7 +35,7 @@
     <div class="panel panel-default">
 
       <div class="panel-heading">
-        <span class="badge"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
+        <span class="badge{% if lastread < event.date %} badge-unread{% endif %}"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
         &#160;
         <a href="{% same_author event.author %}">{% user_badge event.author %}</a> {{ event|safe }} {{ event.date|naturaltime }}
         {% if event.code == event.DESCRIBE %}

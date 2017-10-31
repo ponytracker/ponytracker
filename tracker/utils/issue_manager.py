@@ -16,6 +16,7 @@ STATUS_DEFAULT = 'is:open'
 STATUS_VALUES = OrderedDict([
         ('is:open', 'Open'),
         ('is:close', 'Closed'),
+        ('is:unread', 'Unread'),
         ('*', 'All'),
     ])
 
@@ -36,9 +37,9 @@ def shell_split(cmd):
 
    if python_version < (3,):
        cmd = cmd.encode('utf-8')
-   
+
    args = shlex.split(cmd)
-   
+
    if python_version < (3,):
        args = [ arg.decode('utf-8') for arg in args ]
 
@@ -61,11 +62,12 @@ def get_filter_value(key, value):
 
 class IssueManager:
 
-    def __init__(self, project, filter=None, sort=None):
+    def __init__(self, project, filter=None, sort=None, user=None):
 
         self.project = project
         self.filter = filter or STATUS_DEFAULT
         self.sort = sort or SORT_DEFAULT
+        self.user = user
 
         self.status = None
         self.error = None
@@ -78,6 +80,7 @@ class IssueManager:
 
         self._constraints = []
         self._filters = []
+        self.unread = False
 
         for constraint in shell_split(self.filter):
 
@@ -131,9 +134,12 @@ class IssueManager:
         elif value == 'close':
             self.status = 'is:close'
             self._filters.append(Q(closed=True))
+        elif value == 'unread':
+            self.status = 'is:unread'
+            self.unread = True
         else:
             raise ValueError("The keyword 'is' must be followed "
-                             "by 'open' or 'close'.")
+                             "by 'unread', 'open' or 'close'.")
 
     def handle_label(self, value):
 
@@ -176,11 +182,13 @@ class IssueManager:
             raise ValueError("The user '%s' does not exist." % value)
         self._filters.append(Q(author=author))
 
+
     @property
     def issues(self):
         issues = self.project.issues
         for filter in self._filters:
             issues = issues.filter(filter)
+
 
         if self.sort == 'newest':
             issues = issues.order_by('-opened_at')
@@ -197,6 +205,9 @@ class IssueManager:
         else: # recently-updated
             issues = issues.annotate(last_activity=Max('events__date'))\
                     .order_by('-last_activity')
+
+        if self.unread:
+            return [ issue for issue in issues if issue.have_unread_message(self.user)]
 
         return issues
 

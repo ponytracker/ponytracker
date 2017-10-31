@@ -40,6 +40,10 @@ class ProjectMiddleware:
             return
         project = view_kwargs.get('project')
         if not project:
+            # count unread issues by projects
+            request.read_state_projects = {}
+            for project in request.projects.all():
+                request.read_state_projects[project] = project.get_unread_issues_nb(request.user)
             return
         try:
             project = all_projects.get(name=project)
@@ -52,3 +56,8 @@ class ProjectMiddleware:
         request.project = project
         request.archived = project.archived
         request.projects = all_projects.filter(archived=request.archived)
+        # count unread event by issues
+        request.read_state_issues = {}
+        for issue in project.issues.all():
+            request.read_state_issues[issue] = issue.get_unread_event_nb(request.user)
+

@@ -10,6 +10,7 @@ from django.contrib.sites.models import Site
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.urlresolvers import reverse
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
 
 from colorful.fields import RGBColorField
 
@@ -19,7 +20,7 @@ from datetime import datetime, timedelta
 from accounts.models import User
 
 
-__all__ = ['Project', 'Issue', 'Label', 'Milestone', 'Event']
+__all__ = ['Project', 'Issue', 'Label', 'Milestone', 'ReadState', 'Event']
 
 
 class Settings(models.Model):
@@ -91,6 +92,16 @@ class Project(models.Model):
     @property
     def milestones(self):
         return Milestone.objects.filter(project=self, deleted=False)
+
+    def get_unread_issues_nb(self, user):
+        if not user.is_authenticated():
+            return 0
+        count = 0
+        for issue in self.issues.all():
+            if issue.have_unread_message(user):
+                count +=1
+        return count
+
 
     def __str__(self):
         return self.display_name
@@ -318,8 +329,51 @@ class Issue(models.Model):
                 args={'milestone': milestone.name})
         event.save()
 
+    def have_unread_message(self, user):
+        if not user.is_authenticated():
+            return False
+        try:
+            readstate = self.readstates.get(user=user)
+        except ObjectDoesNotExist:
+            return True
+        return self.events.filter(date__gt=readstate.lastread).exists()
+
+    def get_unread_event_nb(self, user):
+        if not user.is_authenticated():
+            return 0
+        try:
+            readstate = self.readstates.get(user=user)
+        except ObjectDoesNotExist:
+            return self.events.count()
+        return self.events.filter(date__gt=readstate.lastread).count()
+
+    def mark_as_read(self, user):
+        if not user.is_authenticated():
+            return timezone.now()
+        try:
+            readstate = self.readstates.get(user=user)
+            olddate = readstate.lastread
+        except ObjectDoesNotExist:
+            readstate = ReadState(issue=self, user=user)
+            olddate = self.opened_at
+        readstate.lastread = timezone.now()
+        readstate.save()
+        return olddate
+
     def __str__(self):
         return self.title
+
+@python_2_unicode_compatible
+class ReadState(models.Model):
+
+    issue = models.ForeignKey(Issue, related_name="%(class)ss")
+
+    user = models.ForeignKey(User, related_name='%(class)ss')
+
+    lastread = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('issue', 'user')
 
 
 @python_2_unicode_compatible

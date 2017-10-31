@@ -30,3 +30,7 @@ def same_author(context, author):
 def can_edit(context, event):
     request = context['request']
     return event.editable_by(request)
+
+@register.filter
+def get_item(dic, valeur):
+    return dic.get(valeur, None)

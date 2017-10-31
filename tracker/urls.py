@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^(?P<project>[-\w]+)/delete/$', views.project_delete, name='delete-project'),
     url(r'^(?P<project>[-\w]+)/subscribe/$', views.project_subscribe, name='subscribe-project'),
     url(r'^(?P<project>[-\w]+)/unsubscribe/$', views.project_unsubscribe, name='unsubscribe-project'),
+    url(r'^(?P<project>[-\w]+)/markread/$', views.project_mark_as_read, name='mark-read'),
     url(r'^(?P<project>[-\w]+)/archive/$', views.project_archive, {'archive': True}, name='archive-project'),
     url(r'^(?P<project>[-\w]+)/unarchive/$', views.project_archive, {'archive': False}, name='unarchive-project'),
     # Issues
