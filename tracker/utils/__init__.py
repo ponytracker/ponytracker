@@ -2,7 +2,7 @@ from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 import bleach
 from markdown import markdown

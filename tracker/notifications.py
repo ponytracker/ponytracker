@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.template.loader import render_to_string
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.core import mail
 from django.core.mail import EmailMultiAlternatives

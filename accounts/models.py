@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib import auth
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 __all__ = ['User', 'Group', 'Team']

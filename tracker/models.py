@@ -8,7 +8,7 @@ from django.utils.html import escape, format_html
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.sites.models import Site
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 

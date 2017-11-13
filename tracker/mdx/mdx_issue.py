@@ -31,7 +31,7 @@ from markdown.inlinepatterns import SubstituteTagPattern
 from markdown.inlinepatterns import Pattern
 from markdown.util import etree
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
 
