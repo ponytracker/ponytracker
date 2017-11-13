@@ -2,9 +2,10 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views
 
+
 urlpatterns = [
     # django admin
-    url(r'^django-admin/', include(admin.site.urls)),
+    url(r'^django-admin/', admin.site.urls),
     # login / logout
     url(r'^login$', views.login, {'template_name': 'login.html'}, name='login'),
     url(r'^logout$', views.logout, {'next_page': '/'}, name='logout'),
