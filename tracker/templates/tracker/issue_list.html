@@ -112,8 +112,8 @@
     &#160;–&#160;&#160;<span class="glyphicon glyphicon-road"></span> <a href="{% issue_url milestone=issue.milestone %}"><b>{{ issue.milestone }}</b></a>
     {% endif %}
     &#160;–&#160;&#160;<span><span class="badge"><span class="glyphicon glyphicon-comment"></span>&#160;{{ issue.comments.count }}</span></span>
-    {% if request.read_state_issues|get_item:issue > 0 %}
-    <span><span class="badge badge-unread"><span class="glyphicon glyphicon-bullhorn"></span>&#160;{{ request.read_state_issues|get_item:issue }}</span></span>
+    {% if read_state_issues|get_item:issue > 0 %}
+    <span><span class="badge badge-unread"><span class="glyphicon glyphicon-bullhorn"></span>&#160;{{ read_state_issues|get_item:issue }}</span></span>
     {% endif %}
   </li>
   {% endfor %}

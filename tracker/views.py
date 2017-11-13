@@ -84,8 +84,13 @@ def project_list(request, archived=False):
             messages.info(request, 'Start by creating a project.')
             return redirect('add-project')
 
+
+    read_state_projects = {}
+    for project in request.projects.all():
+        read_state_projects[project] = project.get_unread_issues_nb(request.user)
     c = {
         'archived': archived,
+        'read_state_projects': read_state_projects,
     }
 
     return render(request, 'tracker/project_list.html', c)
@@ -271,6 +276,10 @@ def issue_list(request, project):
     else:
         paginator = None
 
+    read_state_issues = {}
+    for issue in project.issues.all():
+        read_state_issues[issue] = issue.get_unread_event_nb(request.user)
+
     c = {
         'project': project,
         'issues': issues,
@@ -280,6 +289,7 @@ def issue_list(request, project):
         'status_values': STATUS_VALUES,
         'sort': issuemanager.sort,
         'sort_values': SORT_VALUES,
+        'read_state_issues': read_state_issues,
     }
 
     return render(request, 'tracker/issue_list.html', c)
