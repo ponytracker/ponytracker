@@ -15,17 +15,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='issue',
-            field=models.ForeignKey(related_name='events', to='tracker.Issue'),
+            field=models.ForeignKey(related_name='events', to='tracker.Issue', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='issue',
             name='assignee',
-            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, blank=True, related_name='+'),
+            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, blank=True, related_name='+', on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='issue',
             name='author',
-            field=models.ForeignKey(related_name='+', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='+', to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT),
         ),
         migrations.AlterField(
             model_name='issue',
@@ -35,12 +35,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='issue',
             name='milestone',
-            field=models.ForeignKey(null=True, to='tracker.Milestone', blank=True, related_name='issues'),
+            field=models.ForeignKey(null=True, to='tracker.Milestone', blank=True, related_name='issues', on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='issue',
             name='project',
-            field=models.ForeignKey(related_name='issues', to='tracker.Project'),
+            field=models.ForeignKey(related_name='issues', to='tracker.Project', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='issue',
@@ -50,12 +50,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='label',
             name='project',
-            field=models.ForeignKey(related_name='labels', to='tracker.Project'),
+            field=models.ForeignKey(related_name='labels', to='tracker.Project', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='milestone',
             name='project',
-            field=models.ForeignKey(related_name='milestones', to='tracker.Project'),
+            field=models.ForeignKey(related_name='milestones', to='tracker.Project', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='project',

@@ -176,7 +176,8 @@ class ProjectPermission(PermissionModel):
     class Meta:
         unique_together = ('project', 'grantee_type', 'grantee_id')
 
-    project = models.ForeignKey(Project, related_name='permissions')
+    project = models.ForeignKey(Project, related_name='permissions',
+            on_delete=models.CASCADE)
 
     create_issue = PermissionField(default=False,
             verbose_name='Create issue')

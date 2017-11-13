@@ -35,7 +35,7 @@ class Settings(models.Model):
     )
 
     site = models.OneToOneField(Site, editable=False,
-            related_name='settings')
+            related_name='settings', on_delete=models.CASCADE)
     items_per_page = models.IntegerField(default=25,
             verbose_name="Items per page",
             validators=[
@@ -110,7 +110,7 @@ class Project(models.Model):
 @python_2_unicode_compatible
 class Label(models.Model):
 
-    project = models.ForeignKey(Project, related_name='+')
+    project = models.ForeignKey(Project, related_name='+', on_delete=models.CASCADE)
 
     name = models.CharField(max_length=32)
 
@@ -165,7 +165,7 @@ class Milestone(models.Model):
             message="Please enter only lowercase characters, number, "
                     "dot, underscores or hyphens.")
 
-    project = models.ForeignKey(Project, related_name='+')
+    project = models.ForeignKey(Project, related_name='+', on_delete=models.CASCADE)
 
     name = models.CharField(max_length=32, validators=[name_validator])
 
@@ -211,7 +211,7 @@ class Issue(models.Model):
     # id is the id in the project, not the pk, so we need one
     primarykey = models.AutoField(primary_key=True)
 
-    project = models.ForeignKey(Project, related_name='issues')
+    project = models.ForeignKey(Project, related_name='issues', on_delete=models.CASCADE)
     id = models.IntegerField(editable=False)
 
     class Meta:
@@ -219,7 +219,7 @@ class Issue(models.Model):
 
     title = models.CharField(max_length=128)
 
-    author = models.ForeignKey(User, related_name='+')
+    author = models.ForeignKey(User, related_name='+', on_delete=models.PROTECT)
 
     opened_at = models.DateTimeField(auto_now_add=True)
 
@@ -231,9 +231,10 @@ class Issue(models.Model):
             related_name='issues')
 
     milestone = models.ForeignKey(Milestone, blank=True, null=True,
-            related_name='issues')
+            related_name='issues', on_delete=models.SET_NULL)
 
-    assignee = models.ForeignKey(User, blank=True, null=True, related_name='+')
+    assignee = models.ForeignKey(User, blank=True, null=True, related_name='+',
+            on_delete=models.SET_NULL)
 
     subscribers = models.ManyToManyField(User, blank=True,
             related_name='subscribed_issues')
@@ -366,9 +367,9 @@ class Issue(models.Model):
 @python_2_unicode_compatible
 class ReadState(models.Model):
 
-    issue = models.ForeignKey(Issue, related_name="%(class)ss")
+    issue = models.ForeignKey(Issue, related_name="%(class)ss", on_delete=models.CASCADE)
 
-    user = models.ForeignKey(User, related_name='%(class)ss')
+    user = models.ForeignKey(User, related_name='%(class)ss', on_delete=models.CASCADE)
 
     lastread = models.DateTimeField(auto_now_add=True)
 
@@ -397,11 +398,11 @@ class Event(models.Model):
     CHANGE_DUE_DATE = 15
     UNSET_DUE_DATE = 16
 
-    issue = models.ForeignKey(Issue, related_name="%(class)ss")
+    issue = models.ForeignKey(Issue, related_name="%(class)ss", on_delete=models.CASCADE)
 
     date = models.DateTimeField(auto_now_add=True)
 
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
 
     code = models.IntegerField(default=UNKNOW)
 

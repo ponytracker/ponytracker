@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('code', models.IntegerField(default=0)),
                 ('_args', models.CharField(default='{}', max_length=1024, blank=True)),
                 ('additionnal_section', models.TextField(default='', blank=True)),
-                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
             ],
             options={
             },
@@ -36,8 +36,8 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=128)),
                 ('opened_at', models.DateTimeField(auto_now_add=True)),
                 ('closed', models.BooleanField(default=False)),
-                ('assignee', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, blank=True)),
-                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('assignee', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)),
+                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
                 ('subscribers', models.ManyToManyField(null=True, to=settings.AUTH_USER_MODEL, blank=True)),
             ],
             options={
@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='issue',
-            field=models.ForeignKey(to='tracker.Issue'),
+            field=models.ForeignKey(to='tracker.Issue', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.CreateModel(
@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='issue',
             name='milestone',
-            field=models.ForeignKey(to='tracker.Milestone', null=True, blank=True),
+            field=models.ForeignKey(to='tracker.Milestone', null=True, blank=True, on_delete=models.SET_NULL),
             preserve_default=True,
         ),
         migrations.CreateModel(
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='milestone',
             name='project',
-            field=models.ForeignKey(to='tracker.Project'),
+            field=models.ForeignKey(to='tracker.Project', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -115,13 +115,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='label',
             name='project',
-            field=models.ForeignKey(to='tracker.Project'),
+            field=models.ForeignKey(to='tracker.Project', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='issue',
             name='project',
-            field=models.ForeignKey(to='tracker.Project'),
+            field=models.ForeignKey(to='tracker.Project', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
