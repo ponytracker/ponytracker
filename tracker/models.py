@@ -376,6 +376,9 @@ class ReadState(models.Model):
     class Meta:
         unique_together = ('issue', 'user')
 
+    def __str__(self):
+        return "%s : User=%s lastread=%s" % (self.issue, self.user, self.lastread)
+
 
 @python_2_unicode_compatible
 class Event(models.Model):
