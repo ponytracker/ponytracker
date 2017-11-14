@@ -51,7 +51,7 @@ class ProjectMiddleware(object):
         try:
             project = all_projects.get(name=project)
         except ObjectDoesNotExist:
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 raise PermissionDenied()
             else:
                 return login_required(view)(request, *view_args, **view_kwargs)

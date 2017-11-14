@@ -17,7 +17,7 @@ def project_perm_required(perm):
                 project = None
             if request.user.has_perm(perm, project):
                 return view(request, *args, **kwargs)
-            elif request.user.is_authenticated():
+            elif request.user.is_authenticated:
                 raise PermissionDenied()
             else:
                 return login_required(view)(request, *args, **kwargs)

@@ -24,9 +24,9 @@ __all__ = ['granted_project', 'markdown_to_html', 'get_message_id'
 
 
 def granted_projects(user):
-    if user.is_authenticated() and user.is_staff:
+    if user.is_authenticated and user.is_staff:
         return Project.objects.all()
-    elif user.is_authenticated():
+    elif user.is_authenticated:
         teams = user.teams.values_list('id')
         groups = user.groups.values_list('id')
         # check for a global permission allowing access

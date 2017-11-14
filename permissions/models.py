@@ -64,7 +64,7 @@ class PermissionModel(models.Model):
     grantee = property(get_grantee, set_grantee)
 
     def granted_to(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if self.grantee_type == self.GRANTEE_USER:
             return user.id == self.grantee_id

@@ -94,7 +94,7 @@ class Project(models.Model):
         return Milestone.objects.filter(project=self, deleted=False)
 
     def get_unread_issues_nb(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return 0
         count = 0
         for issue in self.issues.all():
@@ -331,7 +331,7 @@ class Issue(models.Model):
         event.save()
 
     def have_unread_message(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         try:
             readstate = self.readstates.get(user=user)
@@ -340,7 +340,7 @@ class Issue(models.Model):
         return self.events.filter(date__gt=readstate.lastread).exists()
 
     def get_unread_event_nb(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return 0
         try:
             readstate = self.readstates.get(user=user)
@@ -349,7 +349,7 @@ class Issue(models.Model):
         return self.events.filter(date__gt=readstate.lastread).count()
 
     def mark_as_read(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return timezone.now()
         try:
             readstate = self.readstates.get(user=user)
