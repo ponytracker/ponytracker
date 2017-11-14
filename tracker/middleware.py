@@ -10,10 +10,17 @@ from tracker.utils import granted_projects
 modules = ['accounts.views', 'permissions.views', 'tracker.views']
 
 
-class ProjectMiddleware:
+class ProjectMiddleware(object):
+
     """
     This middleware must be call after authentication middleware.
     """
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
 
     def process_view(self, request, view, view_args, view_kwargs):
 
