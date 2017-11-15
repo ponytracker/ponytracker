@@ -153,8 +153,8 @@ class GlobalPermission(PermissionModel):
             verbose_name='Create comment')
     modify_comment = ProjectPermissionField(default=False,
             verbose_name='Modify comment')
-    modify_his_comment = ProjectPermissionField(default=False,
-            verbose_name='Modify his comment')
+    modify_his_issue_comment = ProjectPermissionField(default=False,
+            verbose_name='Modify his issue and comment')
     delete_comment = ProjectPermissionField(default=False,
             verbose_name='Delete comment')
 
@@ -192,8 +192,8 @@ class ProjectPermission(PermissionModel):
             verbose_name='Create comment')
     modify_comment = PermissionField(default=False,
             verbose_name='Modify comment')
-    modify_his_comment = PermissionField(default=False,
-            verbose_name='Modify his comment')
+    modify_his_issue_comment = PermissionField(default=False,
+            verbose_name='Modify his issue and comment')
     delete_comment = PermissionField(default=False,
             verbose_name='Delete comment')
 

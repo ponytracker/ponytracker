@@ -299,9 +299,11 @@ def issue_list(request, project):
 def issue_edit(request, project, issue=None):
 
     if issue:
-        if not request.user.has_perm('modify_issue', project):
-            raise PermissionDenied()
         issue = get_object_or_404(Issue, project=project, id=issue)
+        if issue.getdescevent() and not issue.getdescevent().editable_by(request):
+            raise PermissionDenied()
+        elif (not issue.getdescevent()) and (not request.user.has_perm('modify_issue', project)):
+            raise PermissionDenied()
         init_data = {'title': issue.title,
                      'due_date': issue.due_date,
                      'description': issue.description}

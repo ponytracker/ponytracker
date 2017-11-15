@@ -43,7 +43,8 @@
           {% if perm.delete_issue %}
           <a href="#" data-item="issue" data-action="{% url 'delete-issue' project.name issue.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
           {% endif %}
-          {% if perm.modify_issue %}
+          {% can_edit event as perm_edit %}
+          {% if perm_edit %}
           <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
           {% endif %}
         </div>

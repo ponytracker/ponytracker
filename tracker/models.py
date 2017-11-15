@@ -44,9 +44,9 @@ class Settings(models.Model):
             ])
     edit_policy = models.IntegerField(choices=EDIT_TYPE,
             default=EDIT_NOTIMEOUT,
-            verbose_name="Policy for \"Modify his comment\" permission")
+            verbose_name="Policy for \"Modify his issue and comment\" permission")
     edit_policy_timeout = models.IntegerField(default=30,
-            verbose_name="Timeout for \"Modify his comment\" permission (in min)",
+            verbose_name="Timeout for \"Modify his issue and comment\" permission (in min)",
             validators=[
                 MinValueValidator(1),
             ])
@@ -261,17 +261,23 @@ class Issue(models.Model):
         else:
             return False
 
-    def getdesc(self):
+    def getdescevent(self):
         desc = self.events.filter(code=Event.DESCRIBE)
         if desc.exists():
-            return desc.first().additionnal_section
+            return desc.first()
+        else:
+            return None
+
+    def getdesc(self):
+        desc = self.getdescevent()
+        if desc:
+            return desc.additionnal_section
         else:
             return None
 
     def setdesc(self, value):
-        desc = self.events.filter(code=Event.DESCRIBE)
-        if desc.exists():
-            desc = desc.first()
+        desc = self.getdescevent()
+        if desc:
             desc.additionnal_section = value
             desc.save()
         else:
@@ -280,9 +286,10 @@ class Issue(models.Model):
             desc.save()
 
     def deldesc(self):
-        desc = self.events.filter(code=Event.DESCRIBE)
-        if desc.exists():
-            desc.first().delete()
+        desc = self.getdescevent()
+        if desc:
+            desc.delete()
+
     description = property(getdesc, setdesc, deldesc)
 
     def add_label(self, author, label, commit=True):
@@ -432,9 +439,11 @@ class Event(models.Model):
         if not self.editable():
             return False
 
-        if request.user.has_perm('modify_comment', self.issue.project):
+        if request.user.has_perm('modify_comment', self.issue.project) and self.code == Event.COMMENT:
             return True
-        elif not request.user.has_perm('modify_his_comment', self.issue.project) or \
+        elif request.user.has_perm('modify_issue', self.issue.project) and self.code == Event.DESCRIBE:
+            return True
+        elif not request.user.has_perm('modify_his_issue_comment', self.issue.project) or \
                 not self.author == request.user:
             return False
 
