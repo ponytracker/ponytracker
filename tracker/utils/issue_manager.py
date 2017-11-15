@@ -191,7 +191,7 @@ class IssueManager:
         if self.unread:
             datelastread = ReadState.objects.filter(issue=OuterRef('pk'),user=self.user)
             datelastupdate = Event.objects.filter(issue=OuterRef('pk')).order_by('-date')
-            issues = issues.annotate(datelastupdate=Subquery(datelastupdate.values('date')), \
+            issues = issues.annotate(datelastupdate=Subquery(datelastupdate.values('date')[:1]), \
                                      datelastread=Subquery(datelastread.values('lastread'))) \
                            .filter(Q(datelastread__isnull=True) | Q(datelastread__lt=F('datelastupdate')))
 
