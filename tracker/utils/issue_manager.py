@@ -1,10 +1,9 @@
 from __future__ import unicode_literals
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Max, Count
-from django.db.models import Q
+from django.db.models import Max, Count, F, Q, OuterRef, Subquery, Exists
 
-from tracker.models import Label, Milestone
+from tracker.models import Label, Milestone, ReadState, Event
 from accounts.models import User
 
 import shlex
@@ -189,6 +188,12 @@ class IssueManager:
         for filter in self._filters:
             issues = issues.filter(filter)
 
+        if self.unread:
+            datelastread = ReadState.objects.filter(issue=OuterRef('pk'),user=self.user)
+            datelastupdate = Event.objects.filter(issue=OuterRef('pk')).order_by('-date')
+            issues = issues.annotate(datelastupdate=Subquery(datelastupdate.values('date')), \
+                                     datelastread=Subquery(datelastread.values('lastread'))) \
+                           .filter(Q(datelastread__isnull=True) | Q(datelastread__lt=F('datelastupdate')))
 
         if self.sort == 'newest':
             issues = issues.order_by('-opened_at')
@@ -205,9 +210,6 @@ class IssueManager:
         else: # recently-updated
             issues = issues.annotate(last_activity=Max('events__date'))\
                     .order_by('-last_activity')
-
-        if self.unread:
-            return [ issue for issue in issues if issue.have_unread_message(self.user)]
 
         return issues
 
