@@ -1,6 +1,6 @@
 {% extends 'tracker/project_base.html' %}
 
-{% block title %}{{ issue }} - {{ project }} - PonyTracker{% endblock %}
+{% block title %}{% if issue %}{{ issue }} - {% endif %}{{ project }} - PonyTracker{% endblock %}
 
 {% block issuetab %}primary{% endblock %}
 
