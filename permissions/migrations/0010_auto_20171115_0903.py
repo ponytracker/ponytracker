@@ -16,21 +16,21 @@ class Migration(migrations.Migration):
         migrations.RenameField(
             model_name='globalpermission',
             old_name='modify_his_comment',
-            new_name='modify_his_issue_comment',
+            new_name='modify_own_comment',
         ),
         migrations.RenameField(
             model_name='projectpermission',
             old_name='modify_his_comment',
-            new_name='modify_his_issue_comment',
+            new_name='modify_own_comment',
         ),
         migrations.AlterField(
             model_name='globalpermission',
-            name='modify_his_issue_comment',
+            name='modify_own_comment',
             field=permissions.models.ProjectPermissionField(default=False, verbose_name='Modify his issue and comment'),
         ),
         migrations.AlterField(
             model_name='projectpermission',
-            name='modify_his_issue_comment',
+            name='modify_own_comment',
             field=permissions.models.PermissionField(default=False, verbose_name='Modify his issue and comment'),
         ),
     ]

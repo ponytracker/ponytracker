@@ -443,7 +443,7 @@ class Event(models.Model):
             return True
         elif request.user.has_perm('modify_issue', self.issue.project) and self.code == Event.DESCRIBE:
             return True
-        elif not request.user.has_perm('modify_his_issue_comment', self.issue.project) or \
+        elif not request.user.has_perm('modify_own_comment', self.issue.project) or \
                 not self.author == request.user:
             return False
 
