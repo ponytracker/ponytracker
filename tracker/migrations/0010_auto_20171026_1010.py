@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 import django.core.validators
+from django.conf import settings
 from django.db import migrations, models
 
 
@@ -16,11 +17,24 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='settings',
             name='edit_policy',
-            field=models.IntegerField(choices=[(0, 'No timeout'), (1, 'Timeout'), (2, 'As long no next comment')], default=0, verbose_name='Policy for "Modify his comment" permission'),
+            field=models.IntegerField(choices=[(0, 'No timeout'), (1, 'Timeout'), (2, 'As long no next comment')], default=0, verbose_name='Policy for "Modify his issue and comment" permission'),
         ),
         migrations.AddField(
             model_name='settings',
             name='edit_policy_timeout',
-            field=models.IntegerField(default=30, validators=[django.core.validators.MinValueValidator(1)], verbose_name='Timeout for "Modify his comment" permission (in min)'),
+            field=models.IntegerField(default=30, validators=[django.core.validators.MinValueValidator(1)], verbose_name='Timeout for "Modify his issue and comment" permission (in min)'),
+        ),
+        migrations.CreateModel(
+            name='ReadState',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('lastread', models.DateTimeField(auto_now_add=True)),
+                ('issue', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='readstates', to='tracker.Issue')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='readstates', to=settings.AUTH_USER_MODEL)),
+            ],
+        ),
+        migrations.AlterUniqueTogether(
+            name='readstate',
+            unique_together=set([('issue', 'user')]),
         ),
     ]
