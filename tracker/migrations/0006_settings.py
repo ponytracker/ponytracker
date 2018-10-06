@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(serialize=False, auto_created=True, verbose_name='ID', primary_key=True)),
                 ('items_per_page', models.IntegerField(verbose_name='Items per page', validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(500)], default=25)),
-                ('site', models.OneToOneField(editable=False, related_name='settings', to='sites.Site')),
+                ('site', models.OneToOneField(editable=False, related_name='settings', to='sites.Site', on_delete=models.CASCADE)),
             ],
         ),
     ]

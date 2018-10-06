@@ -8,29 +8,50 @@ from django.utils.html import escape, format_html
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.sites.models import Site
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
 
 from colorful.fields import RGBColorField
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from accounts.models import User
 
 
-__all__ = ['Project', 'Issue', 'Label', 'Milestone', 'Event']
+__all__ = ['Project', 'Issue', 'Label', 'Milestone', 'ReadState', 'Event']
 
 
 class Settings(models.Model):
 
+    EDIT_NOTIMEOUT = 0
+    EDIT_TIMEOUT = 1
+    EDIT_NOMORECOMMENT = 2
+    EDIT_TYPE = (
+        (EDIT_NOTIMEOUT, 'No timeout'),
+        (EDIT_TIMEOUT, 'Timeout'),
+        (EDIT_NOMORECOMMENT, 'As long no next comment'),
+    )
+
     site = models.OneToOneField(Site, editable=False,
-            related_name='settings')
+            related_name='settings', on_delete=models.CASCADE)
     items_per_page = models.IntegerField(default=25,
             verbose_name="Items per page",
             validators=[
                 MinValueValidator(1),
                 MaxValueValidator(500)
             ])
+    edit_policy = models.IntegerField(choices=EDIT_TYPE,
+            default=EDIT_NOTIMEOUT,
+            verbose_name="Policy for \"Modify his issue and comment\" permission")
+    edit_policy_timeout = models.IntegerField(default=30,
+            verbose_name="Timeout for \"Modify his issue and comment\" permission (in min)",
+            validators=[
+                MinValueValidator(1),
+            ])
+
+
 
 
 @python_2_unicode_compatible
@@ -72,6 +93,16 @@ class Project(models.Model):
     def milestones(self):
         return Milestone.objects.filter(project=self, deleted=False)
 
+    def get_unread_issues_nb(self, user):
+        if not user.is_authenticated:
+            return 0
+        count = 0
+        for issue in self.issues.all():
+            if issue.have_unread_message(user):
+                count +=1
+        return count
+
+
     def __str__(self):
         return self.display_name
 
@@ -79,7 +110,7 @@ class Project(models.Model):
 @python_2_unicode_compatible
 class Label(models.Model):
 
-    project = models.ForeignKey(Project, related_name='+')
+    project = models.ForeignKey(Project, related_name='+', on_delete=models.CASCADE)
 
     name = models.CharField(max_length=32)
 
@@ -134,7 +165,7 @@ class Milestone(models.Model):
             message="Please enter only lowercase characters, number, "
                     "dot, underscores or hyphens.")
 
-    project = models.ForeignKey(Project, related_name='+')
+    project = models.ForeignKey(Project, related_name='+', on_delete=models.CASCADE)
 
     name = models.CharField(max_length=32, validators=[name_validator])
 
@@ -180,7 +211,7 @@ class Issue(models.Model):
     # id is the id in the project, not the pk, so we need one
     primarykey = models.AutoField(primary_key=True)
 
-    project = models.ForeignKey(Project, related_name='issues')
+    project = models.ForeignKey(Project, related_name='issues', on_delete=models.CASCADE)
     id = models.IntegerField(editable=False)
 
     class Meta:
@@ -188,7 +219,7 @@ class Issue(models.Model):
 
     title = models.CharField(max_length=128)
 
-    author = models.ForeignKey(User, related_name='+')
+    author = models.ForeignKey(User, related_name='+', on_delete=models.PROTECT)
 
     opened_at = models.DateTimeField(auto_now_add=True)
 
@@ -200,9 +231,10 @@ class Issue(models.Model):
             related_name='issues')
 
     milestone = models.ForeignKey(Milestone, blank=True, null=True,
-            related_name='issues')
+            related_name='issues', on_delete=models.SET_NULL)
 
-    assignee = models.ForeignKey(User, blank=True, null=True, related_name='+')
+    assignee = models.ForeignKey(User, blank=True, null=True, related_name='+',
+            on_delete=models.SET_NULL)
 
     subscribers = models.ManyToManyField(User, blank=True,
             related_name='subscribed_issues')
@@ -229,17 +261,23 @@ class Issue(models.Model):
         else:
             return False
 
-    def getdesc(self):
+    def getdescevent(self):
         desc = self.events.filter(code=Event.DESCRIBE)
         if desc.exists():
-            return desc.first().additionnal_section
+            return desc.first()
+        else:
+            return None
+
+    def getdesc(self):
+        desc = self.getdescevent()
+        if desc:
+            return desc.additionnal_section
         else:
             return None
 
     def setdesc(self, value):
-        desc = self.events.filter(code=Event.DESCRIBE)
-        if desc.exists():
-            desc = desc.first()
+        desc = self.getdescevent()
+        if desc:
             desc.additionnal_section = value
             desc.save()
         else:
@@ -248,9 +286,10 @@ class Issue(models.Model):
             desc.save()
 
     def deldesc(self):
-        desc = self.events.filter(code=Event.DESCRIBE)
-        if desc.exists():
-            desc.first().delete()
+        desc = self.getdescevent()
+        if desc:
+            desc.delete()
+
     description = property(getdesc, setdesc, deldesc)
 
     def add_label(self, author, label, commit=True):
@@ -298,8 +337,54 @@ class Issue(models.Model):
                 args={'milestone': milestone.name})
         event.save()
 
+    def have_unread_message(self, user):
+        if not user.is_authenticated:
+            return False
+        try:
+            readstate = self.readstates.get(user=user)
+        except ObjectDoesNotExist:
+            return True
+        return self.events.filter(date__gt=readstate.lastread).exists()
+
+    def get_unread_event_nb(self, user):
+        if not user.is_authenticated:
+            return 0
+        try:
+            readstate = self.readstates.get(user=user)
+        except ObjectDoesNotExist:
+            return self.events.count()
+        return self.events.filter(date__gt=readstate.lastread).count()
+
+    def mark_as_read(self, user):
+        if not user.is_authenticated:
+            return timezone.now()
+        try:
+            readstate = self.readstates.get(user=user)
+            olddate = readstate.lastread
+        except ObjectDoesNotExist:
+            readstate = ReadState(issue=self, user=user)
+            olddate = self.opened_at
+        readstate.lastread = timezone.now()
+        readstate.save()
+        return olddate
+
     def __str__(self):
         return self.title
+
+@python_2_unicode_compatible
+class ReadState(models.Model):
+
+    issue = models.ForeignKey(Issue, related_name="%(class)ss", on_delete=models.CASCADE)
+
+    user = models.ForeignKey(User, related_name='%(class)ss', on_delete=models.CASCADE)
+
+    lastread = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('issue', 'user')
+
+    def __str__(self):
+        return "%s : User=%s lastread=%s" % (self.issue, self.user, self.lastread)
 
 
 @python_2_unicode_compatible
@@ -323,11 +408,11 @@ class Event(models.Model):
     CHANGE_DUE_DATE = 15
     UNSET_DUE_DATE = 16
 
-    issue = models.ForeignKey(Issue, related_name="%(class)ss")
+    issue = models.ForeignKey(Issue, related_name="%(class)ss", on_delete=models.CASCADE)
 
     date = models.DateTimeField(auto_now_add=True)
 
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
 
     code = models.IntegerField(default=UNKNOW)
 
@@ -348,6 +433,26 @@ class Event(models.Model):
     def editable(self):
 
         return self.code == Event.COMMENT or self.code == Event.DESCRIBE
+
+
+    def editable_by(self, request):
+        if not self.editable():
+            return False
+
+        if request.user.has_perm('modify_comment', self.issue.project) and self.code == Event.COMMENT:
+            return True
+        elif request.user.has_perm('modify_issue', self.issue.project) and self.code == Event.DESCRIBE:
+            return True
+        elif not request.user.has_perm('modify_own_comment', self.issue.project) or \
+                not self.author == request.user:
+            return False
+
+        policy = get_current_site(request).settings.edit_policy
+        if policy == Settings.EDIT_TIMEOUT:
+            return self.date + timedelta(minutes=get_current_site(request).settings.edit_policy_timeout) > timezone.now()
+        elif policy == Settings.EDIT_NOMORECOMMENT:
+            return not self.issue.events.filter(code=Event.COMMENT, date__gt=self.date).exists()
+        return True
 
     def glyphicon(self):
 

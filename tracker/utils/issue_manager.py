@@ -1,10 +1,9 @@
 from __future__ import unicode_literals
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Max, Count
-from django.db.models import Q
+from django.db.models import Max, Count, F, Q, OuterRef, Subquery, Exists
 
-from tracker.models import Label, Milestone
+from tracker.models import Label, Milestone, ReadState, Event
 from accounts.models import User
 
 import shlex
@@ -16,6 +15,7 @@ STATUS_DEFAULT = 'is:open'
 STATUS_VALUES = OrderedDict([
         ('is:open', 'Open'),
         ('is:close', 'Closed'),
+        ('is:unread', 'Unread'),
         ('*', 'All'),
     ])
 
@@ -36,9 +36,9 @@ def shell_split(cmd):
 
    if python_version < (3,):
        cmd = cmd.encode('utf-8')
-   
+
    args = shlex.split(cmd)
-   
+
    if python_version < (3,):
        args = [ arg.decode('utf-8') for arg in args ]
 
@@ -61,11 +61,12 @@ def get_filter_value(key, value):
 
 class IssueManager:
 
-    def __init__(self, project, filter=None, sort=None):
+    def __init__(self, project, filter=None, sort=None, user=None):
 
         self.project = project
         self.filter = filter or STATUS_DEFAULT
         self.sort = sort or SORT_DEFAULT
+        self.user = user
 
         self.status = None
         self.error = None
@@ -78,6 +79,7 @@ class IssueManager:
 
         self._constraints = []
         self._filters = []
+        self.unread = False
 
         for constraint in shell_split(self.filter):
 
@@ -131,9 +133,12 @@ class IssueManager:
         elif value == 'close':
             self.status = 'is:close'
             self._filters.append(Q(closed=True))
+        elif value == 'unread':
+            self.status = 'is:unread'
+            self.unread = True
         else:
             raise ValueError("The keyword 'is' must be followed "
-                             "by 'open' or 'close'.")
+                             "by 'unread', 'open' or 'close'.")
 
     def handle_label(self, value):
 
@@ -176,11 +181,19 @@ class IssueManager:
             raise ValueError("The user '%s' does not exist." % value)
         self._filters.append(Q(author=author))
 
+
     @property
     def issues(self):
         issues = self.project.issues
         for filter in self._filters:
             issues = issues.filter(filter)
+
+        if self.unread:
+            datelastread = ReadState.objects.filter(issue=OuterRef('pk'),user=self.user)
+            datelastupdate = Event.objects.filter(issue=OuterRef('pk')).order_by('-date')
+            issues = issues.annotate(datelastupdate=Subquery(datelastupdate.values('date')[:1]), \
+                                     datelastread=Subquery(datelastread.values('lastread'))) \
+                           .filter(Q(datelastread__isnull=True) | Q(datelastread__lt=F('datelastupdate')))
 
         if self.sort == 'newest':
             issues = issues.order_by('-opened_at')

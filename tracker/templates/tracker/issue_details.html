@@ -35,7 +35,7 @@
     <div class="panel panel-default">
 
       <div class="panel-heading">
-        <span class="badge"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
+        <span class="badge{% if lastread < event.date %} badge-unread{% endif %}"><span class="glyphicon glyphicon-{{ event.glyphicon }}"></span></span>
         &#160;
         <a href="{% same_author event.author %}">{% user_badge event.author %}</a> {{ event|safe }} {{ event.date|naturaltime }}
         {% if event.code == event.DESCRIBE %}
@@ -43,7 +43,8 @@
           {% if perm.delete_issue %}
           <a href="#" data-item="issue" data-action="{% url 'delete-issue' project.name issue.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
           {% endif %}
-          {% if perm.modify_issue %}
+          {% can_edit event as perm_edit %}
+          {% if perm_edit %}
           <a href="{% url 'edit-issue' project.name issue.id %}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
           {% endif %}
         </div>
@@ -52,7 +53,8 @@
           {% if perm.delete_comment %}
           <a href="#" data-item="comment" data-action="{% url 'delete-comment' project.name issue.id event.id %}" data-toggle="modal" data-target="#confirm-delete" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-trash"></span></a>
           {% endif %}
-          {% if perm.modify_comment %}
+          {% can_edit event as perm_edit %}
+          {% if perm_edit %}
           <a href="{% url 'edit-comment' project.name issue.id event.id %}" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-edit"></span></a>
           {% endif %}
         </div>

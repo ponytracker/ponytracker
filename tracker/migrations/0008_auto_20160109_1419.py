@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='label',
             name='project',
-            field=models.ForeignKey(to='tracker.Project', related_name='+'),
+            field=models.ForeignKey(to='tracker.Project', related_name='+', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='milestone',
             name='project',
-            field=models.ForeignKey(to='tracker.Project', related_name='+'),
+            field=models.ForeignKey(to='tracker.Project', related_name='+', on_delete=models.CASCADE),
         ),
     ]

@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
                 ('delete_comment', models.BooleanField(default=False)),
                 ('manage_tags', models.BooleanField(default=False)),
                 ('delete_tags', models.BooleanField(default=False)),
-                ('project', models.ForeignKey(editable=False, to='tracker.Project')),
+                ('project', models.ForeignKey(editable=False, to='tracker.Project', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

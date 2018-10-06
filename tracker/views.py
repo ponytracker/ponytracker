@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, Http404
 from django.db.models import Max, Count
@@ -84,8 +84,13 @@ def project_list(request, archived=False):
             messages.info(request, 'Start by creating a project.')
             return redirect('add-project')
 
+
+    read_state_projects = {}
+    for project in request.projects.all():
+        read_state_projects[project] = project.get_unread_issues_nb(request.user)
     c = {
         'archived': archived,
+        'read_state_projects': read_state_projects,
     }
 
     return render(request, 'tracker/project_list.html', c)
@@ -211,6 +216,17 @@ def project_unsubscribe(request, project):
     else:
         return redirect('list-issue', project.name)
 
+@login_required
+def project_mark_as_read(request, project):
+
+    for issue in project.issues.all():
+        issue.mark_as_read(request.user)
+
+    next = request.GET.get('next')
+    if next:
+        return redirect(next)
+    else:
+        return redirect('list-issue', project.name)
 
 @project_perm_required('modify_project')
 def project_archive(request, project, archive):
@@ -239,7 +255,8 @@ def issue_list(request, project):
 
     issuemanager = IssueManager(project,
                                 filter=request.GET.get('q'),
-                                sort=request.GET.get('sort'))
+                                sort=request.GET.get('sort'),
+                                user=request.user)
 
     issues = issuemanager.issues
 
@@ -259,6 +276,10 @@ def issue_list(request, project):
     else:
         paginator = None
 
+    read_state_issues = {}
+    for issue in project.issues.all():
+        read_state_issues[issue] = issue.get_unread_event_nb(request.user)
+
     c = {
         'project': project,
         'issues': issues,
@@ -268,6 +289,7 @@ def issue_list(request, project):
         'status_values': STATUS_VALUES,
         'sort': issuemanager.sort,
         'sort_values': SORT_VALUES,
+        'read_state_issues': read_state_issues,
     }
 
     return render(request, 'tracker/issue_list.html', c)
@@ -277,9 +299,11 @@ def issue_list(request, project):
 def issue_edit(request, project, issue=None):
 
     if issue:
-        if not request.user.has_perm('modify_issue', project):
-            raise PermissionDenied()
         issue = get_object_or_404(Issue, project=project, id=issue)
+        if issue.getdescevent() and not issue.getdescevent().editable_by(request):
+            raise PermissionDenied()
+        elif (not issue.getdescevent()) and (not request.user.has_perm('modify_issue', project)):
+            raise PermissionDenied()
         init_data = {'title': issue.title,
                      'due_date': issue.due_date,
                      'description': issue.description}
@@ -388,6 +412,7 @@ def issue_details(request, project, issue):
         'issue': issue,
         'events': events,
         'form': form,
+        'lastread' : issue.mark_as_read(request.user),
     }
 
     return render(request, 'tracker/issue_details.html', c)
@@ -405,10 +430,10 @@ def issue_comment_edit(request, project, issue, comment=None):
         change_state = True
 
     if comment:
-        if not request.user.has_perm('modify_comment', project):
-            raise PermissionDenied()
         event = get_object_or_404(Event, code=Event.COMMENT,
                 issue=issue, id=comment)
+        if not event.editable_by(request):
+            raise PermissionDenied()
         init_data = {'comment': event.additionnal_section}
     else:
         if not request.user.has_perm('create_comment', project):

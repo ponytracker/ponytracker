@@ -116,7 +116,8 @@
             "manage_tags": false,
             "modify_comment": false,
             "modify_issue": false,
-            "modify_project": false
+            "modify_project": false,
+            "modify_own_comment": false
         },
         "model": "permissions.globalpermission",
         "pk": 1
@@ -135,6 +136,7 @@
             "manage_tags": false,
             "modify_comment": false,
             "modify_issue": false,
+            "modify_own_comment": false,
             "project": 1
         },
         "model": "permissions.projectpermission",

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% load tracker_tags %}
 
 {% block content %}
 
@@ -22,7 +23,11 @@
 {% for project in projects %}
 <div class="list-group">
   <a class="list-group-item" href="{% url 'list-issue' project.name %}">
-    <h4>{{ project }}</h4>
+    <h4>{{ project }}
+    {% if read_state_projects|get_item:project > 0 %}
+    <span><span class="badge badge-unread"><span class="glyphicon glyphicon-bullhorn"></span>&#160;{{ read_state_projects|get_item:project }}</span></span>
+    {% endif %}
+    </h4>
     {% if project.description %}
     {{ project.description|linebreaksbr }}
     {% else %}

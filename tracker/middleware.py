@@ -10,10 +10,17 @@ from tracker.utils import granted_projects
 modules = ['accounts.views', 'permissions.views', 'tracker.views']
 
 
-class ProjectMiddleware:
+class ProjectMiddleware(object):
+
     """
     This middleware must be call after authentication middleware.
     """
+
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
 
     def process_view(self, request, view, view_args, view_kwargs):
 
@@ -44,7 +51,7 @@ class ProjectMiddleware:
         try:
             project = all_projects.get(name=project)
         except ObjectDoesNotExist:
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 raise PermissionDenied()
             else:
                 return login_required(view)(request, *view_args, **view_kwargs)
@@ -52,3 +59,4 @@ class ProjectMiddleware:
         request.project = project
         request.archived = project.archived
         request.projects = all_projects.filter(archived=request.archived)
+

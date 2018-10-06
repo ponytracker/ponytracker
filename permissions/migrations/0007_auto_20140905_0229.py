@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='projectpermission',
             name='project',
-            field=models.ForeignKey(related_name='permissions', to='tracker.Project'),
+            field=models.ForeignKey(related_name='permissions', to='tracker.Project', on_delete=models.CASCADE),
         ),
     ]

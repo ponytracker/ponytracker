@@ -64,7 +64,7 @@ class PermissionModel(models.Model):
     grantee = property(get_grantee, set_grantee)
 
     def granted_to(self, user):
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False
         if self.grantee_type == self.GRANTEE_USER:
             return user.id == self.grantee_id
@@ -153,6 +153,8 @@ class GlobalPermission(PermissionModel):
             verbose_name='Create comment')
     modify_comment = ProjectPermissionField(default=False,
             verbose_name='Modify comment')
+    modify_own_comment = ProjectPermissionField(default=False,
+            verbose_name='Modify his issue and comment')
     delete_comment = ProjectPermissionField(default=False,
             verbose_name='Delete comment')
 
@@ -174,7 +176,8 @@ class ProjectPermission(PermissionModel):
     class Meta:
         unique_together = ('project', 'grantee_type', 'grantee_id')
 
-    project = models.ForeignKey(Project, related_name='permissions')
+    project = models.ForeignKey(Project, related_name='permissions',
+            on_delete=models.CASCADE)
 
     create_issue = PermissionField(default=False,
             verbose_name='Create issue')
@@ -189,6 +192,8 @@ class ProjectPermission(PermissionModel):
             verbose_name='Create comment')
     modify_comment = PermissionField(default=False,
             verbose_name='Modify comment')
+    modify_own_comment = PermissionField(default=False,
+            verbose_name='Modify his issue and comment')
     delete_comment = PermissionField(default=False,
             verbose_name='Delete comment')
 

@@ -2,7 +2,7 @@ from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 import bleach
 from markdown import markdown
@@ -24,9 +24,9 @@ __all__ = ['granted_project', 'markdown_to_html', 'get_message_id'
 
 
 def granted_projects(user):
-    if user.is_authenticated() and user.is_staff:
+    if user.is_authenticated and user.is_staff:
         return Project.objects.all()
-    elif user.is_authenticated():
+    elif user.is_authenticated:
         teams = user.teams.values_list('id')
         groups = user.groups.values_list('id')
         # check for a global permission allowing access
